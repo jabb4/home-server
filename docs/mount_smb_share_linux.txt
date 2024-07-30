@@ -1,0 +1,15 @@
+sudo apt install cifs-utils
+
+nano .media_library_creds
+Add:
+username=<username>
+password=<password>
+
+sudo mkdir /mnt/media-library
+
+sudo nano /etc/fstab
+Add:
+### Media Library
+//192.168.20.101/media-library    /mnt/media-library      cifs    uid=proxmox,credentials=/home/proxmox/.media_library_creds,iocharset=utf8,x-systemd.automount,vers=3.0,noperm,nofail    0       0
+
+sudo mount -a
