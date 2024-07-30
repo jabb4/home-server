@@ -5,11 +5,11 @@ services:
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
+    networks:
+      - traefik_proxy
     ports:
       - 80:80
       - 443:443
-      # - 443:443/tcp # Uncomment if you want HTTP3
-      # - 443:443/udp # Uncomment if you want HTTP3
     environment:
       CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN} # Cloudflare Token
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
@@ -35,3 +35,7 @@ services:
       - "traefik.http.routers.traefik-secure.tls.domains[0].main=local.pyer.xyz"
       - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.local.pyer.xyz"
       - "traefik.http.routers.traefik-secure.service=api@internal"
+
+networks:
+  traefik_proxy:
+    name: traefik_proxy

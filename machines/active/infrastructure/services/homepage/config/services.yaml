@@ -1,0 +1,28 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/services
+
+- Infrastructure:
+    - Proxmox:
+        href: https://proxmox.local.pyer.xyz/
+        description: Proxmox VE
+        icon: proxmox.png
+    - Pi-hole:
+        href: https://pi-hole.local.pyer.xyz/
+        icon: pi-hole.png
+    - Authentik:
+        href: https://authentik.local.pyer.xyz/
+        icon: authentik.png
+    - Traefik:
+        href: https://traefik.local.pyer.xyz/
+        icon: traefik.png    
+
+- My Second Group:
+    - My Second Service:
+        href: http://localhost/
+        description: Homepage is the best
+
+- My Third Group:
+    - My Third Service:
+        href: http://localhost/
+        description: Homepage is 😎
