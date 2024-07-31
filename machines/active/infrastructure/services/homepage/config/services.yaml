@@ -3,26 +3,49 @@
 # https://gethomepage.dev/latest/configs/services
 
 - Infrastructure:
+    - Unifi:
+        href: https://unifi.labserver.casa/network/default/dashboard
+        icon: unifi.png
+    - Home-assistant:
+        href: https://home-assistant.labserver.casa
+        icon: home-assistant.png
     - Proxmox:
-        href: https://proxmox.local.pyer.xyz/
-        description: Proxmox VE
+        href: https://pve.labserver.casa/
         icon: proxmox.png
+    - TrueNas:
+        href: https://truenas.labserver.casa/
+        icon: truenas.png
     - Pi-hole:
-        href: https://pi-hole.local.pyer.xyz/
+        href: https://pi-hole.labserver.casa/
         icon: pi-hole.png
-    - Authentik:
-        href: https://authentik.local.pyer.xyz/
-        icon: authentik.png
     - Traefik:
-        href: https://traefik.local.pyer.xyz/
-        icon: traefik.png    
+        href: https://traefik.labserver.casa/
+        icon: traefik.png
 
-- My Second Group:
-    - My Second Service:
-        href: http://localhost/
-        description: Homepage is the best
+- Streaming:
+    - Jellyseerr:
+        href: https://jellyseerr.labserver.casa
+        icon: jellyseerr.png
+    - Jellyfin:
+        href: https://jellyfin.labserver.casa/
+        icon: jellyfin.png
+    - Qbittorrent:
+        href: https://qbittorrent.labserver.casa/
+        icon: qbittorrent.png
+    - Radarr:
+        href: https://radarr.labserver.casa/
+        icon: radarr.png
+    - Sonarr:
+        href: https://sonarr.labserver.casa/
+        icon: sonarr.png
+    - Prowlarr:
+        href: https://prowlarr.labserver.casa/
+        icon: prowlarr.png
+    - Bazarr:
+        href: https://bazarr.labserver.casa/
+        icon: bazarr.png
 
-- My Third Group:
-    - My Third Service:
-        href: http://localhost/
-        description: Homepage is 😎
+- Cloud:
+    - Cloudflare:
+        href: https://dash.cloudflare.com/
+        icon: cloudflare.png

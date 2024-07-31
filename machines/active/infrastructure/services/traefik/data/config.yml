@@ -4,7 +4,7 @@ http:
     proxmox:
       entryPoints:
         - "https"
-      rule: "Host(`proxmox.local.pyer.xyz`)"
+      rule: "Host(`pve.labserver.casa`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -14,7 +14,7 @@ http:
     pi-hole:
       entryPoints:
         - "https"
-      rule: "Host(`pi-hole.local.pyer.xyz`)"
+      rule: "Host(`pi-hole.labserver.casa`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -25,7 +25,7 @@ http:
     home-assistant:
       entryPoints:
         - "https"
-      rule: "Host(`home-assistant.local.pyer.xyz`)"
+      rule: "Host(`home-assistant.labserver.casa`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -35,7 +35,7 @@ http:
     truenas:
       entryPoints:
         - "https"
-      rule: "Host(`truenas.local.pyer.xyz`)"
+      rule: "Host(`truenas.labserver.casa`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -45,7 +45,7 @@ http:
     homepage:
       entryPoints:
         - "https"
-      rule: "Host(`homepage.local.pyer.xyz`)"
+      rule: "Host(`homepage.labserver.casa`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -55,7 +55,7 @@ http:
     unifi:
       entryPoints:
         - "https"
-      rule: "Host(`unifi.local.pyer.xyz`)"
+      rule: "Host(`unifi.labserver.casa`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -65,7 +65,7 @@ http:
     jellyfin:
       entryPoints:
         - "https"
-      rule: "Host(`jellyfin.local.pyer.xyz`)"
+      rule: "Host(`jellyfin.labserver.casa`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -75,7 +75,7 @@ http:
     jellyseerr:
       entryPoints:
         - "https"
-      rule: "Host(`jellyseerr.local.pyer.xyz`)"
+      rule: "Host(`jellyseerr.labserver.casa`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -85,7 +85,7 @@ http:
     qbittorrent:
       entryPoints:
         - "https"
-      rule: "Host(`qbittorrent.local.pyer.xyz`)"
+      rule: "Host(`qbittorrent.labserver.casa`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -95,7 +95,7 @@ http:
     radarr:
       entryPoints:
         - "https"
-      rule: "Host(`radarr.local.pyer.xyz`)"
+      rule: "Host(`radarr.labserver.casa`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -105,7 +105,7 @@ http:
     sonarr:
       entryPoints:
         - "https"
-      rule: "Host(`sonarr.local.pyer.xyz`)"
+      rule: "Host(`sonarr.labserver.casa`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -115,7 +115,7 @@ http:
     prowlarr:
       entryPoints:
         - "https"
-      rule: "Host(`prowlarr.local.pyer.xyz`)"
+      rule: "Host(`prowlarr.labserver.casa`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -125,7 +125,7 @@ http:
     bazarr:
       entryPoints:
         - "https"
-      rule: "Host(`bazarr.local.pyer.xyz`)"
+      rule: "Host(`bazarr.labserver.casa`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -232,23 +232,6 @@ http:
         customRequestHeaders:
           X-Forwarded-Proto: https
 
-    middlewares-authentik:
-      forwardAuth:
-        address: "http://authentik_server:9000/outpost.goauthentik.io/auth/traefik"
-        trustForwardHeader: true
-        authResponseHeaders:
-          - X-authentik-username
-          - X-authentik-groups
-          - X-authentik-email
-          - X-authentik-name
-          - X-authentik-uid
-          - X-authentik-jwt
-          - X-authentik-meta-jwks
-          - X-authentik-meta-outpost
-          - X-authentik-meta-provider
-          - X-authentik-meta-app
-          - X-authentik-meta-version
-
     default-whitelist:
       ipAllowList:
         sourceRange:
@@ -260,7 +243,7 @@ http:
         - default-whitelist
         - default-headers
 
-    # pi-hole redirect, Redirects https://pi-hole.local.pyer.xyz -> https://pi-hole.local.pyer.xyz/admin
+    # pi-hole redirect, Redirects https://pi-hole.labserver.casa -> https://pi-hole.labserver.casa/admin
     pi-hole-redirect:
       redirectRegex:
         regex: "^https://([^/]+)/?$"
