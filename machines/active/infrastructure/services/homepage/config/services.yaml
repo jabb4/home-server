@@ -14,7 +14,7 @@
         icon: proxmox.png
         widget:
             type: proxmox
-            url: https://192.168.20.2:8006
+            url: https://pve.labserver.casa
             username: {{HOMEPAGE_VAR_PROXMOX_API_USERNAME}}
             password: {{HOMEPAGE_VAR_PROXMOX_API_PASSWORD}}
     - TrueNas:
@@ -39,7 +39,7 @@
         icon: qbittorrent.png
         widget:
             type: qbittorrent
-            url: http://192.168.20.102:8085
+            url: https://qbittorrent.labserver.casa
             username: {{HOMEPAGE_VAR_QBITTORRENT_USERNAME}}
             password: {{HOMEPAGE_VAR_QBITTORRENT_PASSWORD}}
     - Radarr:

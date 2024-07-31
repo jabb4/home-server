@@ -144,7 +144,7 @@ http:
     pi-hole:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.106:8888"
+          - url: "http://192.168.20.50:80"
         passHostHeader: true
     
     home-assistant:
@@ -162,7 +162,7 @@ http:
     homepage:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.106:3000"
+          - url: "http://192.168.20.100:3000"
         passHostHeader: true
     
     unifi:
