@@ -1,0 +1,36 @@
+https://www.youtube.com/watch?v=mQGB4hL2_ZQ
+
+
+
+
+First connect to the server using SSH, as this is easier because you can copy and paste
+
+Now switch to the folder where the file is stored
+cd /usr/share/javascript/proxmox-widget-toolkit
+
+Next back up the file in case we mess things up
+cp proxmoxlib.js proxmoxlib.js.bak
+
+And then edit the file as we need to make a change
+nano proxmoxlib.js
+
+Use Ctrl-W to find and type in
+if (res ==
+
+Hit return and this should take you to a line like this
+if (res === null || res === undefined || !res || res
+                        .data.status.toLowerCase() !== 'active') {
+
+Replace the line with this
+if (false) {
+
+Now save and exit using Ctrl-X
+
+Basically we've changed this statement check to always return false so that it never triggers
+
+Restart the PVE service for the changes to take effect
+systemctl restart pveproxy
+
+Now repeat this for all nodes
+
+Logout of any existing session, close your browser, start the browser back up, connect to the server and you should find the subscription no longer appears
