@@ -6,6 +6,11 @@
     - Unifi:
         href: https://unifi.labserver.casa/network/default/dashboard
         icon: unifi.png
+        widget:
+            type: unifi
+            url: https://unifi.labserver.casa
+            username: {{HOMEPAGE_VAR_UNIFI_USERNAME}}
+            password: {{HOMEPAGE_VAR_UNIFI_PASSWORD}}
     - Home-assistant:
         href: https://home-assistant.labserver.casa
         icon: home-assistant.png
@@ -17,12 +22,23 @@
             url: https://pve.labserver.casa
             username: {{HOMEPAGE_VAR_PROXMOX_API_USERNAME}}
             password: {{HOMEPAGE_VAR_PROXMOX_API_PASSWORD}}
+    - Authentik:
+        href: https://auth.labserver.casa
+        icon: authentik.png
+        widget:
+            type: authentik
+            url: https://auth.labserver.casa
+            key: {{HOMEPAGE_VAR_AUTHENTIK_API}}
     - TrueNas:
         href: https://truenas.labserver.casa/
         icon: truenas.png
     - Pi-hole:
         href: https://pi-hole.labserver.casa/
         icon: pi-hole.png
+        widget:
+            type: pihole
+            url: https://pi-hole.labserver.casa
+            key: {{HOMEPAGE_VAR_PIHOLE_API}}
     - Traefik:
         href: https://traefik.labserver.casa/
         icon: traefik.png
