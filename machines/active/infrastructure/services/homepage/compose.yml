@@ -2,6 +2,7 @@ services:
   homepage:
     image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
+    restart: always
     ports:
       - 3000:3000
     volumes:
@@ -19,4 +20,3 @@ services:
       HOMEPAGE_VAR_AUTHENTIK_API: ${HOMEPAGE_VAR_AUTHENTIK_API}
       HOMEPAGE_VAR_UNIFI_USERNAME: ${HOMEPAGE_VAR_UNIFI_USERNAME}
       HOMEPAGE_VAR_UNIFI_PASSWORD: ${HOMEPAGE_VAR_UNIFI_PASSWORD}
-    restart: unless-stopped

@@ -11,7 +11,14 @@
             url: https://unifi.labserver.casa
             username: {{HOMEPAGE_VAR_UNIFI_USERNAME}}
             password: {{HOMEPAGE_VAR_UNIFI_PASSWORD}}
-    - Home-assistant:
+    - Uptime-Kuma:
+        href: https://uptime-kuma.labserver.casa
+        icon: uptime-kuma.png
+        widget:
+            type: uptimekuma
+            url: https://uptime-kuma.labserver.casa
+            slug: homepage
+    - Home-Assistant:
         href: https://home-assistant.labserver.casa
         icon: home-assistant.png
     - Proxmox:

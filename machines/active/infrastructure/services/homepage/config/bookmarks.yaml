@@ -4,15 +4,15 @@
 
 - Developer:
     - Github:
-        - icon: github.png
+        - icon: github-light.png
           href: https://github.com/py-er
 
 - Social:
-    - Reddit:
+    - Linkedin:
         - icon: linkedin.png
-          href: https://www.linkedin.com/in/jacob-bengtsson/
+          href: https://linkedin.com/in/jacob-bengtsson/
 
-- Entertainment:
-    - YouTube:
-        - abbr: YT
-          href: https://youtube.com/
+- Slack:
+    - Notifications:
+      - icon: slack.png
+        href: https://app.slack.com/client/T07FCNTJSN6/C07G1GW6UMN

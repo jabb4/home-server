@@ -32,6 +32,16 @@ http:
       tls: {}
       service: authentik
 
+    uptime-kuma:
+      entryPoints:
+        - "https"
+      rule: "Host(`uptime-kuma.labserver.casa`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: uptime-kuma
+
     home-assistant:
       entryPoints:
         - "https"
@@ -162,6 +172,12 @@ http:
         servers:
           - url: "https://192.168.20.100:9443"
         passHostHeader: true
+
+    uptime-kuma:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.100:3001"
+        passHostHeader: true    
 
     home-assistant:
       loadBalancer:
