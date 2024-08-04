@@ -6,6 +6,12 @@
     - Github:
         - icon: github-light.png
           href: https://github.com/py-er
+    - Cloudflare:
+        - icon: cloudflare.png
+          href: https://dash.cloudflare.com
+    - Namecheap:
+        - icon: si-namecheap-#f76809
+          href: https://ap.www.namecheap.com
 
 - Social:
     - Linkedin:

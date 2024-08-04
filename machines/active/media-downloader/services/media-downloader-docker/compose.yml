@@ -2,6 +2,7 @@ services:
   gluetun:
     image: qmcgaw/gluetun
     container_name: gluetun
+    restart: always
     # line above must be uncommented to allow external containers to connect.
     # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md#external-container-to-gluetun
     cap_add:
@@ -13,11 +14,10 @@ services:
       - 6881:6881/udp # qbittorrent
       - 8085:8085 # qbittorrent
       - 9696:9696 # Prowlarr
+      - 8191:8191 # Flaresolverr
       - 8989:8989 # Sonarr
       - 7878:7878 # Radarr
       - 6767:6767 # Bazarr
-    volumes:
-      - ./gluetun/config:/gluetun
     environment:
       # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
       - VPN_SERVICE_PROVIDER=mullvad
@@ -34,11 +34,14 @@ services:
       # Server list updater
       # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
       - UPDATER_PERIOD=24h
-    restart: unless-stopped
+    volumes:
+      - ./gluetun/config:/gluetun
 
   qbittorrent:
     image: lscr.io/linuxserver/qbittorrent:latest
     container_name: qbittorrent
+    restart: always
+    network_mode: "service:gluetun"
     environment:
       - PUID=1000
       - PGID=1000
@@ -47,24 +50,37 @@ services:
     volumes:
       - ./qbittorrent/config:/config
       - /mnt/media-library/downloads:/downloads
-    restart: unless-stopped
-    network_mode: "service:gluetun"
 
   prowlarr:
     image: lscr.io/linuxserver/prowlarr:latest
     container_name: prowlarr
+    restart: always
+    network_mode: "service:gluetun"
     environment:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/Stockholm
     volumes:
       - ./prowlarr/config:/config
-    restart: unless-stopped
+
+  flaresolverr:
+    image: ghcr.io/flaresolverr/flaresolverr:latest
+    container_name: flaresolverr
+    restart: always
     network_mode: "service:gluetun"
+    environment:
+      - LOG_LEVEL=info
+      - LOG_HTML=false
+      - CAPTCHA_SOLVER=none
+      - TZ=Europe/Stockholm
+    depends_on:
+      - prowlarr
 
   sonarr:
     image: lscr.io/linuxserver/sonarr:latest
     container_name: sonarr
+    restart: always
+    network_mode: "service:gluetun"
     environment:
       - PUID=1000
       - PGID=1000
@@ -73,8 +89,6 @@ services:
       - ./sonarr/config:/config
       - /mnt/media-library/series:/tv
       - /mnt/media-library/downloads:/downloads
-    restart: unless-stopped
-    network_mode: "service:gluetun"
     depends_on:
       - qbittorrent
       - prowlarr
@@ -82,6 +96,8 @@ services:
   radarr:
     image: lscr.io/linuxserver/radarr:latest
     container_name: radarr
+    restart: always
+    network_mode: "service:gluetun"
     environment:
       - PUID=1000
       - PGID=1000
@@ -90,8 +106,6 @@ services:
       - ./radarr/config:/config
       - /mnt/media-library/movies:/movies
       - /mnt/media-library/downloads:/downloads
-    restart: unless-stopped
-    network_mode: "service:gluetun"
     depends_on:
       - qbittorrent
       - prowlarr
@@ -99,6 +113,8 @@ services:
   bazarr:
     image: lscr.io/linuxserver/bazarr:latest
     container_name: bazarr
+    restart: always
+    network_mode: "service:gluetun"
     environment:
       - PUID=1000
       - PGID=1000
@@ -107,8 +123,6 @@ services:
       - ./bazarr/config:/config
       - /mnt/media-library/movies:/movies
       - /mnt/media-library/series:/tv
-    restart: unless-stopped
-    network_mode: "service:gluetun"
     depends_on:
       - radarr
       - sonarr
@@ -116,14 +130,14 @@ services:
   jellyseerr:
     image: fallenbagel/jellyseerr:latest
     container_name: jellyseerr
+    restart: unless-stopped
+    ports:
+      - 5055:5055
     environment:
       - LOG_LEVEL=debug
       - TZ=Erope/Stockholm
     volumes:
       - ./jellyseerr/config:/app/config
-    ports:
-      - 5055:5055
-    restart: unless-stopped
     depends_on:
       - radarr
       - sonarr

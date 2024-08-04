@@ -6,79 +6,125 @@
     - Unifi:
         href: https://unifi.labserver.casa/network/default/dashboard
         icon: unifi.png
+        ping: https://192.168.10.1
         widget:
             type: unifi
             url: https://unifi.labserver.casa
             username: {{HOMEPAGE_VAR_UNIFI_USERNAME}}
             password: {{HOMEPAGE_VAR_UNIFI_PASSWORD}}
-    - Uptime-Kuma:
-        href: https://uptime-kuma.labserver.casa
-        icon: uptime-kuma.png
-        widget:
-            type: uptimekuma
-            url: https://uptime-kuma.labserver.casa
-            slug: homepage
-    - Home-Assistant:
-        href: https://home-assistant.labserver.casa
-        icon: home-assistant.png
     - Proxmox:
-        href: https://pve.labserver.casa/
+        href: https://pve.labserver.casa
         icon: proxmox.png
+        ping: https://192.168.20.2:8006
         widget:
             type: proxmox
             url: https://pve.labserver.casa
             username: {{HOMEPAGE_VAR_PROXMOX_API_USERNAME}}
             password: {{HOMEPAGE_VAR_PROXMOX_API_PASSWORD}}
+    - Uptime-Kuma:
+        href: https://uptime-kuma.labserver.casa
+        icon: uptime-kuma.png
+        ping: http://192.168.20.100:3001
+        widget:
+            type: uptimekuma
+            url: https://uptime-kuma.labserver.casa
+            slug: homepage
+    - Pi-hole:
+        href: https://pi-hole.labserver.casa
+        icon: pi-hole.png
+        ping: http://192.168.20.50:80
+        widget:
+            type: pihole
+            url: https://pi-hole.labserver.casa
+            key: {{HOMEPAGE_VAR_PIHOLE_API}}
     - Authentik:
         href: https://auth.labserver.casa
         icon: authentik.png
+        ping: https://192.168.20.100:9443
         widget:
             type: authentik
             url: https://auth.labserver.casa
             key: {{HOMEPAGE_VAR_AUTHENTIK_API}}
     - TrueNas:
-        href: https://truenas.labserver.casa/
+        href: https://truenas.labserver.casa
         icon: truenas.png
-    - Pi-hole:
-        href: https://pi-hole.labserver.casa/
-        icon: pi-hole.png
+        ping: https://192.168.20.101
         widget:
-            type: pihole
-            url: https://pi-hole.labserver.casa
-            key: {{HOMEPAGE_VAR_PIHOLE_API}}
+            type: truenas
+            url: https://truenas.labserver.casa
+            key: {{HOMEPAGE_VAR_TRUENAS_API}} # apikey
+            enablePools: true # optional, defaults to false
+            nasType: scale # defaults to scale, must be set to 'core' if using enablePools with TrueNAS Core
     - Traefik:
-        href: https://traefik.labserver.casa/
+        href: https://traefik.labserver.casa
         icon: traefik.png
+        ping: https://traefik.labserver.casa
+        widget:
+            type: traefik
+            url: https://traefik.labserver.casa
+            username: {{HOMEPAGE_VAR_TRAEFIK_USERNAME}}
+            password: {{HOMEPAGE_VAR_TRAEFIK_PASSWORD}}
 
 - Streaming:
     - Jellyseerr:
         href: https://jellyseerr.labserver.casa
         icon: jellyseerr.png
+        ping: http://192.168.20.102:5055
     - Jellyfin:
-        href: https://jellyfin.labserver.casa/
+        href: https://jellyfin.labserver.casa
         icon: jellyfin.png
+        ping: http://192.168.20.103:8096
+        widget:
+            type: jellyfin
+            url: https://jellyfin.labserver.casa
+            key: {{HOMEPAGE_VAR_JELLYFIN_API}}
+            enableBlocks: true # optional, defaults to false
+            enableNowPlaying: true # optional, defaults to true
+            enableUser: true # optional, defaults to false
+            showEpisodeNumber: true # optional, defaults to false
+            expandOneStreamToTwoRows: false # optional, defaults to true
     - Qbittorrent:
-        href: https://qbittorrent.labserver.casa/
+        href: https://qbittorrent.labserver.casa
         icon: qbittorrent.png
+        ping: http://192.168.20.102:8085
         widget:
             type: qbittorrent
             url: https://qbittorrent.labserver.casa
             username: {{HOMEPAGE_VAR_QBITTORRENT_USERNAME}}
             password: {{HOMEPAGE_VAR_QBITTORRENT_PASSWORD}}
     - Radarr:
-        href: https://radarr.labserver.casa/
+        href: https://radarr.labserver.casa
         icon: radarr.png
+        ping: http://192.168.20.102:7878
+        widget:
+            type: radarr
+            url: https://radarr.labserver.casa
+            key: {{HOMEPAGE_VAR_RADARR_API}}
+            enableQueue: true # optional, defaults to false
     - Sonarr:
-        href: https://sonarr.labserver.casa/
+        href: https://sonarr.labserver.casa
         icon: sonarr.png
+        ping: http://192.168.20.102:8989
+        widget:
+            type: sonarr
+            url: https://sonarr.labserver.casa
+            key: {{HOMEPAGE_VAR_SONARR_API}}
+            enableQueue: true # optional, defaults to false
     - Prowlarr:
-        href: https://prowlarr.labserver.casa/
+        href: https://prowlarr.labserver.casa
         icon: prowlarr.png
+        ping: http://192.168.20.102:9696
+        widget:
+            type: prowlarr
+            url: https://prowlarr.labserver.casa
+            key: {{HOMEPAGE_VAR_PROWLARR_API}}
     - Bazarr:
-        href: https://bazarr.labserver.casa/
+        href: https://bazarr.labserver.casa
         icon: bazarr.png
+        ping: http://192.168.20.102:6767
 
-- Cloud:
-    - Cloudflare:
-        href: https://dash.cloudflare.com/
-        icon: cloudflare.png
+- Home Automation:
+    - Home-Assistant:
+        href: https://home-assistant.labserver.casa
+        icon: home-assistant.png
+        ping: http://192.168.20.104:8123
