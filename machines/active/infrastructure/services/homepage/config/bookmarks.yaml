@@ -9,6 +9,15 @@
     - Cloudflare:
         - icon: cloudflare.png
           href: https://dash.cloudflare.com
+    - Hetzner:
+        - icon: hetzner.png
+          href: https://console.hetzner.cloud
+    - Heroku:
+        - icon: heroku.png
+          href: https://dashboard.heroku.com
+    - Vultr:
+        - icon: vultr.png
+          href: https://my.vultr.com
     - Namecheap:
         - icon: si-namecheap-#f76809
           href: https://ap.www.namecheap.com
