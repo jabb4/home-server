@@ -13,7 +13,7 @@
         - icon: hetzner.png
           href: https://console.hetzner.cloud
     - Heroku:
-        - icon: heroku.png
+        - icon: si-heroku-#430098
           href: https://dashboard.heroku.com
     - Vultr:
         - icon: vultr.png
