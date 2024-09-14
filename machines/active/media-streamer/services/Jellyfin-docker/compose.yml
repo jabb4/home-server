@@ -12,4 +12,4 @@ services:
     ports:
       - 8096:8096
       - 8920:8920
-    restart: unless-stopped
+    restart: always
