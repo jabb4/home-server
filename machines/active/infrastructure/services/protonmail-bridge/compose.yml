@@ -1,0 +1,11 @@
+services:
+    protonmail-bridge:
+        image: ghcr.io/videocurio/proton-mail-bridge-alpine:latest
+        container_name: protonmail_bridge
+        volumes:
+            - mail_data:/root
+        ports:
+            - 12025:25/tcp
+        restart: unless-stopped
+volumes:
+    mail_data:
