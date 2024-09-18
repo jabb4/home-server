@@ -2,5 +2,7 @@ services:
   cloudflare-tunnel:
     image: cloudflare/cloudflared:latest
     container_name: cloudflare-tunnel
-    command: tunnel --no-autoupdate run --token ${CF_TOKEN}
+    environment:
+      - CF_TOKEN: ${CF_TOKEN}
+    command: tunnel --no-autoupdate run --token $CF_TOKEN
     restart: always
