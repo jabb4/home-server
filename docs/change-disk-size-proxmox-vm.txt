@@ -1,0 +1,3 @@
+In the proxmox host shell run:
+
+qm disk resize <VM ID> scsi0 32G

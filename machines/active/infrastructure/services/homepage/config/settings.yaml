@@ -2,6 +2,15 @@
 # For configuration options and examples, please see:
 # https://gethomepage.dev/latest/configs/settings
 
+title: Jabbas Homepage
+# favicon: /icons/favicon/jabba.ico # Uncomment this line to use a custom favicon (broken kinda)
+
+headerStyle: underlined
+theme: dark
+color: slate
+
+useEqualHeights: true
+
 providers:
   openweathermap: openweathermapapikey
   weatherapi: weatherapiapikey

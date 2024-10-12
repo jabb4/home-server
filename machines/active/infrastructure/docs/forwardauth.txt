@@ -1,0 +1,26 @@
+1. add authentik-foarwardauth middleware in traefik conf
+2. go to authentk and create a new application and provider for the service
+The things you need to fill in:
+ - Application Name: Service name (ex: sonarr)
+ - Slug: Service name (ex: sonarr)
+ - provider type: Forward Auth (Single Application)
+ - Proiver name: "Provider for <Service name> (ex: Provider for sonarr)
+ - Authorization flow: default-provider-authorization-implicit-consent
+ - External host: https://<service>.local.jabbas.dev
+ (if homepage dashboard or something else need access to api or some specific path that cant be behinde authentik do this):
+ - Under advancded protocol settings, Unauthenticated Paths: set to the path you need (one path per line) (ex: ^/api/.*) (this is to give access to api)
+ (if the service has basic auth as a authentication method do this):
+ - Under Authentication settings: Enable "Send HTTP-Basic Authentication"
+ - HTTP-Basic Username key: <service>_username
+ - HTTP-Basic Password key: <service>_password
+ - Save
+ - Then go to Directory/Groups and create a new group called <service>_access
+ - Under attributes make the first line: <service>_username: <username>
+ - Make the second line to: <service>_password: <password>
+ - Save the group
+ - Then click on the newly created group, then go to users and click "Add existing user"
+ - Add the user that you want to have access to the service
+3. go to Applications/Outpost
+- Edit the Embedded Outpost
+- Add the new service by doubble taping it 
+3. Done!

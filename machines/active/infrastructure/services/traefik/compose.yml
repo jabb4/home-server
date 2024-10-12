@@ -2,11 +2,11 @@ services:
   traefik:
     image: traefik:v3.1
     container_name: traefik
-    restart: always
+    restart: unless-stopped
     security_opt:
       - no-new-privileges:true
     networks:
-      - traefik_proxy
+      - traefik
     ports:
       - 80:80
       - 443:443
@@ -22,20 +22,20 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.traefik.entrypoints=http"
-      - "traefik.http.routers.traefik.rule=Host(`traefik.labserver.casa`)"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.local.jabbas.dev`)"
       - "traefik.http.middlewares.traefik-auth.basicauth.users=${TRAEFIK_DASHBOARD_CREDENTIALS}"
       - "traefik.http.middlewares.traefik-https-redirect.redirectscheme.scheme=https"
       - "traefik.http.middlewares.sslheader.headers.customrequestheaders.X-Forwarded-Proto=https"
       - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
       - "traefik.http.routers.traefik-secure.entrypoints=https"
-      - "traefik.http.routers.traefik-secure.rule=Host(`traefik.labserver.casa`)"
+      - "traefik.http.routers.traefik-secure.rule=Host(`traefik.local.jabbas.dev`)"
       - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
       - "traefik.http.routers.traefik-secure.tls=true"
       - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].main=labserver.casa"
-      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.labserver.casa"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].main=local.jabbas.dev"
+      - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.local.jabbas.dev"
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
 networks:
   traefik_proxy:
-    name: traefik_proxy
+    name: traefik

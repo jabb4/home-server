@@ -1,6 +1,6 @@
 services:
     protonmail-bridge:
-        image: ghcr.io/videocurio/proton-mail-bridge-alpine:latest
+        image: ghcr.io/videocurio/proton-mail-bridge:latest
         container_name: protonmail_bridge
         volumes:
             - mail_data:/root

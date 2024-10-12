@@ -1,0 +1,1 @@
+shasum -a 256 <modelfile_to_check> # (This will take a while)

@@ -4,17 +4,27 @@ http:
     proxmox:
       entryPoints:
         - "https"
-      rule: "Host(`pve.labserver.casa`)"
+      rule: "Host(`pve.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
       tls: {}
       service: proxmox
+    
+    proxmox-prometheus-node:
+      entryPoints:
+        - "https"
+      rule: "Host(`pve-prometheus-node.local.jabbas.dev`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: proxmox-prometheus-node
 
     pi-hole:
       entryPoints:
         - "https"
-      rule: "Host(`pi-hole.labserver.casa`)"
+      rule: "Host(`pi-hole.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -25,7 +35,7 @@ http:
     authentik:
       entryPoints:
         - "https"
-      rule: "Host(`auth.labserver.casa`)"
+      rule: "Host(`auth.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -35,17 +45,38 @@ http:
     uptime-kuma:
       entryPoints:
         - "https"
-      rule: "Host(`uptime-kuma.labserver.casa`)"
+      rule: "Host(`uptime-kuma.local.jabbas.dev`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+        - forwardAuth-authentik
+      tls: {}
+      service: uptime-kuma
+
+    prometheus:
+      entryPoints:
+        - "https"
+      rule: "Host(`prometheus.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
       tls: {}
-      service: uptime-kuma
+      service: prometheus
+    
+    prometheus-grafana:
+      entryPoints:
+        - "https"
+      rule: "Host(`prometheus-grafana.local.jabbas.dev`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: prometheus-grafana
 
     home-assistant:
       entryPoints:
         - "https"
-      rule: "Host(`home-assistant.labserver.casa`)"
+      rule: "Host(`home-assistant.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -55,27 +86,38 @@ http:
     truenas:
       entryPoints:
         - "https"
-      rule: "Host(`truenas.labserver.casa`)"
+      rule: "Host(`truenas.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
       tls: {}
       service: truenas
 
-    homepage:
+    kestra:
       entryPoints:
         - "https"
-      rule: "Host(`homepage.labserver.casa`)"
+      rule: "Host(`kestra.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
+      tls: {}
+      service: kestra
+
+    homepage:
+      entryPoints:
+        - "https"
+      rule: "Host(`homepage.local.jabbas.dev`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+        - forwardAuth-authentik
       tls: {}
       service: homepage
 
     unifi:
       entryPoints:
         - "https"
-      rule: "Host(`unifi.labserver.casa`)"
+      rule: "Host(`unifi.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -85,7 +127,7 @@ http:
     jellyfin:
       entryPoints:
         - "https"
-      rule: "Host(`jellyfin.labserver.casa`)"
+      rule: "Host(`jellyfin.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -95,7 +137,7 @@ http:
     jellyseerr:
       entryPoints:
         - "https"
-      rule: "Host(`jellyseerr.labserver.casa`)"
+      rule: "Host(`jellyseerr.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -105,7 +147,7 @@ http:
     qbittorrent:
       entryPoints:
         - "https"
-      rule: "Host(`qbittorrent.labserver.casa`)"
+      rule: "Host(`qbittorrent.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
@@ -115,40 +157,54 @@ http:
     radarr:
       entryPoints:
         - "https"
-      rule: "Host(`radarr.labserver.casa`)"
+      rule: "Host(`radarr.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
+        - forwardAuth-authentik
       tls: {}
       service: radarr
     
     sonarr:
       entryPoints:
         - "https"
-      rule: "Host(`sonarr.labserver.casa`)"
+      rule: "Host(`sonarr.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
+        - forwardAuth-authentik
       tls: {}
       service: sonarr
 
     prowlarr:
       entryPoints:
         - "https"
-      rule: "Host(`prowlarr.labserver.casa`)"
+      rule: "Host(`prowlarr.local.jabbas.dev`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+        - forwardAuth-authentik
+      tls: {}
+      service: prowlarr
+
+    flaresolverr:
+      entryPoints:
+        - "https"
+      rule: "Host(`flaresolverr.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
       tls: {}
-      service: prowlarr
+      service: flaresolverr
 
     bazarr:
       entryPoints:
         - "https"
-      rule: "Host(`bazarr.labserver.casa`)"
+      rule: "Host(`bazarr.local.jabbas.dev`)"
       middlewares:
         - default-headers
         - https-redirectscheme
+        - forwardAuth-authentik
       tls: {}
       service: bazarr
   
@@ -159,6 +215,12 @@ http:
       loadBalancer:
         servers:
           - url: "https://192.168.20.2:8006"
+        passHostHeader: true
+
+    proxmox-prometheus-node:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.2:9100"
         passHostHeader: true
 
     pi-hole:
@@ -172,13 +234,25 @@ http:
         servers:
           - url: "https://192.168.20.100:9443"
         passHostHeader: true
-
+    
     uptime-kuma:
       loadBalancer:
         servers:
           - url: "http://192.168.20.100:3001"
+        passHostHeader: true
+
+    prometheus:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.100:9090"
         passHostHeader: true    
 
+    prometheus-grafana:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.100:3030"
+        passHostHeader: true
+    
     home-assistant:
       loadBalancer:
         servers:
@@ -189,6 +263,12 @@ http:
       loadBalancer:
         servers:
           - url: "https://192.168.20.101"
+        passHostHeader: true
+    
+    kestra:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.100:8080"
         passHostHeader: true
 
     homepage:
@@ -238,6 +318,12 @@ http:
         servers:
           - url: "http://192.168.20.102:9696"
         passHostHeader: true
+      
+    flaresolverr:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.102:8191"
+        passHostHeader: true
 
     bazarr:
       loadBalancer:
@@ -275,10 +361,10 @@ http:
         - default-whitelist
         - default-headers
 
-    # Authentik for forwardauth
-    authentik:
+    # Forwardauth for Authentik
+    forwardAuth-authentik:
       forwardAuth:
-        address: https://auth.labserver.casa/outpost.goauthentik.io/auth/traefik
+        address: "http://authentik-server:9000/outpost.goauthentik.io/auth/traefik"
         trustForwardHeader: true
         authResponseHeaders:
           - X-authentik-username
@@ -292,8 +378,9 @@ http:
           - X-authentik-meta-provider
           - X-authentik-meta-app
           - X-authentik-meta-version
+          - authorization
 
-    # pi-hole redirect, Redirects https://pi-hole.labserver.casa -> https://pi-hole.labserver.casa/admin
+    # pi-hole redirect, Redirects https://pi-hole.local.jabbas.dev -> https://pi-hole.local.jabbas.dev/admin
     pi-hole-redirect:
       redirectRegex:
         regex: "^https://([^/]+)/?$"

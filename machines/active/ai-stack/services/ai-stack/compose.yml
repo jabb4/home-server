@@ -1,0 +1,220 @@
+services:
+  # gluetun:
+  #   image: qmcgaw/gluetun
+  #   container_name: gluetun
+  #   restart: always
+  #   # line above must be uncommented to allow external containers to connect.
+  #   # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/connect-a-container-to-gluetun.md#external-container-to-gluetun
+  #   cap_add:
+  #     - NET_ADMIN
+  #   devices:
+  #     - /dev/net/tun:/dev/net/tun
+  #   ports:
+  #     - 11434:11434 # Ollama
+  #   environment:
+  #     # See https://github.com/qdm12/gluetun-wiki/tree/main/setup#setup
+  #     - VPN_SERVICE_PROVIDER: mullvad
+  #     - SERVER_CITIES: Boston,Miami
+  #     - VPN_TYPE: wireguard
+  #     # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/mullvad.md
+  #     - WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY}
+  #     - WIREGUARD_ADDRESSES: 10.64.149.86/32
+  #     # Timezone for accurate log times
+  #     - Europe/Stockholm
+  #     # Server list updater
+  #     # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/servers.md#update-the-vpn-servers-list
+  #     - UPDATER_PERIOD: 24h
+  #   volumes:
+  #     - ./gluetun/config:/gluetun
+
+  ## Ollama
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama
+    restart: unless-stopped
+
+    ## Comment out the ports to use VPN
+    ports:
+      - 11434:11434
+    ## Uncommnent the network_mode to enable VPN
+    # network_mode: "service:gluetun"
+
+    environment:
+      - PUID: ${PUID:-1000}
+      - PGID: ${PGID:-1000}
+      - OLLAMA_KEEP_ALIVE: 2h
+      - ENABLE_IMAGE_GENERATION: True
+      - COMFYUI_BASE_URL: https://stable-diffusion.local.jabbas.dev
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./ollama:/root/.ollama
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]
+
+  ## open web ui
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:latest
+    container_name: open-webui
+    restart: unless-stopped
+    networks:
+      - traefik
+    environment:
+      - PUID: ${PUID:-1000}
+      - PGID: ${PGID:-1000}
+      - OLLAMA_BASE_URL: https://ai-ollama.local.jabbas.dev
+      - ENABLE_RAG_WEB_SEARCH: True
+      - RAG_WEB_SEARCH_ENGINE: searxng
+      - RAG_WEB_SEARCH_RESULT_COUNT: 3
+      - RAG_WEB_SEARCH_CONCURRENT_REQUESTS: 10
+      - SEARXNG_QUERY_URL: https://ai-searxng.local.jabbas.dev/search?q=<query>
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./open-webui:/app/backend/data
+    depends_on:
+      - ollama
+    extra_hosts:
+      - host.docker.internal:host-gateway
+
+  # searxng to enable web search in open web ui
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    ports:
+      - 8080:8081
+    environment:
+      - PUID: ${PUID:-1000}
+      - PGID: ${PGID:-1000}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./searxng:/etc/searxng
+    depends_on:
+      - open-webui
+    restart: unless-stopped
+
+## stable diffusion
+  # stable-diffusion-webui-downloader
+  stable-diffusion-download:
+    build: ./stable-diffusion-webui-docker/services/download/
+    image: comfy-download
+    environment:
+      - PUID: ${PUID:-1000}
+      - PGID: ${PGID:-1000}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./stable-diffusion-webui-docker/data:/data
+
+  # stable-diffusion-webui
+  stable-diffusion-webui:
+    build: ./stable-diffusion-webui-docker/services/comfy/
+    image: comfy-ui
+    ports:
+      - 7860:7860
+    environment:
+      - PUID: ${PUID:-1000}
+      - PGID: ${PGID:-1000}
+      - CLI_ARGS:
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./stable-diffusion-webui-docker/data:/data
+      - ./stable-diffusion-webui-docker/output:/output
+    stop_signal: SIGKILL
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: [ '0' ]
+              capabilities: [ compute, utility ]
+    restart: unless-stopped
+
+## whisper
+  # mongoDB
+  mongo:
+    container_name: whisper-mongodb
+    image: mongo
+    restart: unless-stopped
+    ports:
+      - 27017:27017
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./whisper/db_data:/data/db
+      - ./whisper/db_data/logs/:/var/log/mongodb/
+    environment:
+      - PUID: ${PUID:-1000}
+      - PGID: ${PGID:-1000}
+      - MONGO_INITDB_ROOT_USERNAME: ${WHISPER_DB_USER:-whisper}
+      - MONGO_INITDB_ROOT_PASSWORD: ${WHISPER_DB_PASS:-whisper}
+    command: ['--logpath', '/var/log/mongodb/mongod.log']
+
+  # libretranslate for translation
+  translate:
+    container_name: whisper-libretranslate
+    image: libretranslate/libretranslate:latest-cuda
+    restart: unless-stopped
+    ports:
+      - 5000:5000
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./whisper/libretranslate/data:/home/libretranslate/.local/share
+      - ./whisper/libretranslate/cache:/home/libretranslate/.local/cache
+    tty: true
+    environment:
+      - PUID: ${PUID:-1000}
+      - PGID: ${PGID:-1000}
+      - LT_DISABLE_WEB_UI: True
+      - LT_LOAD_ONLY: ${LT_LOAD_ONLY:-en,fr,es,sv}
+      - LT_UPDATE_MODELS: True
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]
+
+  # whisper to transcribe audio
+  whisper:
+    container_name: whisper
+    pull_policy: always
+    image: pluja/whishper:latest-gpu
+    ports:
+      - 8082:80
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - ./whisper/uploads:/app/uploads
+      - ./whisper/logs:/var/log/whishper
+      - ./whisper/models:/app/models
+    restart: unless-stopped
+    depends_on:
+      - mongo
+      - translate
+    environment:
+      - PUID: ${PUID:-1000}
+      - PGID: ${PGID:-1000}
+      - PUBLIC_INTERNAL_API_HOST: http://127.0.0.1:80
+      - PUBLIC_TRANSLATION_API_HOST: ${LIBRETRANSLATE_HOST:-}
+      - PUBLIC_API_HOST: ${WHISPER_HOST:-}
+      - PUBLIC_WHISHPER_PROFILE: gpu
+      - WHISPER_MODELS_DIR: /app/models
+      - UPLOAD_DIR: /app/uploads
+    deploy:
+      resources:
+        reservations:
+          devices:
+          - driver: nvidia
+            count: all
+            capabilities: [gpu]

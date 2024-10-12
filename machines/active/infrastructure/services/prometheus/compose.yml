@@ -1,0 +1,27 @@
+services:
+  prometheus:
+    image: docker.io/prom/prometheus:v2.54.1
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    restart: always
+
+
+## iFrame does not work with Grafana :(
+  grafana:
+    image: docker.io/grafana/grafana-oss:11.2.2
+    container_name: grafana
+    ports:
+      - "3030:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
