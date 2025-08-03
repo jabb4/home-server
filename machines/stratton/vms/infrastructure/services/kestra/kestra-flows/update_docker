@@ -1,0 +1,66 @@
+id: update_docker
+namespace: my_namespace
+
+inputs:
+  - id: root_password
+    type: STRING
+    displayName: "Input your root password"
+
+  - id: docker_container
+    type: SELECT
+    values:
+      - media-downloader
+      - authentik
+      - homepage
+      - kestra
+      - prometheus
+      - protonmail-bridge
+      - traefik
+      - uptime-kuma
+
+tasks:
+  - id: global_var_machines
+    type: io.kestra.plugin.core.kv.Get
+    key: global_var_machines
+  
+  - id: global_var_docker_containers
+    type: io.kestra.plugin.core.kv.Get
+    key: global_var_docker_containers
+
+  - id: ansible_setup
+    type: io.kestra.plugin.core.flow.WorkingDirectory
+    inputFiles:
+      inventory.ini: |
+        [hosts]
+        {{ outputs.global_var_machines.value[outputs.global_var_docker_containers.value[inputs.docker_container]['machine']]['url'] }}            ansible_user={{ outputs.global_var_machines.value[outputs.global_var_docker_containers.value[inputs.docker_container]['machine']]['user'] }}
+      myplaybook.yaml: |
+        ---
+        - name: Update docker continer
+          hosts: hosts
+          become: true
+          tasks:
+            - name: Check if the compose.yml exists in path
+              stat:
+                path: {{ outputs.global_var_docker_containers.value[inputs.docker_container]['path'] }}/compose.yml
+              register: compose_file
+
+            - name: Update the continer
+              shell:
+                chdir: {{ outputs.global_var_docker_containers.value[inputs.docker_container]['path'] }}
+                cmd: docker compose down && docker compose pull && docker compose up --force-recreate --build -d && docker image prune -f
+              when: compose_file.stat.exists
+
+      id_rsa: "{{ secret('KESTRA_BASE64_PRIVATE_SSH_KEY') }}"
+
+    tasks:
+      - id: ansible_playbook
+        type: io.kestra.plugin.ansible.cli.AnsibleCLI
+        taskRunner:
+          type: io.kestra.plugin.scripts.runner.docker.Docker
+          image: docker.io/cytopia/ansible:latest-tools
+          user: "1000"
+        env:
+          "ANSIBLE_HOST_KEY_CHECKING": "False"
+          "ANSIBLE_BECOME_PASS": "{{ inputs.root_password }}"
+        commands:
+          - ansible-playbook -i inventory.ini --key-file id_rsa myplaybook.yaml

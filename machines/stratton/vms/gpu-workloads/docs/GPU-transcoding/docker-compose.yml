@@ -1,0 +1,25 @@
+---
+version: "2.1"
+services:
+  jellyfin:
+    image: lscr.io/linuxserver/jellyfin:latest
+    container_name: jellyfin
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Stockholm
+      - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - ./config:/config
+      - /mnt/media-library:/data/media-library
+    ports:
+      - 8096:8096
+      - 8920:8920
+    restart: unless-stopped
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]

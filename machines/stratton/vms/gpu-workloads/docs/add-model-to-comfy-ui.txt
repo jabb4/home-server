@@ -1,0 +1,4 @@
+1. Download model(checkpoint) from huggingface, you need .safetensor file or .ckpt file. Put the modelfile in to models/Stable-diffusion/<model>.safetensor (if it is a SD model else put it in other dir)
+2. Download encoder and put the filse in models/CLIPEncoder
+3. Download vea put in vae dir 
+(some models inclod clip and vea in the checkpoint)

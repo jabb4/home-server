@@ -1,0 +1,16 @@
+services:
+  grafana:
+    image: docker.io/grafana/grafana-oss:11.2.2
+    container_name: grafana
+    ports:
+      - "3030:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    restart: unless-stopped
+    environment:
+      GF_SECURITY_ALLOW_EMBEDDING: true
+      GF_AUTH_ANONYMOUS_ENABLED: true
+
+volumes:
+  grafana-data:
+    driver: local

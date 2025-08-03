@@ -1,0 +1,59 @@
+id: upload_public_ssh_key
+namespace: my_namespace
+
+inputs:
+  - id: rsa_public_key
+    type: STRING
+    displayName: "Input your rsa public key"
+
+  - id: machines
+    type: MULTISELECT
+    values:
+      - ai-stack
+      - infrastrcture
+      - media-downloader
+      - media-streamer
+      - pi-hole
+      - proxmox
+      - remote-access
+
+tasks:
+  - id: global_var_machines
+    type: io.kestra.plugin.core.kv.Get
+    key: global_var_machines
+
+  - id: ansible_setup
+    type: io.kestra.plugin.core.flow.WorkingDirectory
+    inputFiles:
+      inventory.ini: |
+        [hosts]
+        {% for machine in inputs.machines %}
+        {{ outputs.global_var_machines.value[machine]['url'] }}    ansible_user={{ outputs.global_var_machines.value[machine]['user'] }}
+        {% endfor %}
+      myplaybook.yaml: |
+        ---
+        - name: Add a 
+          hosts: hosts
+          tasks:
+            - name: Create authorized_keys file if none exsists
+              file:
+                path: "/home/{{ inputs.user }}/.ssh/authorized_keys"
+                state: touch
+
+            - name: Write SSH public key to authorized_keys file
+              lineinfile:
+                path: "/home/{{ inputs.user }}/.ssh/authorized_keys"
+                line: "{{ inputs.rsa_public_key }}"
+
+      id_rsa: "{{ secret('KESTRA_BASE64_PRIVATE_SSH_KEY') }}"
+    tasks:
+      - id: ansible_playbook
+        type: io.kestra.plugin.ansible.cli.AnsibleCLI
+        taskRunner:
+          type: io.kestra.plugin.scripts.runner.docker.Docker
+          image: docker.io/cytopia/ansible:latest-tools
+          user: "1000"
+        env:
+          "ANSIBLE_HOST_KEY_CHECKING": "False"
+        commands:
+          - ansible-playbook -i inventory.ini --key-file id_rsa myplaybook.yaml

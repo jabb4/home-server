@@ -72,10 +72,12 @@
 - **Host OS**: NixOS + Docker containers
 - **Services**:
   - Traefik
+  - Crowdsec
   - Authentik
   - Uptime Kuma
   - Grafana
   - Kestra
+  - Prometheus
 
 ---
 
@@ -91,6 +93,7 @@
   - Immich
   - Paperless-NGX
   - Open-WebUI
+  - SearxNG
 
 ---
 
@@ -105,13 +108,14 @@
 
 ---
 
-#### 6. Media
+#### 6. Media Downloader
 - **Type**: Full VM
 - **Startup priority**: None
 - **Specs**: 2–4 vCPU / 4–8GB RAM / 32GB boot
 - **Extra**: Mount SMB shares
 - **Host OS**: NixOS + Docker containers
 - **Services**:
+  - Gluten
   - Jellyseerr
   - SABnzbd
   - Radarr

@@ -1,0 +1,15 @@
+---
+# For configuration options and examples, please see:
+# https://gethomepage.dev/latest/configs/settings
+
+title: Jabbas Homepage
+
+headerStyle: underlined
+theme: dark
+color: slate
+
+useEqualHeights: true
+
+providers:
+  openweathermap: openweathermapapikey
+  weatherapi: weatherapiapikey

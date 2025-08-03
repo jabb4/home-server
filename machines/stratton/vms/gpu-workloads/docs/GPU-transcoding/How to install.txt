@@ -1,0 +1,39 @@
+Usfull links:
+
+Install Nvidia Drivers on guest:
+https://www.youtube.com/watch?v=-HCzLhnNf-A
+https://drive.google.com/drive/folders/1JlKe-SUeEUvNhTS3-z7En_ypWnYwx_K2
+
+Install Nvidia Drivers ubuntu:
+https://linuxize.com/post/how-to-nvidia-drivers-on-ubuntu-20-04/
+
+Docker-compose file + nvidia-continer-toolkti:
+https://www.reddit.com/r/selfhosted/comments/w559xa/jellyfin_nvidia_in_docker_a_guide_for_newbies/
+
+Install nvidia-container-toolkit:
+https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/latest/install-guide.html#installing-with-apt
+
+Proxmox pci passthrough:
+https://pve.proxmox.com/wiki/PCI_Passthrough
+
+Steps:
+- Part1
+1. First ennable IOMMU in bios.
+
+2. check in proxmox that IOMMU is enbalbed
+
+3. block the GPU in proxmox: (this is for nvidia):
+echo "blacklist nouveau" >> /etc/modprobe.d/blacklist.conf 
+echo "blacklist nvidia*" >> /etc/modprobe.d/blacklist.conf
+
+- Part2
+1. Use ubuntu server with the minimal install.
+2. after setup shutdown system and add grafic card to vm
+RUN:
+1. sudo apt update && sudo apt upgarde -y
+2. ubuntu-drivers devices
+4. sudo apt install <Recomended driver>
+3. sudo apt-get install -y nvidia-container-toolkit
+4. sudo apt install -y nvidia-docker2
+5. nvidia-smi
+

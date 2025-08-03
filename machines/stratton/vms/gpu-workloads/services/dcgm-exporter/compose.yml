@@ -1,0 +1,14 @@
+services:
+  dcgm-exporter:
+    image: nvidia/dcgm-exporter:3.3.8-3.6.0-ubuntu22.04
+    container_name: dcgm-exporter
+    restart: always
+    ports:
+      - 9400:9400
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [ gpu ]

@@ -1,0 +1,1 @@
+Just put the prometheus_node_exporter on the linux machine you want to get metrics from and run the continer.

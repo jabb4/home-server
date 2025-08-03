@@ -1,0 +1,3 @@
+https://docs.openwebui.com/tutorials/features/web_search#searxng-docker
+when you have builded that containers you need to edit searxng/settings.yml:
+ - add json under formats:
