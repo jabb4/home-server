@@ -1,1 +1,0 @@
-If qbittorrent dosent work and dosent do shit you may need to click on setting and the click on connecton adn then Random to get a new port number

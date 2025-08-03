@@ -1,3 +1,0 @@
-Change the session duration time: (docs: https://docs.goauthentik.io/docs/flow/stages/user_login/)
-go to: https://auth.labserver.casa/if/admin/#/flow/stages
-Edit default-authentication-login and set Session duration to weeks=4
