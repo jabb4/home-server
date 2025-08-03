@@ -67,7 +67,7 @@
 #### 3. Infrastructure
 - **Type**: Full VM
 - **Startup priority**: 2
-- **Specs**: 4 vCPU / 8GB RAM / 32GB boot
+- **Specs**: 4 vCPU / 12GB RAM / 32GB boot
 - **Extra**: None
 - **Host OS**: NixOS + Docker containers
 - **Services**:
@@ -84,7 +84,7 @@
 #### 4. Apps
 - **Type**: Full VM
 - **Startup priority**: None
-- **Specs**: 4 vCPU / 12GB RAM / 32GB boot
+- **Specs**: 6 vCPU / 12GB RAM / 48GB boot
 - **Extra**: Mount SMB shares
 - **Host OS**: NixOS + Docker containers
 - **Services**:
@@ -94,6 +94,7 @@
   - Paperless-NGX
   - Open-WebUI
   - SearxNG
+  - Joplin
 
 ---
 
@@ -111,7 +112,7 @@
 #### 6. Media Downloader
 - **Type**: Full VM
 - **Startup priority**: None
-- **Specs**: 2–4 vCPU / 4–8GB RAM / 32GB boot
+- **Specs**: 2 vCPU / 4GB RAM / 32GB boot
 - **Extra**: Mount SMB shares
 - **Host OS**: NixOS + Docker containers
 - **Services**:
