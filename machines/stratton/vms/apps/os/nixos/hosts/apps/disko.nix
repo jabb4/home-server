@@ -2,18 +2,19 @@
   disko.devices = {
     disk = {
       nixos = {
+        device = "/dev/sda";
         type = "disk";
-        device = "/dev/vda";
         content = {
           type = "gpt";
           partitions = {
             ESP = {
-              size = "512M";
               type = "EF00";
+              size = "512M";
               content = {
                 type = "filesystem";
                 format = "vfat";
                 mountpoint = "/boot";
+                mountOptions = [ "umask=0077" ];
               };
             };
             root = {
