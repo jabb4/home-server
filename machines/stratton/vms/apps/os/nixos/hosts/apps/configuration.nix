@@ -1,6 +1,7 @@
 {pkgs, ...}: {
   imports = [
     # Include the results of the hardware scan.
+    ./disko.nix
     ./hardware-configuration.nix
   ];
 
@@ -19,10 +20,6 @@
       keep-derivations = true
     '';
   };
-
-  # Remove unecessary preinstalled packages
-  environment.defaultPackages = [];
-  services.xserver.desktopManager.xterm.enable = false;
 
   # Boot settings: clean /tmp/, latest kernel and enable bootloader
   boot = {
@@ -45,17 +42,32 @@
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.nixos = {
+    initialHashedPassword = "$y$j9T$Jih.ZSsWCOQvhyFP9jQLT0$2N.14vBexUwO1Dc3ns4f2LS0TIwU5jN4Ww8KnE05FL9"; # Run mkpasswd "password" to get hash, default password is nixos
+    openssh.authorizedKeys.keys = [
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAJ0zwaPTeICiyrcPwdFbxxDUOHH+G5CkQ8iKIE31vKc" # Homeserver SSH key in Termius
+    ];
     isNormalUser = true;
     description = "nixos";
     extraGroups = ["input" "wheel"];
     linger = true; # This does so docker containers (and systemd services) can start at boot rather then at login
     shell = pkgs.zsh;
   };
+
+  # Enable zsh
   programs.zsh.enable = true;
+
+  # Enable QEMU Guest agent
+  services.qemuGuest.enable = true;
+
+  # Enable the OpenSSH daemon.
+  services.openssh = {
+    enable = true;
+    settings.PermitRootLogin = "no";
+  };
 
   # Enable rootless docker (This limits port 0-1023 so make sure to use other)
   virtualisation.docker = {
-    enable = false;
+    enable = true;
     rootless = {
       enable = true;
       setSocketVariable = true;
