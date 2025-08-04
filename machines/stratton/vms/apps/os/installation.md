@@ -8,9 +8,8 @@
 ````bash
 git clone https://your-repo
 cd your-repo
-nix-shell -p nixFlakes # Enables flakes
-nix run .#disko-install # Partitions disk
-nixos-install --flake .#vm # Installs the system
+sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount --yes-wipe-all-disks disk-config.nix
+sudo nixos-install --flake .#apps
 ````
 
 4. Shutdown and unmount iso
