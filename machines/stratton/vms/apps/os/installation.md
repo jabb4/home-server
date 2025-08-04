@@ -9,6 +9,7 @@
 git clone https://your-repo
 cd your-repo
 sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount --yes-wipe-all-disks disk-config.nix
+nix-collect-garbage -d
 sudo nixos-install --flake .#apps
 ````
 
