@@ -1,15 +1,31 @@
 services:
   homepage:
-    image: ghcr.io/gethomepage/homepage:latest
     container_name: homepage
+    image: ghcr.io/gethomepage/homepage:latest
     restart: unless-stopped
+
+    # Networking
     ports:
       - 3000:3000
+
+    # Filesystem
     volumes:
-      - ./config:/app/config
+      - ./config:/app/config:ro
+
+    # Security
+    user: "1000:1000"
+    cap_drop:
+      - ALL                      # drop all Linux capabilities
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
     environment:
       PUID: 1000
       PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+      # Service specific
       HOMEPAGE_VAR_PROXMOX_API_USERNAME: ${HOMEPAGE_VAR_PROXMOX_API_USERNAME}
       HOMEPAGE_VAR_PROXMOX_API_PASSWORD: ${HOMEPAGE_VAR_PROXMOX_API_PASSWORD}
       HOMEPAGE_VAR_QBITTORRENT_USERNAME: ${HOMEPAGE_VAR_QBITTORRENT_USERNAME}
