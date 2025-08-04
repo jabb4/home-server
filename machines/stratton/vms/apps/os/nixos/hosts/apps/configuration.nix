@@ -1,7 +1,7 @@
 {pkgs, ...}: {
   imports = [
     # Include the results of the hardware scan.
-    ./disko.nix
+    ./disk-config.nix
     ./hardware-configuration.nix
   ];
 
