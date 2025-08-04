@@ -25,7 +25,6 @@
 
 
 
-
 ## Stratton (4u Server)
 ### Description
 - Main server for most services
@@ -95,16 +94,6 @@
   - Open-WebUI
   - SearxNG
   - Joplin
-
----
-
-#### 5. Vaultwarden
-- **Type**: Full VM
-- **Startup priority**: None
-- **Specs**: 1 vCPU / 2GB RAM / 16GB boot
-- **Extra**: None
-- **Host OS**: NixOS + Docker container
-- **Services**:
   - Vaultwarden
 
 ---
