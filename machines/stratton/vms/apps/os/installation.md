@@ -6,11 +6,16 @@
 
 3. Install Nix configs with:
 ````bash
-git clone https://your-repo
-cd your-repo
-sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount --yes-wipe-all-disks disk-config.nix
+# In proxmox console
+passwd #Change password so you can SSH
+ip a # Get ip address
+
+# SSH into the vm and continue
+git clone https://github.com/jabb4/home-server.git
+cd home-server/machines/stratton/vms/apps/os/nixos/
+sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount --yes-wipe-all-disks hosts/apps/disk-config.nix
 nix-collect-garbage -d
 sudo nixos-install --flake .#apps
 ````
 
-4. Shutdown and unmount iso
+1. Shutdown and unmount iso
