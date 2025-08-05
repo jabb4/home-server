@@ -96,6 +96,11 @@
     };
   };
 
+  # Apparmor
+  security.apparmor = {
+    enable = true;
+  };
+
   # Install packages
   environment.systemPackages = with pkgs; [
       cifs-utils # For SMB client (mount smb share)
