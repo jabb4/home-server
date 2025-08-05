@@ -19,6 +19,8 @@ nano hosts/apps/smb-credentials
 sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount --yes-wipe-all-disks hosts/apps/disk-config.nix && nix-collect-garbage -d
 
 sudo nixos-install --no-root-passwd --flake .#apps
+
+sudo shutdown now
 ````
 
-4. Shutdown and unmount iso
+4. Unmount iso and start again
