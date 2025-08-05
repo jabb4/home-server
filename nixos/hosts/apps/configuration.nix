@@ -41,16 +41,33 @@
   };
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.nixos = {
-    initialHashedPassword = "$y$j9T$Jih.ZSsWCOQvhyFP9jQLT0$2N.14vBexUwO1Dc3ns4f2LS0TIwU5jN4Ww8KnE05FL9"; # Run mkpasswd "password" to get hash, default password is nixos
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAJ0zwaPTeICiyrcPwdFbxxDUOHH+G5CkQ8iKIE31vKc" # Homeserver SSH key in Termius
-    ];
-    isNormalUser = true;
-    description = "nixos";
-    extraGroups = ["input" "wheel"];
-    linger = true; # This does so docker containers (and systemd services) can start at boot rather then at login
-    shell = pkgs.zsh;
+  users = {
+    users = {
+      nixos = {
+        initialHashedPassword = "$y$j9T$Jih.ZSsWCOQvhyFP9jQLT0$2N.14vBexUwO1Dc3ns4f2LS0TIwU5jN4Ww8KnE05FL9"; # Run mkpasswd "password" to get hash, default password is nixos
+        openssh.authorizedKeys.keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAJ0zwaPTeICiyrcPwdFbxxDUOHH+G5CkQ8iKIE31vKc" # Homeserver SSH key in Termius
+        ];
+        isNormalUser = true;
+        uid = 1000;
+        gid = 1000;
+        extraGroups = ["input" "wheel"];
+        linger = true; # This does so docker containers (and systemd services) can start at boot rather then at login
+        shell = pkgs.zsh;
+      };
+    };
+  };
+    
+
+  # Mount SMB Share for Nextcloud
+  fileSystems."/mnt/share" = {
+    device = "//<IP_OR_HOST>/path/to/share";
+    fsType = "cifs";
+    options = let
+      # this line prevents hanging on network split
+      automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s";
+
+    in ["${automount_opts},credentials=/etc/nixos/smb-secrets,uid=1000,gid=1000"];
   };
 
   # Enable zsh
@@ -73,6 +90,11 @@
       setSocketVariable = true;
     };
   };
+
+  # Install packages
+  environment.systemPackages = with pkgs; [
+      cifs-utils # For SMB client (mount smb share)
+  ]; 
 
   system.stateVersion = "25.05";
 }

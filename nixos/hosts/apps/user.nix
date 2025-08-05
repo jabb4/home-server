@@ -3,7 +3,7 @@
   home.username = "nixos";
   home.homeDirectory = "/home/nixos";
 
-  home.file."docker-services".source = ./docker-services;
+  home.file.".smb-credentials".source = ./smb-credentials;
 
   home.stateVersion = "25.11";
 }
