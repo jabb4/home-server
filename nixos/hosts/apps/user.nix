@@ -3,7 +3,8 @@
   home.username = "nixos";
   home.homeDirectory = "/home/nixos";
 
-  home.file.".smb-credentials".source = ./smb-credentials;
+  home.file.".smb-credentials".source = ./.smb-credentials;
+  home.file.".zshrc".source = ./.zshrc;
 
   home.stateVersion = "25.11";
 }
