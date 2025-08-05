@@ -1,0 +1,27 @@
+services:
+  nextcloud:
+    container_name: nextcloud
+    image: lscr.io/linuxserver/nextcloud:latest
+    restart: unless-stopped
+
+    # Networking
+    ports:
+      - 4443:443
+
+    # Filesystem
+    volumes:
+      - ./config:/config
+      - /mnt/nextcloud/data:/data
+
+    # Security
+    user: "1000:1000"
+    cap_drop:
+      - ALL                      # drop all Linux capabilities
+    security_opt:
+      - no-new-privileges:true   # forbid privilege escalation
+    
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
