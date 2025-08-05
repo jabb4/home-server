@@ -22,4 +22,4 @@ nix-collect-garbage -d
 sudo nixos-install --no-root-passwd --flake .#apps
 ````
 
-1. Shutdown and unmount iso
+4. Shutdown and unmount iso
