@@ -50,10 +50,15 @@
         ];
         isNormalUser = true;
         uid = 1000;
-        gid = 1000;
+        group = "nixos"
         extraGroups = ["input" "wheel"];
         linger = true; # This does so docker containers (and systemd services) can start at boot rather then at login
         shell = pkgs.zsh;
+      };
+    };
+    groups = {
+      nixos = {
+        gid = 1000;
       };
     };
   };
