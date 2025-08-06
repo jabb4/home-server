@@ -12,7 +12,7 @@
               type = "EF02";    # I dont know why i need this boot partion but it dosnt work without it
             };
             ESP = {
-              size = "512M";
+              size = "1G";
               type = "EF00";
               content = {
                 type = "filesystem";
