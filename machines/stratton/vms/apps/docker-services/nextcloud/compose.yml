@@ -11,7 +11,7 @@ services:
     # Filesystem
     volumes:
       - ./config:/config
-      - /mnt/nextcloud/data:/data
+      - /mnt/data/nextcloud:/data
 
     # Security
     user: "1000:1000"
