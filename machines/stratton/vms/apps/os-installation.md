@@ -14,7 +14,7 @@ ip a # Get ip address
 git clone https://github.com/jabb4/home-server.git && cd home-server/nixos
 
 # Change SMB creds to your liking
-nano hosts/apps/smb-credentials
+nano hosts/apps/.smb-credentials
 
 sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount --yes-wipe-all-disks hosts/apps/disk-config.nix && nix-collect-garbage -d
 
