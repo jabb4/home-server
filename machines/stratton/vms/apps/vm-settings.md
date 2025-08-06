@@ -1,5 +1,9 @@
 # Proxmox VM settings:
 
+## General
+- VM ID: 103
+- Name: Apps
+
 ## OS
 - ISO image: nixos-minimal
 
