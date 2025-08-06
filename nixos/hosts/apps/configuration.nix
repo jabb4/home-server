@@ -63,9 +63,9 @@
     };
   };
     
-  # Mount SMB Share for Nextcloud
-  fileSystems."/mnt/nextcloud" = {
-    device = "//<IP_OR_HOST>/nextcloud";
+  # Mount SMB Share for Nextcloud, Immic´h, Paperless etc
+  fileSystems."/mnt/data" = {
+    device = "//<IP_OR_HOST>/app-data";
     fsType = "cifs";
     options = let
       # this line prevents hanging on network split
