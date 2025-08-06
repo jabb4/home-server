@@ -42,6 +42,7 @@
 ### VMs & Containers
 
 #### 1. TrueNAS
+- **ID**: 101
 - **Type**: Full VM
 - **Startup priority**: 1
 - **Specs**: 4 vCPU / 32GB RAM / 32GB Boot
@@ -53,9 +54,10 @@
 ---
 
 #### 2. Home Assistant
+- **ID**: 104
 - **Type**: Full VM
 - **Startup priority**: None
-- **Specs**: 2 vCPU / 4GB RAM / 16GB boot
+- **Specs**: 2 vCPU / 4GB RAM / 32GB boot
 - **Extra**: USB passthrough (Zigbee dongle)
 - **Host OS**: Home Assistant OS
 - **Services**:
@@ -64,6 +66,7 @@
 ---
 
 #### 3. Infrastructure
+- **ID**: 100
 - **Type**: Full VM
 - **Startup priority**: 2
 - **Specs**: 4 vCPU / 12GB RAM / 32GB boot
@@ -81,6 +84,7 @@
 ---
 
 #### 4. Apps
+- **ID**: 103
 - **Type**: Full VM
 - **Startup priority**: None
 - **Specs**: 6 vCPU / 12GB RAM / 48GB boot
@@ -99,6 +103,7 @@
 ---
 
 #### 6. Media Downloader
+- **ID**: 106
 - **Type**: Full VM
 - **Startup priority**: None
 - **Specs**: 2 vCPU / 4GB RAM / 32GB boot
@@ -116,6 +121,7 @@
 ---
 
 #### 7. GPU Workloads
+- **ID**: 105
 - **Type**: Full VM
 - **Startup priority**: None
 - **Specs**: 8 vCPU / 32GB RAM / 400GB boot
@@ -130,6 +136,7 @@
 ---
 
 #### 8. DMZ (External Entry Point)
+- **ID**: 102
 - **Type**: Full VM
 - **Startup priority**: None
 - **Specs**: 1 vCPU / 2GB RAM / 16GB boot
