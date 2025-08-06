@@ -83,6 +83,7 @@
   services.openssh = {
     enable = true;
     settings.PermitRootLogin = "no";
+    settings.PasswordAuthentication = false;
   };
 
   # Enable rootless docker (This limits port 0-1023 so make sure to use other)
