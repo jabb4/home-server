@@ -7,14 +7,16 @@ services:
     # Networking
     ports:
       - 8081:8080
-    
+    networks:
+      - searxng
+
     # Filesystem
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
-      - ./searxng:/etc/searxng
+      - ./searxng:/etc/searxng:rw
+      - searxng-data:/var/cache/searxng:rw
 
     # Security
+    user: "1000:1000"
     cap_drop:
       - ALL                      # drop all Linux capabilities
     security_opt:
@@ -25,6 +27,44 @@ services:
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
       # Service specific
-      SEARXNG_BASE_URL: ${SEARXNG_BASE_URL}
-      UWSGI_WORKERS: ${SEARXNG_UWSGI_WORKERS:-4}
-      UWSGI_THREADS: ${SEARXNG_UWSGI_THREADS:-4}
+      SEARXNG_BASE_URL: https://${SEARXNG_HOSTNAME}/
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+
+
+  redis:
+    container_name: redis
+    image: docker.io/valkey/valkey:8-alpine
+    command: valkey-server --save 30 1 --loglevel warning
+    restart: unless-stopped
+
+    # Networking
+    networks:
+      - searxng
+
+    # Filesystem
+    volumes:
+      - valkey-data:/data
+    
+    # Security
+    user: "1000:1000"
+    cap_drop:
+      - ALL                      # drop all Linux capabilities
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+networks:
+  searxng:

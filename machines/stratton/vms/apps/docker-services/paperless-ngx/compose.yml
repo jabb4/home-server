@@ -1,0 +1,207 @@
+# Docker Compose file for running paperless from the docker container registry.
+# This file contains everything paperless needs to run.
+# Paperless supports amd64, arm and arm64 hardware.
+#
+# All compose files of paperless configure paperless in the following way:
+#
+# - Paperless is (re)started on system boot, if it was running before shutdown.
+# - Docker volumes for storing data are managed by Docker.
+# - Folders for importing and exporting files are created in the same directory
+#   as this file and mounted to the correct folders inside the container.
+# - Paperless listens on port 8000.
+#
+# In addition to that, this Docker Compose file adds the following optional
+# configurations:
+#
+# - Instead of SQLite (default), PostgreSQL is used as the database server.
+# - Apache Tika and Gotenberg servers are started with paperless and paperless
+#   is configured to use these services. These provide support for consuming
+#   Office documents (Word, Excel, PowerPoint and their LibreOffice counter-
+#   parts).
+#
+# To install and update paperless with this file, do the following:
+#
+# - Copy this file as 'docker-compose.yml' and the files 'docker-compose.env'
+#   and '.env' into a folder.
+# - Run 'docker compose pull'.
+# - Run 'docker compose up -d'.
+#
+# For more extensive installation and update instructions, refer to the
+# documentation.
+services:
+  webserver:
+    container_name: webserver
+    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+    restart: unless-stopped
+    depends_on:
+      - db
+      - broker
+      - gotenberg
+      - tika
+
+    # Networking
+    ports:
+      - "8001:8000"
+    
+    # Filesystem
+    volumes:
+      - /mnt/paperless/data:/usr/src/paperless/data
+      - /mnt/paperless/media:/usr/src/paperless/media
+      - ./export:/usr/src/paperless/export
+      - ./consume:/usr/src/paperless/consume
+    
+    # Security
+    user:
+      - 1000:1000
+    cap_drop:
+      - ALL                     # drop all Linux capabilities
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+
+    # Environment
+    environment:
+      # Service specific
+      USERMAP_UID: ${USERMAP_UID:-1000}
+      USERMAP_GID: ${USERMAP_GID:-1000}
+      PAPERLESS_TIME_ZONE: ${PAPERLESS_TIME_ZONE:-Europe/Stockholm}
+      PAPERLESS_SECRET_KEY: ${PAPERLESS_SECRET_KEY}
+      PAPERLESS_OCR_LANGUAGE: ${PAPERLESS_OCR_LANGUAGE}
+      PAPERLESS_OCR_LANGUAGES: ${PAPERLESS_OCR_LANGUAGES}
+      PAPERLESS_URL: ${PAPERLESS_URL}
+      PAPERLESS_REDIS: redis://broker:6379
+      PAPERLESS_DBHOST: db
+      PAPERLESS_DBNAME: paperless
+      PAPERLESS_DBUSER: paperless
+      PAPERLESS_DBPASS: ${POSTGRES_PASSWORD}
+      PAPERLESS_TIKA_ENABLED: 1
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
+      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+
+
+  broker:
+    container_name: broker
+    image: docker.io/library/redis:8
+    restart: unless-stopped
+
+    # Filesystem
+    volumes:
+      - redisdata:/data
+    
+    # Security
+    user:
+      - 1000:1000
+    cap_drop:
+      - ALL                     # drop all Linux capabilities
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
+    environment:
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+      
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+
+
+  db:
+    container_name: db
+    image: docker.io/library/postgres:17-alpine
+    restart: unless-stopped
+
+    # Filesystem
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    
+    # Security
+    user:
+      - 1000:1000
+    cap_drop:
+      - ALL                     # drop all Linux capabilities
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+
+    # Environment
+    environment:
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+      # Service specific
+      POSTGRES_DB: paperless
+      POSTGRES_USER: paperless
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+
+  
+  gotenberg:
+    container_name: gotenberg
+    image: docker.io/gotenberg/gotenberg:8.20
+    restart: unless-stopped
+
+    command:
+      - "gotenberg"
+      - "--chromium-disable-javascript=true"
+      - "--chromium-allow-list=file:///tmp/.*"
+
+    # Security
+    user:
+      - 1000:1000
+    cap_drop:
+      - ALL                     # drop all Linux capabilities
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
+    environment:
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+  
+
+
+  tika:
+    container_name: tika
+    image: docker.io/apache/tika:latest
+    restart: unless-stopped
+
+    # Security
+    user:
+      - 1000:1000
+    cap_drop:
+      - ALL                     # drop all Linux capabilities
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
+    environment:
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"

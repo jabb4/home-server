@@ -6,11 +6,11 @@ services:
 
     # Networking
     ports:
-      - 3000:3000
+      - 3001:3000
 
     # Filesystem
     volumes:
-      - ./config:/app/config:ro
+      - ./config:/app/config
 
     # Security
     user: "1000:1000"
@@ -42,3 +42,10 @@ services:
       HOMEPAGE_VAR_READARR_API: ${HOMEPAGE_VAR_READARR_API}
       HOMEPAGE_VAR_BAZARR_API: ${HOMEPAGE_VAR_BAZARR_API}
       HOMEPAGE_VAR_HOMEASSISTANT_API: ${HOMEPAGE_VAR_HOMEASSISTANT_API}
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"

@@ -1,17 +1,17 @@
 services:  
   open-webui:
     container_name: open-webui
-    image: ghcr.io/open-webui/open-webui:latest
+    image: ghcr.io/open-webui/open-webui:main
     restart: unless-stopped
+    depends_on:
+      - database
 
     # Networking
     ports:
-      - 8080:8080
+      - 3000:8080
     
     # Filesystem
     volumes:
-      - /etc/localtime:/etc/localtime:ro
-      - /etc/timezone:/etc/timezone:ro
       - open-webui:/app/backend/data
     
     # Security
@@ -24,8 +24,6 @@ services:
 
     # Environment
     environment:
-      PUID: 1000
-      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
       # Service specific
@@ -38,18 +36,22 @@ services:
       ENABLE_RAG_WEB_SEARCH: True
       RAG_WEB_SEARCH_ENGINE: searxng
       RAG_WEB_SEARCH_RESULT_COUNT: 3
-      RAG_WEB_SEARCH_CONCURRENT_REQUESTS: 5
-      SEARXNG_QUERY_URL: ${SEARXNG_BASE_URL}/search?q=<query>
+      RAG_WEB_SEARCH_CONCURRENT_REQUESTS: 10
+      SEARXNG_QUERY_URL: https://${SEARXNG_HOSTNAME}/search?q=<query>
     
-    depends_on:
-      - database
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
 
 
 
   # Database for open web ui
   database:
     container_name: database
-    image: docker.io/library/postgres:16-alpine
+    image: docker.io/library/postgres:17-alpine
     restart: unless-stopped
 
     # Filesystem
@@ -57,6 +59,7 @@ services:
       - database:/var/lib/postgresql/data
     
     # Security
+    user: "1000:1000"
     cap_drop:
       - ALL                      # drop all Linux capabilities
     security_opt:
@@ -70,9 +73,10 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_DB: ${POSTGRES_DB_NAME}
-
-
-
-volumes:
-  database:
-    driver: local
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"

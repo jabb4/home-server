@@ -1,28 +1,30 @@
 services:
-  nextcloud:
-    container_name: nextcloud
-    image: lscr.io/linuxserver/nextcloud:latest
+  vaultwarden:
+    container_name: vaultwarden
+    image: vaultwarden/server:latest
     restart: unless-stopped
 
     # Networking
     ports:
-      - 4443:443
-
+      - 8000:80
+    
     # Filesystem
     volumes:
-      - ./config:/config
-      - /mnt/data/nextcloud:/data
-
+      - ./data:/data
+    
     # Security
     user: "1000:1000"
     cap_drop:
       - ALL                      # drop all Linux capabilities
     security_opt:
-      - no-new-privileges:true   # forbid privilege escalation
-    
+      - no-new-privileges:true  # forbid privilege escalation
+
     # Environment
     environment:
       TZ: ${TIMEZONE:-Europe/Stockholm}
+
+      # Service specific
+      DOMAIN: https://${VAULTWARDEN_HOSTNAME}
     
     # Logging
     logging:
@@ -30,3 +32,7 @@ services:
       options:
         max-size: "10m"
         max-file: "2"
+
+    
+
+    
