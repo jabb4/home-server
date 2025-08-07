@@ -97,7 +97,6 @@
   - Paperless-NGX
   - Open-WebUI
   - SearxNG
-  - Joplin
   - Vaultwarden
 
 ---
