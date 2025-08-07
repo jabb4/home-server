@@ -22,7 +22,7 @@ sudo nixos-install --no-root-passwd --flake .#apps
 
 ````
 
-4. **WARNING** The output of the nixos-install shoudl look like this:
+4. **WARNING** The output of the nixos-install should look like this: (You will probably have to use disko twice)
 ````
 installing the boot loader...
 setting up /etc...
