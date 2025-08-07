@@ -19,7 +19,6 @@
 - Storage: VM-storage
 - Disk size: 48
 - Discard: Checked
-- Cache: Write through
 - SSD emulation: Checked
 
 ## CPU
