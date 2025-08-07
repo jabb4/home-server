@@ -65,7 +65,7 @@
     
   # Mount SMB Share for Nextcloud, Immich, Paperless etc
   fileSystems."/mnt/data" = {
-    device = "//<IP_OR_HOST>/app-data";
+    device = "//192.168.20.101/app-data";
     fsType = "cifs";
     options = let
       automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s,user,users";
