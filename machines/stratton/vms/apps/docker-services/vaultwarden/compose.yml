@@ -1,3 +1,5 @@
+# Verified working
+
 services:
   vaultwarden:
     container_name: vaultwarden
@@ -13,7 +15,6 @@ services:
       - ./data:/data
     
     # Security
-    user: "1000:1000"
     cap_drop:
       - ALL                      # drop all Linux capabilities
     security_opt:
