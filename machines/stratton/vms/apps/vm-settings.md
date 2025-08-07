@@ -3,6 +3,7 @@
 ## General
 - VM ID: 103
 - Name: Apps
+- Advanced: Checked
 
 ## OS
 - ISO image: nixos-minimal
@@ -17,6 +18,9 @@
 ## Disks
 - Storage: VM-storage
 - Disk size: 48
+- Discard: Checked
+- Cache: Write through
+- SSD emulation: Checked
 
 ## CPU
 - Cores: 6
