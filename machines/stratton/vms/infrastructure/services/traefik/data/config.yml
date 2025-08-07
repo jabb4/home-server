@@ -38,19 +38,17 @@ http:
         - forwardAuth-authentik
       tls: {}
       service: kestra
-
-    ## Homepage
-    homepage:
+    
+    ## Grafana
+    grafana:
       entryPoints:
         - "https"
-      rule: "Host(`homepage.local.jabbas.dev`)"
+      rule: "Host(`grafana.local.jabbas.dev`)"
       middlewares:
-        - disallow-iframe-embedding
         - default-headers
         - https-redirectscheme
-        - forwardAuth-authentik
       tls: {}
-      service: homepage
+      service: grafana
 
     ## Network and Security
     ## Unifi webinterface
@@ -90,66 +88,8 @@ http:
         - https-redirectscheme
       tls: {}
       service: authentik
-    
-    ## Wazuh
-    wazuh:
-      entryPoints:
-        - "https"
-      rule: "Host(`wazuh.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: wazuh
 
     ## Monitoring
-    ## Prometheus
-    prometheus:
-      entryPoints:
-        - "https"
-      rule: "Host(`prometheus.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: prometheus
-
-    ## Grafana
-    grafana:
-      entryPoints:
-        - "https"
-      rule: "Host(`grafana.local.jabbas.dev`)"
-      middlewares:
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: grafana
-
-    ## Node Exporters
-    proxmox-prometheus-node:
-      entryPoints:
-        - "https"
-      rule: "Host(`pve-prometheus-node.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: proxmox-prometheus-node
-
-    ai-node-exporter:
-      entryPoints:
-        - "https"
-      rule: "Host(`ai-prometheus-node.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: ai-node-exporter
-
     ## Uptime-Kuma
     uptime-kuma:
       entryPoints:
@@ -163,6 +103,30 @@ http:
       tls: {}
       service: uptime-kuma
 
+    ## Prometheus
+    prometheus:
+      entryPoints:
+        - "https"
+      rule: "Host(`prometheus.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: prometheus
+
+    ## Node Exporters
+    proxmox-prometheus-node:
+      entryPoints:
+        - "https"
+      rule: "Host(`pve-prometheus-node.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: proxmox-prometheus-node
+
     ## Home automation
     ## Home Assistant
     home-assistant:
@@ -175,20 +139,8 @@ http:
         - https-redirectscheme
       tls: {}
       service: home-assistant
-
-    ## AI Stack
-    ## Ollama
-    ollama:
-      entryPoints:
-        - "https"
-      rule: "Host(`ai-ollama.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: ollama
-
+    
+    ## Apps
     ## Open Webui
     open-webui:
       entryPoints:
@@ -206,39 +158,52 @@ http:
     searxng:
       entryPoints:
         - "https"
-      rule: "Host(`ai-searxng.local.jabbas.dev`)"
+      rule: "Host(`searxng.local.jabbas.dev`)"
       middlewares:
         - disallow-iframe-embedding
         - default-headers
         - https-redirectscheme
       tls: {}
       service: searxng
-
-    ## Stable diffusion
-    stable-diffusion:
+    
+    ## Vaultwarden
+    vaultwarden:
       entryPoints:
         - "https"
-      rule: "Host(`stable-diffusion.local.jabbas.dev`)"
+      rule: "Host(`vaultwarden.local.jabbas.dev`)"
       middlewares:
         - disallow-iframe-embedding
         - default-headers
         - https-redirectscheme
       tls: {}
-      service: stable-diffusion
-
-    ## Applio
-    applio:
+      service: vaultwarden
+    
+    ## Homepage
+    homepage:
       entryPoints:
         - "https"
-      rule: "Host(`applio.local.jabbas.dev`)"
+      rule: "Host(`homepage.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+        - forwardAuth-authentik
+      tls: {}
+      service: homepage
+
+    ## GPU
+    ## Ollama
+    ollama:
+      entryPoints:
+        - "https"
+      rule: "Host(`ollama.local.jabbas.dev`)"
       middlewares:
         - disallow-iframe-embedding
         - default-headers
         - https-redirectscheme
       tls: {}
-      service: applio
-
-    ## Media Stack
+      service: ollama
+    
     ## Jellyfin
     jellyfin:
       entryPoints:
@@ -251,6 +216,7 @@ http:
       tls: {}
       service: jellyfin
 
+    ## Media Stack
     ## Jellyseerr
     jellyseerr:
       entryPoints:
@@ -262,18 +228,6 @@ http:
         - https-redirectscheme
       tls: {}
       service: jellyseerr
-
-    ## qBittorrent
-    qbittorrent:
-      entryPoints:
-        - "https"
-      rule: "Host(`qbittorrent.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: qbittorrent
 
     ## SABnzbd
     sabnzbd:
@@ -326,18 +280,6 @@ http:
       tls: {}
       service: prowlarr
 
-    ## Flaresolverr
-    flaresolverr:
-      entryPoints:
-        - "https"
-      rule: "Host(`flaresolverr.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: flaresolverr
-
     ## Bazarr
     bazarr:
       entryPoints:
@@ -374,12 +316,12 @@ http:
         servers:
           - url: "http://192.168.20.100:8080"
         passHostHeader: true
-
-    ## Homepage
-    homepage:
+    
+    ## Grafana
+    grafana:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.100:3000"
+          - url: "http://192.168.20.100:3030"
         passHostHeader: true
 
     ## Network and Security
@@ -403,27 +345,20 @@ http:
         servers:
           - url: "https://192.168.20.107:9443"
         passHostHeader: true
-    
-    ## Wazuh
-    wazuh:
-      loadBalancer:
-        servers:
-          - url: "https://192.168.20.107:5601"
-        passHostHeader: true
 
     ## Monitoring
+    ## Uptime-Kuma
+    uptime-kuma:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.100:3001"
+        passHostHeader: true
+
     ## Prometheus
     prometheus:
       loadBalancer:
         servers:
           - url: "http://192.168.20.100:9090"
-        passHostHeader: true
-
-    ## Grafana
-    grafana:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.100:3030"
         passHostHeader: true
 
     ## Node Exporters
@@ -433,19 +368,6 @@ http:
           - url: "http://192.168.20.2:9100"
         passHostHeader: true
 
-    ai-node-exporter:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.106:9400"
-        passHostHeader: true
-
-    ## Uptime-Kuma
-    uptime-kuma:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.100:3001"
-        passHostHeader: true
-
     ## Home automation
     ## Home Assistant
     home-assistant:
@@ -453,44 +375,44 @@ http:
         servers:
           - url: "http://192.168.20.104:8123"
         passHostHeader: true
-
-    ## AI-Stack
-    ## Ollama
-    ollama:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.106:11434"
-        passHostHeader: true
-
+    
+    ## Apps
     ## Open Webui
     open-webui:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.106:8080"
+          - url: "http://192.168.20.103:8080"
         passHostHeader: true
 
     ## Searxng
     searxng:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.106:8081"
+          - url: "http://192.168.20.103:8081"
         passHostHeader: true
-
-    ## Stable Diffusion
-    stable-diffusion:
+    
+    ## Homepage
+    homepage:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.106:7860"
+          - url: "http://192.168.20.103:3001"
         passHostHeader: true
-
-    ## Applio
-    applio:
+    
+    ## Vaultwarden
+    vaultwarden:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.106:6969"
+          - url: "http://192.168.20.103:8000"
         passHostHeader: true
 
-    ## Media Stack
+    ## GPU
+    ## Ollama
+    ollama:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.106:11434"
+        passHostHeader: true
+    
     ## Jellyfin
     jellyfin:
       loadBalancer:
@@ -498,18 +420,12 @@ http:
           - url: "http://192.168.20.103:8096"
         passHostHeader: true
 
+    ## Media Stack
     ## Jellyseerr
     jellyseerr:
       loadBalancer:
         servers:
           - url: "http://192.168.20.102:5055"
-        passHostHeader: true
-
-    ## qBittorrent
-    qbittorrent:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.102:8085"
         passHostHeader: true
     
     ## SABnzbd
@@ -538,13 +454,6 @@ http:
       loadBalancer:
         servers:
           - url: "http://192.168.20.102:9696"
-        passHostHeader: true
-
-    ## Flaresolverr
-    flaresolverr:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.102:8191"
         passHostHeader: true
 
     ## Bazarr
