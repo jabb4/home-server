@@ -32,6 +32,16 @@
     };
   };
 
+  # Set up firewall !! This needs to be fixed !!
+  networking = {
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [443 80];
+      allowedUDPPorts = [443 80 44857];
+      allowPing = true;
+    };
+  };
+
   # Set up locales (timezone and keyboard layout)
   time.timeZone = "Europe/Stockholm";
   i18n.defaultLocale = "en_US.UTF-8";
