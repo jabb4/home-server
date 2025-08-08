@@ -17,7 +17,7 @@
 
 ## Disks
 - Storage: VM-storage
-- Disk size: 48
+- Disk size: 80
 - Discard: Checked
 - SSD emulation: Checked
 
