@@ -41,7 +41,7 @@
       };
   in {
     nixosConfigurations = {
-      apps = mkSystem "x86_64-linux" "apps";
+      apps-vm = mkSystem "x86_64-linux" "apps-vm";
     };
   };
 }
