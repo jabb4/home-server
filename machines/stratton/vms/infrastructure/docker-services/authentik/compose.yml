@@ -1,7 +1,14 @@
+# Verified working with rootfull docker (run with sudo docker compose up -d)
+
 services:
   postgresql:
+    container_name: authentik-db
     image: docker.io/library/postgres:16-alpine
     restart: unless-stopped
+
+    # Networking
+    networks:
+      - authentik-internal
 
     # Filesystem
     volumes:
@@ -13,8 +20,6 @@ services:
     
     # Environment
     environment:
-      PUID: 1000
-      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
       # Service specific
@@ -39,10 +44,15 @@ services:
 
       
   redis:
+    container_name: authentik-redis
     image: docker.io/library/redis:alpine
     restart: unless-stopped
 
     command: --save 60 1 --loglevel warning
+
+    # Networking
+    networks:
+      - authentik-internal
 
     # Filesystem
     volumes:
@@ -54,8 +64,6 @@ services:
     
     # Environment
     environment:
-      PUID: 1000
-      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
     healthcheck:
@@ -75,6 +83,7 @@ services:
 
       
   server:
+    container_name: authentik-server
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2025.6.4}
     restart: unless-stopped
     depends_on:
@@ -86,6 +95,9 @@ services:
     command: server
     
     # Networking
+    networks:
+      - traefik
+      - authentik-internal
     ports:
       - "${COMPOSE_PORT_HTTP:-9000}:9000"
       - "${COMPOSE_PORT_HTTPS:-9443}:9443"
@@ -101,8 +113,6 @@ services:
     
     # Environment
     environment:
-      PUID: 1000
-      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
       # Service specific
@@ -123,6 +133,7 @@ services:
 
 
   worker:
+    container_name: authentik-worker
     image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2025.6.4}
     restart: unless-stopped
     depends_on:
@@ -132,6 +143,10 @@ services:
         condition: service_healthy
 
     command: worker
+    
+    # Networking
+    networks:
+      - authentik-internal
 
     # Filesystem
     volumes:
@@ -145,8 +160,6 @@ services:
 
     # Environment
     environment:
-      PUID: 1000
-      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
       # Service specific
@@ -164,7 +177,11 @@ services:
         max-size: "10m"
         max-file: "2"
 
-    
+networks:
+  traefik:
+    external: true
+  authentik-internal:
+    external: false
 
 volumes:
   database:
