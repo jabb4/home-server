@@ -1,5 +1,5 @@
 # Verified working with rootfull docker (run with sudo docker compose up -d)
-# Warning! You need to chmod 600 acme.json on host (before first deploy)
+# Warning! You need to run touch acme.json && chmod 600 acme.json on host (before first deploy)
 
 services:
   traefik:
@@ -32,8 +32,9 @@ services:
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
       # Service specific
-      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN} # Cloudflare Token
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
+      CF_API_EMAIL: ${CF_API_EMAIL} # Cloudflare Token
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN} # Cloudflare Token
     
     labels:
       - "traefik.enable=true"

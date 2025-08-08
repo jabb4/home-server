@@ -488,14 +488,28 @@ http:
     ollama:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.106:11434"
+          - url: "http://192.168.20.105:11434"
         passHostHeader: true
     
     ## Jellyfin
     jellyfin:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.103:8096"
+          - url: "http://192.168.20.105:8096"
+        passHostHeader: true
+    
+    ## dcgm-exporter
+    dcgm-exporter:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.105:9400"
+        passHostHeader: true
+    
+    ## ComfyUI
+    comfyui:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.105:7860"
         passHostHeader: true
 
     ## Media Stack
