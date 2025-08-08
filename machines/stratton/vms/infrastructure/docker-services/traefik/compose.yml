@@ -3,8 +3,8 @@
 
 services:
   traefik:
-    image: traefik:latest
     container_name: traefik
+    image: traefik:latest
     restart: unless-stopped
 
     # Networking
@@ -46,7 +46,8 @@ services:
       - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
       - "traefik.http.routers.traefik-secure.entrypoints=https"
       - "traefik.http.routers.traefik-secure.rule=Host(`traefik.local.jabbas.dev`)"
-      - "traefik.http.routers.traefik-secure.middlewares=cloudflarewarp@file,crowdsec-bouncer@file,forwardAuth-authentik@file,traefik-auth"
+      # - "traefik.http.routers.traefik-secure.middlewares=cloudflarewarp@file,crowdsec-bouncer@file,forwardAuth-authentik@file,traefik-auth" # Use this when authentik is up
+      - "traefik.http.routers.traefik-secure.middlewares=traefik-auth"
       - "traefik.http.routers.traefik-secure.tls=true"
       - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
       - "traefik.http.routers.traefik-secure.tls.domains[0].main=local.jabbas.dev"
