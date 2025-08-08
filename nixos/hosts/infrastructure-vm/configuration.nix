@@ -37,12 +37,13 @@
     firewall = {
       enable = true;
       allowedTCPPorts = [
-        9000                # Authentic (unecrypten)
-        9443                # Authentic (encrypted)
-        3030                # Grafana
-        443                 # Traefik (encrypted)
         80                  # Traefik (unecrypten)
+        443                 # Traefik (encrypted)
         3001                # Uptime-kuma
+        3030                # Grafana
+        9000                # Authentic (unecrypten)
+        9090                # Prometheus
+        9443                # Authentic (encrypted)
       ];
       allowPing = true;
     };
