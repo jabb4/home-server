@@ -1,4 +1,5 @@
-# Verified working with rootless docker
+# Verified working with rootless docker (run with docker compose up -d)
+
 
 services:
   homepage:
