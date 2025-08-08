@@ -37,14 +37,12 @@
     firewall = {
       enable = true;
       allowedTCPPorts = [
-        2283                # Immich
-        3000                # Open-WebUI
-        3001                # Homepage
-        4443                # Nextcloud
-        8000                # Vaultwarden
-        8001                # Paperless-NGX
-        8080                # SearXNG
-        8081                # MicroBin
+        9000                # Authentic (unecrypten)
+        9443                # Authentic (encrypted)
+        3030                # Grafana
+        443                 # Traefik (encrypted)
+        80                  # Traefik (unecrypten)
+        3001                # Uptime-kuma
       ];
       allowPing = true;
     };
@@ -81,15 +79,6 @@
     };
   };
     
-  # Mount SMB Share for Nextcloud, Immich, Paperless etc
-  fileSystems."/mnt/data" = {
-    device = "//192.168.20.101/app-data";
-    fsType = "cifs";
-    options = let
-      automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s,user,users";
-    in ["${automount_opts},credentials=/home/nixos/.smb-credentials,uid=1000,gid=1000"];
-  };
-
   # Enable zsh
   programs.zsh.enable = true;
 

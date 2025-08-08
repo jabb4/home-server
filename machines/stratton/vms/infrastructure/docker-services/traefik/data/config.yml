@@ -1,56 +1,7 @@
 # MARK: HTTP ROUTERS
 http:
   routers:
-    ## Infrastrcture
-    ## Proxmox webinterface
-    proxmox:
-      entryPoints:
-        - "https"
-      rule: "Host(`pve.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: proxmox
-
-    ## Truenas webinterface
-    truenas:
-      entryPoints:
-        - "https"
-      rule: "Host(`truenas.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: truenas
-
-    ## Kestra
-    kestra:
-      entryPoints:
-        - "https"
-      rule: "Host(`kestra.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-        - forwardAuth-authentik
-      tls: {}
-      service: kestra
-    
-    ## Grafana
-    grafana:
-      entryPoints:
-        - "https"
-      rule: "Host(`grafana.local.jabbas.dev`)"
-      middlewares:
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: grafana
-
-    ## Network and Security
+    ## Independent (non docker)
     ## Unifi webinterface
     unifi:
       entryPoints:
@@ -77,6 +28,56 @@ http:
       tls: {}
       service: pi-hole
     
+    ## Home Assistant
+    home-assistant:
+      entryPoints:
+        - "https"
+      rule: "Host(`home-assistant.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: home-assistant
+    
+    ## Truenas webinterface
+    truenas:
+      entryPoints:
+        - "https"
+      rule: "Host(`truenas.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: truenas
+    
+    ## Proxmox
+    ## Proxmox webinterface
+    proxmox:
+      entryPoints:
+        - "https"
+      rule: "Host(`pve.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: proxmox
+    
+    ## Node Exporter
+    proxmox-prometheus-node:
+      entryPoints:
+        - "https"
+      rule: "Host(`pve-prometheus-node.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: proxmox-prometheus-node
+
+    ## infrastrcture
     ## Authentik
     authentik:
       entryPoints:
@@ -88,8 +89,18 @@ http:
         - https-redirectscheme
       tls: {}
       service: authentik
+    
+    ## Grafana
+    grafana:
+      entryPoints:
+        - "https"
+      rule: "Host(`grafana.local.jabbas.dev`)"
+      middlewares:
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: grafana
 
-    ## Monitoring
     ## Uptime-Kuma
     uptime-kuma:
       entryPoints:
@@ -115,32 +126,7 @@ http:
       tls: {}
       service: prometheus
 
-    ## Node Exporters
-    proxmox-prometheus-node:
-      entryPoints:
-        - "https"
-      rule: "Host(`pve-prometheus-node.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: proxmox-prometheus-node
-
-    ## Home automation
-    ## Home Assistant
-    home-assistant:
-      entryPoints:
-        - "https"
-      rule: "Host(`home-assistant.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: home-assistant
-    
-    ## Apps
+    ## apps
     ## Open Webui
     open-webui:
       entryPoints:
@@ -165,6 +151,54 @@ http:
         - https-redirectscheme
       tls: {}
       service: searxng
+    
+    ## Immich
+    immich:
+      entryPoints:
+        - "https"
+      rule: "Host(`immich.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: immich
+    
+    ## Nextcloud
+    nextcloud:
+      entryPoints:
+        - "https"
+      rule: "Host(`nextcloud.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: nextcloud
+    
+    ## Paperless-NGX
+    paperless:
+      entryPoints:
+        - "https"
+      rule: "Host(`paperless.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: paperless
+    
+    ## MicroBin
+    microbin:
+      entryPoints:
+        - "https"
+      rule: "Host(`microbin.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: microbin
     
     ## Vaultwarden
     vaultwarden:
@@ -191,7 +225,7 @@ http:
       tls: {}
       service: homepage
 
-    ## GPU
+    ## gpu-workloads
     ## Ollama
     ollama:
       entryPoints:
@@ -215,8 +249,32 @@ http:
         - https-redirectscheme
       tls: {}
       service: jellyfin
+    
+    ## ComfyUI
+    comfyui:
+      entryPoints:
+        - "https"
+      rule: "Host(`comfyui.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: comfyui
+    
+    ## dcgm exporter
+    dcgm-exporter:
+      entryPoints:
+        - "https"
+      rule: "Host(`dcgm-exporter.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: dcgm-exporter
 
-    ## Media Stack
+    ## media-downloader
     ## Jellyseerr
     jellyseerr:
       entryPoints:
@@ -295,36 +353,7 @@ http:
 
   # MARK: HTTP SERVICES
   services:
-    ## Infrastrcture
-    ## Proxmox
-    proxmox:
-      loadBalancer:
-        servers:
-          - url: "https://192.168.20.2:8006"
-        passHostHeader: true
-
-    ## Truenas
-    truenas:
-      loadBalancer:
-        servers:
-          - url: "https://192.168.20.101"
-        passHostHeader: true
-
-    ## Kestra
-    kestra:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.100:8080"
-        passHostHeader: true
-    
-    ## Grafana
-    grafana:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.100:3030"
-        passHostHeader: true
-
-    ## Network and Security
+    ## Independent (non docker)
     ## Unifi webinterface
     unifi:
       loadBalancer:
@@ -336,7 +365,44 @@ http:
     pi-hole:
       loadBalancer:
         servers:
-          - url: "https://192.168.20.50:443"
+          - url: "https://192.168.20.51:443"
+        passHostHeader: true
+    
+    ## Home Assistant
+    home-assistant:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.104:8123"
+        passHostHeader: true
+
+    ## Truenas
+    truenas:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.20.101"
+        passHostHeader: true
+
+    ## Proxmox
+    ## Proxmox web gui
+    proxmox:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.20.2:8006"
+        passHostHeader: true
+    
+    ## Node Exporter
+    proxmox-prometheus-node:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.2:9100"
+        passHostHeader: true
+
+    ## Infrastrcture
+    ## Grafana
+    grafana:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.100:3030"
         passHostHeader: true
     
     ## Authentik
@@ -346,7 +412,6 @@ http:
           - url: "https://192.168.20.107:9443"
         passHostHeader: true
 
-    ## Monitoring
     ## Uptime-Kuma
     uptime-kuma:
       loadBalancer:
@@ -361,36 +426,21 @@ http:
           - url: "http://192.168.20.100:9090"
         passHostHeader: true
 
-    ## Node Exporters
-    proxmox-prometheus-node:
+    ## Apps
+    ## Immich
+    immich:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.2:9100"
+          - url: "http://192.168.20.103:2283"
         passHostHeader: true
 
-    ## Home automation
-    ## Home Assistant
-    home-assistant:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.104:8123"
-        passHostHeader: true
-    
-    ## Apps
     ## Open Webui
     open-webui:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.103:8080"
+          - url: "http://192.168.20.103:3000"
         passHostHeader: true
 
-    ## Searxng
-    searxng:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.103:8081"
-        passHostHeader: true
-    
     ## Homepage
     homepage:
       loadBalancer:
@@ -398,11 +448,39 @@ http:
           - url: "http://192.168.20.103:3001"
         passHostHeader: true
     
+    ## Nextcloud
+    nextcloud:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.20.103:4443"
+        passHostHeader: true
+    
     ## Vaultwarden
     vaultwarden:
       loadBalancer:
         servers:
           - url: "http://192.168.20.103:8000"
+        passHostHeader: true
+    
+    ## Paperless-NGX
+    paperless:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.20.103:8001"
+        passHostHeader: true
+
+    ## Searxng
+    searxng:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.103:8080"
+        passHostHeader: true
+    
+    ## MicroBin
+    microbin:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.103:8081"
         passHostHeader: true
 
     ## GPU

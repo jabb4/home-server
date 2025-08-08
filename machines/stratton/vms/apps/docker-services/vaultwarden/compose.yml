@@ -1,4 +1,4 @@
-# Verified working
+# Verified working with rootless docker
 
 services:
   vaultwarden:
