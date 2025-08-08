@@ -26,11 +26,14 @@ services:
       - /etc/localtime:/etc/localtime:ro
     
     # Security
-    user: "1000:1000"
-    cap_drop:
-      - ALL                      # drop all Linux capabilities
     security_opt:
       - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
     
     healthcheck:
       disable: false
@@ -54,11 +57,14 @@ services:
       - model-cache:/cache
     
     # Security
-    user: "1000:1000"
-    cap_drop:
-      - ALL                      # drop all Linux capabilities
     security_opt:
       - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
     
     healthcheck:
       disable: false
@@ -77,11 +83,14 @@ services:
     restart: unless-stopped
 
     # Security
-    user: "1000:1000"
-    cap_drop:
-      - ALL                      # drop all Linux capabilities
     security_opt:
       - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
 
     healthcheck:
       test: redis-cli ping || exit 1
@@ -106,19 +115,27 @@ services:
     shm_size: 128mb
 
     # Security
-    user: "1000:1000"
-    cap_drop:
-      - ALL                      # drop all Linux capabilities
     security_opt:
       - no-new-privileges:true  # forbid privilege escalation
 
     # Environment
     environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
       # Service specific
       POSTGRES_PASSWORD: ${DB_PASSWORD}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_DB: ${DB_DATABASE_NAME}
       POSTGRES_INITDB_ARGS: '--data-checksums'
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
 
 
     

@@ -69,7 +69,7 @@
 - **ID**: 100
 - **Type**: Full VM
 - **Startup priority**: 2
-- **Specs**: 4 vCPU / 12GB RAM / 32GB boot
+- **Specs**: 4 vCPU / 12GB RAM / 48GB boot
 - **Extra**: None
 - **Host OS**: NixOS + Docker containers
 - **Services**:

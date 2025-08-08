@@ -1,13 +1,35 @@
 services:
   prometheus:
-    image: docker.io/prom/prometheus:v2.54.1
+    image: docker.io/prom/prometheus:latest
     container_name: prometheus
+    restart: unless-stopped
+    
+    # Networking
     ports:
       - 9090:9090
+
+    # Filesystem
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
-    restart: always
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+    
 
 volumes:
   prometheus-data:

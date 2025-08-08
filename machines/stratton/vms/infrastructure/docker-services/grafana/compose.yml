@@ -1,15 +1,39 @@
 services:
   grafana:
-    image: docker.io/grafana/grafana-oss:11.2.2
     container_name: grafana
+    image: docker.io/grafana/grafana-oss:latest
+    restart: unless-stopped
+    
+    # Networking
     ports:
-      - "3030:3000"
+      - 3030:3000
+
+    # Filesystem
     volumes:
       - grafana-data:/var/lib/grafana
-    restart: unless-stopped
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+
+    # Environment
     environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+      # Service specific
       GF_SECURITY_ALLOW_EMBEDDING: true
       GF_AUTH_ANONYMOUS_ENABLED: true
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+
 
 volumes:
   grafana-data:

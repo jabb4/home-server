@@ -1,30 +1,76 @@
 services:
   crowdsec:
-    image: crowdsecurity/crowdsec:latest
     container_name: crowdsec
-    environment:
-      GID: "${GID-1000}"
-      COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
+    image: crowdsecurity/crowdsec:latest
+    restart: unless-stopped
+
+    # Networking
+    networks:
+      - traefik
+
+    # Filesystem
     volumes:
       - ./config/acquis.yaml:/etc/crowdsec/acquis.yaml
       - crowdsec-db:/var/lib/crowdsec/data/
       - crowdsec-config:/etc/crowdsec/
       - traefik_traefik-logs:/var/log/traefik/:ro
-    networks:
-      - traefik
-    restart: unless-stopped
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
 
-  bouncer-traefik:
-    image: docker.io/fbonalair/traefik-crowdsec-bouncer:latest
-    container_name: bouncer-traefik
+    # Environment
     environment:
-      CROWDSEC_BOUNCER_API_KEY: ${CROWDSEC_BOUNCER_API_KEY}
-      CROWDSEC_AGENT_HOST: crowdsec:8080
-    networks:
-      - traefik
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+      # Service specific
+      GID: 1000
+      COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+    
+    
+    
+  bouncer-traefik:
+    container_name: bouncer-traefik
+    image: docker.io/fbonalair/traefik-crowdsec-bouncer:latest # This is old, should look for alternative
+    restart: unless-stopped
     depends_on:
       - crowdsec
-    restart: unless-stopped
+
+    # Networking
+    networks:
+      - traefik
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+      # Service specific
+      CROWDSEC_BOUNCER_API_KEY: ${CROWDSEC_BOUNCER_API_KEY}
+      CROWDSEC_AGENT_HOST: crowdsec:8080
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+
 
 networks:
   traefik:

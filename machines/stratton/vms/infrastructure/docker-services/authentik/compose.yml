@@ -1,98 +1,173 @@
 services:
   postgresql:
     image: docker.io/library/postgres:16-alpine
-    container_name: authentik-postgres
-    restart: always
+    restart: unless-stopped
+
+    # Filesystem
+    volumes:
+      - database:/var/lib/postgresql/data
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+      # Service specific
+      POSTGRES_PASSWORD: ${PG_PASS:?database password required}
+      POSTGRES_USER: ${PG_USER:-authentik}
+      POSTGRES_DB: ${PG_DB:-authentik}
+
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}" ]
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       start_period: 20s
       interval: 30s
       retries: 5
       timeout: 5s
-    volumes:
-      - database:/var/lib/postgresql/data
-    environment:
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_DB: ${POSTGRES_DB_NAME}
-    networks:
-      - authentik-internal
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+    
 
+      
   redis:
     image: docker.io/library/redis:alpine
-    container_name: authentik-redis
-    restart: always
+    restart: unless-stopped
+
     command: --save 60 1 --loglevel warning
+
+    # Filesystem
+    volumes:
+      - redis:/data
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
     healthcheck:
-      test: [ "CMD-SHELL", "redis-cli ping | grep PONG" ]
+      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
       start_period: 20s
       interval: 30s
       retries: 5
       timeout: 3s
-    volumes:
-      - redis:/data
-    networks:
-      - authentik-internal
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+    
 
+      
   server:
-    image: ghcr.io/goauthentik/server:2024.8.2
-    container_name: authentik-server
-    restart: always
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2025.6.4}
+    restart: unless-stopped
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      
     command: server
-    environment:
-      AUTHENTIK_ERROR_REPORTING__ENABLED: true
-      AUTHENTIK_REDIS__HOST: redis
-      AUTHENTIK_POSTGRESQL__HOST: postgresql
-      AUTHENTIK_POSTGRESQL__USER: ${POSTGRES_USER}
-      AUTHENTIK_POSTGRESQL__NAME: ${POSTGRES_DB_NAME}
-      AUTHENTIK_POSTGRESQL__PASSWORD: ${POSTGRES_PASSWORD}
-      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
+    
+    # Networking
+    ports:
+      - "${COMPOSE_PORT_HTTP:-9000}:9000"
+      - "${COMPOSE_PORT_HTTPS:-9443}:9443"
+    
+    # Filesystem
     volumes:
       - ./media:/media
       - ./custom-templates:/templates
-      - ./media/backgrounds/black.jpg:/web/dist/assets/images/flow_background.jpg
-    networks:
-      - traefik
-      - authentik-internal
-    ports:
-      - 9000:9000
-      - 9443:9443
-    depends_on:
-      - postgresql
-      - redis
-
-  worker:
-    image: ghcr.io/goauthentik/server:2024.8.2
-    container_name: authentik-worker
-    restart: always
-    command: worker
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
     environment:
-      AUTHENTIK_ERROR_REPORTING__ENABLED: true
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+      # Service specific
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
       AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_POSTGRESQL__HOST: postgresql
-      AUTHENTIK_POSTGRESQL__USER: ${POSTGRES_USER}
-      AUTHENTIK_POSTGRESQL__NAME: ${POSTGRES_DB_NAME}
-      AUTHENTIK_POSTGRESQL__PASSWORD: ${POSTGRES_PASSWORD}
-      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY}
-      
-    networks:
-      - authentik-internal
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+    
+
+
+  worker:
+    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2025.6.4}
+    restart: unless-stopped
+    depends_on:
+      postgresql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    command: worker
+
+    # Filesystem
     volumes:
       - ./media:/media
       - ./certs:/certs
       - ./custom-templates:/templates
-    depends_on:
-      - postgresql
-      - redis
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+      # Service specific
+      AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
+      AUTHENTIK_REDIS__HOST: redis
+      AUTHENTIK_POSTGRESQL__HOST: postgresql
+      AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
+      AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
+      AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+    
 
 volumes:
   database:
     driver: local
   redis:
     driver: local
-
-networks:
-  traefik:
-    external: true
-  authentik-internal:
-    external: false

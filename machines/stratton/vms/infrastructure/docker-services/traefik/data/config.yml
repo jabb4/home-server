@@ -69,7 +69,7 @@ http:
     proxmox-prometheus-node:
       entryPoints:
         - "https"
-      rule: "Host(`pve-prometheus-node.local.jabbas.dev`)"
+      rule: "Host(`stratton-prometheus-node.local.jabbas.dev`)"
       middlewares:
         - disallow-iframe-embedding
         - default-headers
@@ -266,7 +266,7 @@ http:
     dcgm-exporter:
       entryPoints:
         - "https"
-      rule: "Host(`dcgm-exporter.local.jabbas.dev`)"
+      rule: "Host(`gpu-prometheus-node.local.jabbas.dev`)"
       middlewares:
         - disallow-iframe-embedding
         - default-headers

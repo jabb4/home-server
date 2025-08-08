@@ -20,9 +20,9 @@ scrape_configs:
   - job_name: 'proxmoxhost'
     scheme: 'https' 
     static_configs:
-      - targets: ['pve-prometheus-node.local.jabbas.dev']
+      - targets: ['stratton-prometheus-node.local.jabbas.dev']
   
   - job_name: 'dcgm-exporter'
     scheme: 'https'
     static_configs:
-      - targets: ['ai-prometheus-node.local.jabbas.dev']
+      - targets: ['gpu-prometheus-node.local.jabbas.dev']

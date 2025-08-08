@@ -15,9 +15,6 @@ services:
       - ./config:/app/config
 
     # Security
-    user: "1000:1000"
-    cap_drop:
-      - ALL                      # drop all Linux capabilities
     security_opt:
       - no-new-privileges:true  # forbid privilege escalation
     
@@ -28,6 +25,7 @@ services:
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
       # Service specific
+      HOMEPAGE_ALLOWED_HOSTS: homepage.local.jabbas.dev
       HOMEPAGE_VAR_PROXMOX_API_USERNAME: ${HOMEPAGE_VAR_PROXMOX_API_USERNAME}
       HOMEPAGE_VAR_PROXMOX_API_PASSWORD: ${HOMEPAGE_VAR_PROXMOX_API_PASSWORD}
       HOMEPAGE_VAR_QBITTORRENT_USERNAME: ${HOMEPAGE_VAR_QBITTORRENT_USERNAME}

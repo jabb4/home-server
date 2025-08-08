@@ -51,10 +51,6 @@ services:
       - ./consume:/usr/src/paperless/consume
     
     # Security
-    user:
-      - 1000:1000
-    cap_drop:
-      - ALL                     # drop all Linux capabilities
     security_opt:
       - no-new-privileges:true  # forbid privilege escalation
 
@@ -96,15 +92,13 @@ services:
       - redisdata:/data
     
     # Security
-    user:
-      - 1000:1000
-    cap_drop:
-      - ALL                     # drop all Linux capabilities
     security_opt:
       - no-new-privileges:true  # forbid privilege escalation
     
     # Environment
     environment:
+      PUID: 1000
+      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
       
     # Logging
@@ -126,15 +120,13 @@ services:
       - pgdata:/var/lib/postgresql/data
     
     # Security
-    user:
-      - 1000:1000
-    cap_drop:
-      - ALL                     # drop all Linux capabilities
     security_opt:
       - no-new-privileges:true  # forbid privilege escalation
 
     # Environment
     environment:
+      PUID: 1000
+      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
       # Service specific
@@ -162,15 +154,13 @@ services:
       - "--chromium-allow-list=file:///tmp/.*"
 
     # Security
-    user:
-      - 1000:1000
-    cap_drop:
-      - ALL                     # drop all Linux capabilities
     security_opt:
       - no-new-privileges:true  # forbid privilege escalation
     
     # Environment
     environment:
+      PUID: 1000
+      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
     
     # Logging
@@ -188,15 +178,13 @@ services:
     restart: unless-stopped
 
     # Security
-    user:
-      - 1000:1000
-    cap_drop:
-      - ALL                     # drop all Linux capabilities
     security_opt:
       - no-new-privileges:true  # forbid privilege escalation
     
     # Environment
     environment:
+      PUID: 1000
+      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
     # Logging

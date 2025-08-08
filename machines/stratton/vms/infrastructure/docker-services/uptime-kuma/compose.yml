@@ -1,9 +1,30 @@
 services:
   uptime-kuma:
-    image: louislam/uptime-kuma:latest
     container_name: uptime-kuma
-    restart: always
+    image: louislam/uptime-kuma:latest
+    restart: unless-stopped
+
+    # Networking
     ports:
       - 3001:3001
+
+    # Filesystem
     volumes:
       - ./data:/app/data
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
