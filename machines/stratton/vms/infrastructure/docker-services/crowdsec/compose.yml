@@ -1,3 +1,6 @@
+# THIS DOES NOT WORK CURRENTLY
+# It makes every site return 403 error (Like ip is banned?)
+
 services:
   crowdsec:
     container_name: crowdsec
