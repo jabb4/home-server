@@ -25,4 +25,4 @@
 - Cores: 6
 
 ## Memory
-- 12288 MiB
+- 16384 MiB
