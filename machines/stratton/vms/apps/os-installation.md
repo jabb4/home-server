@@ -18,7 +18,7 @@ nano hosts/apps/.smb-credentials
 
 sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount --yes-wipe-all-disks hosts/apps/disk-config.nix && nix-collect-garbage -d
 
-sudo nixos-install --no-root-passwd --flake .#apps
+sudo nixos-install --no-root-passwd --flake .#apps-vm
 
 ````
 
@@ -44,6 +44,8 @@ If not then something (i dont know why) have gone wrong and you have to re-run:
 
 ````bash
 sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount --yes-wipe-all-disks hosts/apps/disk-config.nix && nix-collect-garbage -d
+
+sudo nixos-install --no-root-passwd --flake .#apps-vm
 ````
 
 6. Shutdown VM
