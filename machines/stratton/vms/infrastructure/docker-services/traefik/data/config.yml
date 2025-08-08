@@ -23,7 +23,7 @@ http:
         - disallow-iframe-embedding
         - default-headers
         - https-redirectscheme
-        - forwardAuth-authentik
+        #- forwardAuth-authentik
         - pi-hole-redirect
       tls: {}
       service: pi-hole
@@ -110,7 +110,7 @@ http:
         - disallow-iframe-embedding
         - default-headers
         - https-redirectscheme
-        - forwardAuth-authentik
+        #- forwardAuth-authentik
       tls: {}
       service: uptime-kuma
 
@@ -308,7 +308,7 @@ http:
         - disallow-iframe-embedding
         - default-headers
         - https-redirectscheme
-        - forwardAuth-authentik
+        #- forwardAuth-authentik
       tls: {}
       service: radarr
 
@@ -321,7 +321,7 @@ http:
         - disallow-iframe-embedding
         - default-headers
         - https-redirectscheme
-        - forwardAuth-authentik
+        #- forwardAuth-authentik
       tls: {}
       service: sonarr
 
@@ -334,7 +334,7 @@ http:
         - disallow-iframe-embedding
         - default-headers
         - https-redirectscheme
-        - forwardAuth-authentik
+        #- forwardAuth-authentik
       tls: {}
       service: prowlarr
 
@@ -347,7 +347,7 @@ http:
         - disallow-iframe-embedding
         - default-headers
         - https-redirectscheme
-        - forwardAuth-authentik
+        #- forwardAuth-authentik
       tls: {}
       service: bazarr
 
@@ -409,7 +409,7 @@ http:
     authentik:
       loadBalancer:
         servers:
-          - url: "https://192.168.20.107:9443"
+          - url: "https://192.168.20.100:9443"
         passHostHeader: true
 
     ## Uptime-Kuma
@@ -555,7 +555,7 @@ http:
           - url: "http://192.168.20.102:6767"
         passHostHeader: true
 
-  # MARK: HTTP MIDDLEWARES
+  # HTTP MIDDLEWARES
   middlewares:
     https-redirectscheme:
       redirectScheme:
@@ -597,6 +597,7 @@ http:
         authResponseHeaders:
           - X-authentik-username
           - X-authentik-groups
+          - X-authentik-entitlements
           - X-authentik-email
           - X-authentik-name
           - X-authentik-uid
@@ -606,13 +607,12 @@ http:
           - X-authentik-meta-provider
           - X-authentik-meta-app
           - X-authentik-meta-version
-          - authorization
     
     #Crowdsec
-    crowdsec-bouncer:
-      forwardauth:
-        address: http://bouncer-traefik:8080/api/v1/forwardAuth
-        trustForwardHeader: true
+    #crowdsec-bouncer:
+    #  forwardauth:
+    #    address: http://bouncer-traefik:8080/api/v1/forwardAuth
+    #    trustForwardHeader: true
     
     # Get real ip from cloudflare tunnel
     cloudflarewarp:
