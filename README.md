@@ -86,7 +86,7 @@
 - **ID**: 103
 - **Type**: Full VM
 - **Startup priority**: None
-- **Specs**: 6 vCPU / 12GB RAM / 80GB boot
+- **Specs**: 6 vCPU / 16GB RAM / 80GB boot
 - **Extra**: Mount SMB shares
 - **Host OS**: NixOS + Docker containers
 - **Services**:
