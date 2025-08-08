@@ -1,1 +1,1 @@
-You need to create the file data/acme.json and chmod 600 acme.json on the machine
+You need to chmod 600 acme.json
