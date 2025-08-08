@@ -12,13 +12,13 @@ entryPoints:
           scheme: https
       middlewares:
         - cloudflarewarp@file
-        - crowdsec-bouncer@file
+        #- crowdsec-bouncer@file # This dosent work (Gives access diened dont now why (need to be fixed))
   https:
     address: ":443"
     http:
       middlewares:
         - cloudflarewarp@file
-        - crowdsec-bouncer@file
+        #- crowdsec-bouncer@file # This dosent work (Gives access diened dont now why (need to be fixed))
 
 serversTransport:
   insecureSkipVerify: true
