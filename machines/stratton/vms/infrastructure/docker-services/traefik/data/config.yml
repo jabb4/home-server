@@ -351,7 +351,7 @@ http:
       tls: {}
       service: bazarr
 
-  # MARK: HTTP SERVICES
+  # HTTP SERVICES
   services:
     ## Independent (non docker)
     ## Unifi webinterface
@@ -608,11 +608,11 @@ http:
           - X-authentik-meta-app
           - X-authentik-meta-version
     
-    #Crowdsec
-    #crowdsec-bouncer:
-    #  forwardauth:
-    #    address: http://bouncer-traefik:8080/api/v1/forwardAuth
-    #    trustForwardHeader: true
+    # Crowdsec
+    crowdsec-bouncer:
+      forwardauth:
+        address: http://bouncer-traefik:8080/api/v1/forwardAuth
+        trustForwardHeader: true
     
     # Get real ip from cloudflare tunnel
     cloudflarewarp:
