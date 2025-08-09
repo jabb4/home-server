@@ -1,3 +1,6 @@
+# Verified working with rootless docker (run with docker compose up -d)
+# Warning! Watch setup on how to import dashboard (docs/grafana-setup.md)
+
 services:
   grafana:
     container_name: grafana
