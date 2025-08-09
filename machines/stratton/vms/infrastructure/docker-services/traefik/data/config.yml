@@ -1,4 +1,4 @@
-# MARK: HTTP ROUTERS
+# HTTP ROUTERS
 http:
   routers:
     ## Independent (non docker)
