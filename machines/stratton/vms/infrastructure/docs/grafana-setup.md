@@ -17,4 +17,5 @@
 3. Name it `prometheus`
 4. In the connection add the prometheus url: https://prometheus.local.jabbas.dev
 5. Scroll to the button and click **"Save & test"**
-6. Go to your dashboard and then, on your all your "cards" you have to click on the three dots -> Edit & click **"Run queries"**
+6. Go to your dashboard and then, on your all your "cards" you have to click on the three dots -> Edit & click **"Run queries"**¨
+7. In the top right corner click on **"Save dashboard"**
