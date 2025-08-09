@@ -8,6 +8,6 @@
    CF_API_EMAIL=<YOUR_CLOUDFLARE_EMAIL>
    CF_DNS_API_TOKEN=<YOUR_CLOUDFLARE_DNS_API_TOKEN>
    ````
-5. Start container wite rootfull docker: `sudo docker compose `
+5. Start container wite rootfull docker: `sudo docker compose up -d`
 6. Now look att `crowdsec-setup.md` and `authentik-setup.md` and set them up completly.
 7. You should be good to go
