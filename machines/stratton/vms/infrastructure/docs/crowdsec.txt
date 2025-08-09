@@ -1,3 +1,0 @@
-https://technotim.live/posts/crowdsec-traefik/
-
-Add bouncer: docker exec crowdsec cscli bouncers add bouncer-traefik
