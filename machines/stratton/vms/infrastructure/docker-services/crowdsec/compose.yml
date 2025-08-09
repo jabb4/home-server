@@ -1,5 +1,5 @@
-# THIS DOES NOT WORK CURRENTLY
-# It makes every site return 403 error (Like ip is banned?)
+# Verified working with rootfull docker (run with sudo docker compose up -d)
+# Warning! Watch setup guide before you deploy (docs/crowdsec-setup.md)
 
 services:
   crowdsec:
