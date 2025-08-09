@@ -1,3 +1,5 @@
+# Verified working with rootless docker (run with docker compose up -d)
+
 services:
   prometheus:
     image: docker.io/prom/prometheus:latest
