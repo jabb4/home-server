@@ -44,7 +44,7 @@
 #### 1. TrueNAS
 - **ID**: 101
 - **Type**: Full VM
-- **Startup priority**: 1
+- **Startup priority**: 2
 - **Specs**: 4 vCPU / 32GB RAM / 32GB Boot
 - **Extra**: SATA passthrough (4 * 4TB HDD drives)
 - **Host OS**: TrueNAS (Previously TrueNAS Scale)
@@ -68,7 +68,7 @@
 #### 3. Infrastructure
 - **ID**: 100
 - **Type**: Full VM
-- **Startup priority**: 2
+- **Startup priority**: 1
 - **Specs**: 4 vCPU / 12GB RAM / 48GB boot
 - **Extra**: None
 - **Host OS**: NixOS + Docker containers
