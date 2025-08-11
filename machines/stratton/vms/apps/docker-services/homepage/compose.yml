@@ -16,13 +16,12 @@ services:
       - ./config:/app/config
 
     # Security
+    user: "1000:1000"
     security_opt:
       - no-new-privileges:true  # forbid privilege escalation
     
     # Environment
     environment:
-      PUID: 1000
-      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
       # Service specific
