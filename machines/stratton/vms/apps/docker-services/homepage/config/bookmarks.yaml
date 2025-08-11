@@ -22,14 +22,15 @@
     - Eweka:
         - icon: eweka.png
           href: https://www.eweka.nl/en/myeweka?p=acd
-    - Frugal:
-        - icon: mdi-pig-#F5DADF
-          href: https://billing.frugalusenet.com/member
     - NZBGeek:
         - icon: nzbgeek.png
           href: https://www.nzbgeek.info/dashboard.php?myaccount
     - altHUB:
+        - icon: nzbgeek.png  
           href: https://althub.co.za/profile
+    - Usenet Deals:
+        - icon: android.png
+          href: https://rexum.space/p/usenet-provider-deals
 
 - Social:
     - Linkedin:
