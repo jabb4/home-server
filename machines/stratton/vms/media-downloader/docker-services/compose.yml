@@ -1,3 +1,5 @@
+# Verified working with rootfull docker (run with sudo docker compose up -d)
+
 services:
   gluetun:
     container_name: gluetun
