@@ -512,47 +512,47 @@ http:
           - url: "http://192.168.20.105:7860"
         passHostHeader: true
 
-    ## Media Stack
+    ## Media-Downloader
     ## Jellyseerr
     jellyseerr:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.102:5055"
+          - url: "http://192.168.20.106:5055"
         passHostHeader: true
     
     ## SABnzbd
     sabnzbd:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.102:8080"
+          - url: "http://192.168.20.106:8080"
         passHostHeader: true
 
     ## Radarr
     radarr:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.102:7878"
+          - url: "http://192.168.20.106:7878"
         passHostHeader: true
 
     ## Sonarr
     sonarr:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.102:8989"
+          - url: "http://192.168.20.106:8989"
         passHostHeader: true
 
     ## Prowlarr
     prowlarr:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.102:9696"
+          - url: "http://192.168.20.106:9696"
         passHostHeader: true
 
     ## Bazarr
     bazarr:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.102:6767"
+          - url: "http://192.168.20.106:6767"
         passHostHeader: true
 
   # HTTP MIDDLEWARES
