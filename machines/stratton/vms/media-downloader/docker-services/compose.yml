@@ -4,6 +4,7 @@ services:
     image: qmcgaw/gluetun
     restart: unless-stopped
 
+    # Networking
     ports:
       - 8080:8080 # SABnzbd
       - 9696:9696 # Prowlarr
@@ -11,6 +12,7 @@ services:
       - 7878:7878 # Radarr
       - 6767:6767 # Bazarr
 
+    # Filesystem
     volumes:
       - ./gluetun/config:/gluetun
     devices:
@@ -50,12 +52,13 @@ services:
     image: lscr.io/linuxserver/sabnzbd:latest
     restart: unless-stopped
 
+    # Networking
     network_mode: "service:gluetun"
 
+    # Filesystem
     volumes:
       - ./sabnzbd/config:/config
-      - /mnt/media-library/downloads:/downloads
-      - /mnt/media-library/downloads/incomplete-downloads:/incomplete-downloads
+      - /mnt/data/usenet:/data/usenet:rw
     
     # Security
     security_opt:
@@ -81,8 +84,10 @@ services:
     image: lscr.io/linuxserver/prowlarr:latest
     restart: unless-stopped
 
+    # Networking
     network_mode: "service:gluetun"
 
+    # Filesystem
     volumes:
       - ./prowlarr/config:/config
     
@@ -113,12 +118,14 @@ services:
       - sabnzbd
       - prowlarr
 
+
+    # Networking
     network_mode: "service:gluetun"
 
+    # Filesystem
     volumes:
       - ./sonarr/config:/config
-      - /mnt/media-library/series:/tv
-      - /mnt/media-library/downloads:/downloads
+      - /mnt/data:/data
     
     # Security
     security_opt:
@@ -139,8 +146,6 @@ services:
 
     
 
-    
-
   radarr:
     container_name: radarr
     image: lscr.io/linuxserver/radarr:latest
@@ -149,12 +154,13 @@ services:
       - sabnzbd
       - prowlarr
 
+    # Networking
     network_mode: "service:gluetun"
 
+    # Filesystem
     volumes:
       - ./radarr/config:/config
-      - /mnt/media-library/movies:/movies
-      - /mnt/media-library/downloads:/downloads
+      - /mnt/data:/data
     
     # Security
     security_opt:
@@ -180,12 +186,13 @@ services:
     image: lscr.io/linuxserver/bazarr:latest
     restart: unless-stopped
 
+    # Networking
     network_mode: "service:gluetun"
-
+    
+    # Filesystem
     volumes:
       - ./bazarr/config:/config
-      - /mnt/media-library/movies:/movies
-      - /mnt/media-library/series:/tv
+      - /mnt/data/media:/data/media
     
     # Security
     security_opt:
