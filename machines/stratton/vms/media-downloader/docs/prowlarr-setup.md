@@ -1,0 +1,1 @@
+1. Enable Basic (Browser Popup) authentication and put in username and password.
