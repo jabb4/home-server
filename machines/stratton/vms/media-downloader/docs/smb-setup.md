@@ -1,0 +1,1 @@
+1. Create folder structure as descibed in [TRaSH Guides](https://trash-guides.info/File-and-Folder-Structure/)
