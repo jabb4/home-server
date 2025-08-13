@@ -9,8 +9,8 @@ services:
     # Filesystem
     volumes:
       - ./config:/config
-    # read_only: true
-    # tmpfs: /tmp
+    read_only: true
+    tmpfs: /tmp
     
     # Security
     user: "1000:1000"
