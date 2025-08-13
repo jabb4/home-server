@@ -1,0 +1,29 @@
+# Verified working with rootless docker (run with docker compose up -d)
+
+services:
+  recyclarr:
+    container_name: recyclarr
+    image: ghcr.io/recyclarr/recyclarr
+    restart: unless-stopped
+
+    # Filesystem
+    volumes:
+      - ./config:/config
+    # read_only: true
+    # tmpfs: /tmp
+    
+    # Security
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
+
+    # Environment
+    environment:
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"

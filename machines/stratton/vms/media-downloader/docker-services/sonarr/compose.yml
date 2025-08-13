@@ -1,0 +1,36 @@
+# Verified working with rootfull docker (run with sudo docker compose up -d)
+
+services:
+  sonarr:
+    container_name: sonarr
+    image: lscr.io/linuxserver/sonarr:latest
+    restart: unless-stopped
+
+    # Networking
+    network_mode: "container:gluetun"
+
+    # Filesystem
+    volumes:
+      - ./sonarr/config:/config
+      - /mnt/data:/data
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true
+
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+
+    
+
+    
