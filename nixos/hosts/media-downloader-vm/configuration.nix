@@ -119,6 +119,7 @@
   environment.systemPackages = with pkgs; [
       cifs-utils # For SMB client (mount smb share)
       git
+      htop
   ]; 
 
   system.stateVersion = "25.05";

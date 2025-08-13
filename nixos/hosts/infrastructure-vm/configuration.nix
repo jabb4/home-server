@@ -110,6 +110,7 @@
   # Install packages
   environment.systemPackages = with pkgs; [
       git
+      htop
   ]; 
 
   system.stateVersion = "25.05";
