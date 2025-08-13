@@ -1,4 +1,4 @@
-# Verified working with rootfull docker (run with sudo docker compose up -d)
+# Verified working with rootless docker (run with docker compose up -d)
 
 services:
   jellyseerr:
