@@ -1,26 +1,6 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/recyclarr/recyclarr/master/schemas/config-schema.json
 
-# An empty starter config to use with Recyclarr. Update the values below as needed for your
-# instance. You will be required to update the `api_key` and `base_url` for each instance you want
-# to use.
-#
-# If you'd rather use pre-built configuration instead of building your own from scratch, see these
-# pages:
-# - Config Templates: https://recyclarr.dev/wiki/guide-configs/
-# - CLI Command: https://recyclarr.dev/wiki/cli/config/list/templates/
-#
-# This file WILL NOT WORK as it currently is. You need to read the documentation and build this
-# configuration from scratch. Note that there's no "one size fits all" configuration. Please refer
-# to the TRaSH Guides to understand how to build the appropriate configuration based on your
-# hardware setup and capabilities.
-#
-# For more details on the configuration, see the Configuration Reference on the wiki here:
-# https://recyclarr.dev/wiki/yaml/config-reference/
-#
-# Want a more flexible file layout?
-# See: https://recyclarr.dev/wiki/file-structure/
-
-# Configuration specific to Sonarr. For Radarr, the layout is the same.
+# Configuration specific to Sonarr
 # See: https://recyclarr.dev/wiki/yaml/config-reference/basic/
 sonarr:
   series:
@@ -28,14 +8,134 @@ sonarr:
     base_url: !secret sonarr_base_url
     api_key: !secret sonarr_api_key
 
+    delete_old_custom_formats: true
+    replace_existing_custom_formats: true
+
+    include:
+      # Imports all requierd custom formats from trash guides
+      - template: sonarr-v4-custom-formats-web-1080p.yml
+      - template: sonarr-v4-custom-formats-web-2160p.yml
+      # Imports culity profiles
+      - template: sonarr-v4-quality-profile-web-1080p.yml
+      - template: sonarr-v4-quality-profile-web-2160p.yml
+    
+
     # See: https://recyclarr.dev/wiki/yaml/config-reference/quality-definition/
     quality_definition:
-
-    # See: https://recyclarr.dev/wiki/yaml/config-reference/quality-profiles/
-    quality_profiles:
+      type: series
 
     # See: https://recyclarr.dev/wiki/yaml/config-reference/custom-formats/
+    # And: https://recyclarr.dev/wiki/guide-configs/
+    # Here you specify optional fields that are not marked "requierd" in trash guides
     custom_formats:
+      # Miscellaneous
+      - trash_ids:
+          - b6832f586342ef70d9c128d40c07b872 # Bad Dual Groups
+          - cc444569854e9de0b084ab2b8b1532b2 # Black and White Editions
+          - ae9b7c9ebde1f3bd336a8cbd1ec4c5e5 # No-RlsGroup
+          - 7357cf5161efbf8c4d5d0c30b4815ee2 # Obfuscated
+          - 5c44f52a8714fdd79bb4d98e2673be1f # Retags
+          - f537cf427b64c38c8e36298f657e4828 # Scene
+        assign_scores_to:
+          - name: WEB-1080p
+          - name: WEB-2160p
 
     # See: https://recyclarr.dev/wiki/yaml/config-reference/media-naming/
     media_naming:
+      series: default
+      season: jellyfin-tvdb
+      episodes:
+        rename: true
+        standard: default
+        daily: default
+        anime: default
+
+# Configuration specific to Radarr
+# See: https://recyclarr.dev/wiki/yaml/config-reference/basic/
+radarr:
+  movies:
+    # Set the URL/API Key to your actual instance
+    base_url: !secret radarr_base_url
+    api_key: !secret radarr_api_key
+
+    delete_old_custom_formats: true
+    replace_existing_custom_formats: true
+
+    include:
+      # Imports all requierd custom formats from trash guides
+      - template: radarr-custom-formats-hd-bluray-web
+      - template: radarr-custom-formats-uhd-bluray-web
+      - template: radarr-custom-formats-remux-web-1080p
+      - template: radarr-custom-formats-remux-web-2160p
+      # Imports culity profiles
+      - template: radarr-quality-profile-hd-bluray-web
+      - template: radarr-quality-profile-uhd-bluray-web
+      - template: radarr-quality-profile-remux-web-1080p
+      - template: radarr-quality-profile-remux-web-2160p
+    
+    # See: https://recyclarr.dev/wiki/yaml/config-reference/quality-definition/
+    quality_definition:
+      type: movie
+
+    # See: https://recyclarr.dev/wiki/yaml/config-reference/custom-formats/
+    # And: https://recyclarr.dev/wiki/guide-configs/
+    # Here you specify optional fields that are not marked "requierd" in trash guides
+    custom_formats:
+      # Audio
+      - trash_ids:
+          # Uncomment the next section to enable Advanced Audio Formats
+          - 496f355514737f7d83bf7aa4d24f8169 # TrueHD Atmos
+          - 2f22d89048b01681dde8afe203bf2e95 # DTS X
+          - 417804f7f2c4308c1f4c5d380d4c4475 # ATMOS (undefined)
+          - 1af239278386be2919e1bcee0bde047e # DD+ ATMOS
+          - 3cafb66171b47f226146a0770576870f # TrueHD
+          - dcf3ec6938fa32445f590a4da84256cd # DTS-HD MA
+          - a570d4a0e56a2874b64e5bfa55202a1b # FLAC
+          - e7c2fcae07cbada050a0af3357491d7b # PCM
+          - 8e109e50e0a0b83a5098b056e13bf6db # DTS-HD HRA
+          - 185f1dd7264c4562b9022d963ac37424 # DD+
+          - f9f847ac70a0af62ea4a08280b859636 # DTS-ES
+          - 1c1a4c5e823891c75bc50380a6866f73 # DTS
+          - 240770601cc226190c367ef59aba7463 # AAC
+          - c2998bd0d90ed5621d8df281e839436e # DD
+        assign_scores_to:
+          - name: Remux + WEB 1080p
+          - name: UHD Bluray + WEB
+          - name: Remux + WEB 2160p 
+
+      # Movie Versions
+      - trash_ids:
+          - 570bc9ebecd92723d2d21500f4be314c # Remaster
+          - eca37840c13c6ef2dd0262b141a5482f # 4K Remaster
+          - e0c07d59beb37348e975a930d5e50319 # Criterion Collection
+          - 9d27d9d2181838f76dee150882bdc58c # Masters of Cinema
+          - db9b4c4b53d312a3ca5f1378f6440fc9 # Vinegar Syndrome
+          - 957d0f44b592285f26449575e8b1167e # Special Edition
+          - eecf3a857724171f968a66cb5719e152 # IMAX
+          - 9f6cbff8cfe4ebbc1bde14c7b7bec0de # IMAX Enhanced
+        assign_scores_to:
+          - name: HD Bluray + WEB
+          - name: UHD Bluray + WEB
+          - name: Remux + WEB 1080p
+          - name: Remux + WEB 2160p
+      
+      # Miscellaneous
+      - trash_ids:
+          - b6832f586342ef70d9c128d40c07b872 # Bad Dual Groups
+          - cc444569854e9de0b084ab2b8b1532b2 # Black and White Editions
+          - ae9b7c9ebde1f3bd336a8cbd1ec4c5e5 # No-RlsGroup
+          - 7357cf5161efbf8c4d5d0c30b4815ee2 # Obfuscated
+          - 5c44f52a8714fdd79bb4d98e2673be1f # Retags
+          - f537cf427b64c38c8e36298f657e4828 # Scene
+        assign_scores_to:
+          - name: HD Bluray + WEB
+          - name: UHD Bluray + WEB
+          - name: Remux + WEB 1080p
+          - name: Remux + WEB 2160p
+
+    # See: https://recyclarr.dev/wiki/yaml/config-reference/media-naming/
+    media_naming:
+      folder: default
+      movie:
+        rename: true
+        standard: jellyfin-tmdb
