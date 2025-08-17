@@ -1,10 +1,9 @@
-# Verified working with rootfull docker (run with sudo docker compose up -d)
+# To update qulity profiles run: sudo docker compose --rm recyclarr sync
 
 services:
   recyclarr:
     container_name: recyclarr
     image: ghcr.io/recyclarr/recyclarr
-    restart: unless-stopped
 
     # Filesystem
     volumes:
