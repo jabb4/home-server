@@ -1,1 +1,0 @@
-clone from github and put the whole stuff in stable-diffusion-webui/data/config/comfy/custom_nodes
