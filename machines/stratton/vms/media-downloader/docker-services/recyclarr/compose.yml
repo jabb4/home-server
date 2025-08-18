@@ -1,4 +1,4 @@
-# To update qulity profiles run: sudo docker compose --rm recyclarr sync
+# To update qulity profiles run: sudo docker compose run --rm recyclarr sync
 
 services:
   recyclarr:
