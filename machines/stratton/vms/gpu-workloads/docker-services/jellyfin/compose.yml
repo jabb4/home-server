@@ -1,15 +1,31 @@
+# SHOULD work with rootfull docker (sudo docker compose up -d)
+# This Jellyfin instance does not use nvidia gpu for transcoding even though it is on the gpu-wprkloads vm
+# This is because i have decided that it is not necesary for me to have when using infuse on apple tv because it support almost everythning
+# I still want to have the option to in the future enable GPU transcoding though.
+
 services:
   jellyfin:
     image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
-    environment:
-      - PUID=1000
-      - PGID=1000
-      - TZ=Europe/Stockholm
+    restart: unless-stopped
+
+    # Networking
+    ports:
+      - 8096:8096 # HTTP
+      - 8920:8920 # HTTPS (You need to set up SSL cert your self)
+
+    # Filesystem
     volumes:
       - ./config:/config
-      - /mnt/media-library:/data/media-library
-    ports:
-      - 8096:8096
-      - 8920:8920
-    restart: unless-stopped
+      - /mnt/data/media/tv:/data/tvshows
+      - /mnt/data/media/movies:/data/movies
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
