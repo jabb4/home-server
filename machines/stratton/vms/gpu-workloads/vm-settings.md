@@ -2,7 +2,8 @@
 
 ## General
 - VM ID: 105
-- Name: GPU Workloads
+- Name: GPU-Workloads
+- Start at boot: Checked
 - Advanced: Checked
 
 ## OS
