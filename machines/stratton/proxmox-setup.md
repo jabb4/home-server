@@ -12,8 +12,8 @@ Steps:
 1. First ennable IOMMU in bios.
 
 2. check in proxmox that IOMMU is enbalbed
-`dmesg | grep -e DMAR -e IOMMU` Should give "DMAR: IOMMU enabled" If there is no output, something is wrong.
+`dmesg | grep -e DMAR -e IOMMU` Should give "AMD-Vi: IOMMU performance counters supported" "Detected AMD IOMMU #0 (2 banks, 4 counters/bank)" or "DMAR: IOMMU enabled" If there is no output, something is wrong.
 
-3. block the GPU in proxmox: (this is for nvidia):
+1. block the GPU in proxmox: (this is for nvidia):
 `echo "blacklist nouveau" >> /etc/modprobe.d/blacklist.conf `
 `echo "blacklist nvidia*" >> /etc/modprobe.d/blacklist.conf`
