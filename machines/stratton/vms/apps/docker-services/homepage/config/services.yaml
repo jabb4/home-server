@@ -28,6 +28,11 @@
                   url: https://pve.local.jabbas.dev
                   username: {{HOMEPAGE_VAR_PROXMOX_API_USERNAME}}
                   password: {{HOMEPAGE_VAR_PROXMOX_API_PASSWORD}}
+
+      - PiKVM:
+            href: https://192.168.20.62
+            icon: pikvm.png
+            siteMonitor: https://192.168.20.62
       
       - Traefik:
             href: https://traefik.local.jabbas.dev
