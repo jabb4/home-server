@@ -54,5 +54,6 @@ sudo shutdown now
 ````
 
 7. Unmount ISO
-8. In the Hardware section, click Add -> PCI Device, add gpu according to vm-settings.md
-9. Start VM again
+8. Set IP to a static ip in unifi (192.168.20.105)
+9. In the Hardware section, click Add -> PCI Device, add gpu according to vm-settings.md
+10. Start VM again
