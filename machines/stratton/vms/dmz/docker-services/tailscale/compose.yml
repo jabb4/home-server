@@ -1,17 +1,28 @@
+# Verified working with rootfull docker (sudo docker compose up -d)
+
 services:
   tailscale:
-    image: tailscale/tailscale:latest
     container_name: tailscale
-    hostname: homeserver
+    image: tailscale/tailscale:latest
+    restart: always
+
+    # Filesystem
+    volumes:
+      - ./state:/var/lib/tailscale
+      - /dev/net/tun:/dev/net/tun
+    
+    # Security
+    cap_add:
+      - NET_ADMIN
+      - NET_RAW
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
     environment:
       - TS_AUTHKEY=${TS_AUTHKEY}
       - "TS_EXTRA_ARGS=--advertise-exit-node --advertise-routes=192.168.0.0/16"
       - TS_STATE_DIR=/var/lib/tailscale
       - TS_USERSPACE=false
-    volumes:
-      - ./state:/var/lib/tailscale
-      - /dev/net/tun:/dev/net/tun
-    cap_add:
-      - NET_ADMIN
-      - NET_RAW
-    restart: always
+    
+    hostname: homeserver
