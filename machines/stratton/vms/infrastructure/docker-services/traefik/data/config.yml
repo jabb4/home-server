@@ -452,7 +452,7 @@ http:
     nextcloud:
       loadBalancer:
         servers:
-          - url: "https://192.168.20.103:4443"
+          - url: "http://192.168.20.103:11000"
         passHostHeader: true
     
     ## Vaultwarden
@@ -466,7 +466,7 @@ http:
     paperless:
       loadBalancer:
         servers:
-          - url: "https://192.168.20.103:8001"
+          - url: "http://192.168.20.103:8001"
         passHostHeader: true
 
     ## Searxng
