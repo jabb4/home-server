@@ -1,14 +1,25 @@
+# Verified working with rootfull docker (sudo docker compose up -d)
+
 services:
   dcgm-exporter:
-    image: nvidia/dcgm-exporter:3.3.8-3.6.0-ubuntu22.04
     container_name: dcgm-exporter
+    image: nvidia/dcgm-exporter:4.4.0-4.5.0-ubuntu22.04
     restart: always
+
+    # Networking
     ports:
       - 9400:9400
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+
+    # Nixos specific i think
     deploy:
       resources:
         reservations:
           devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
+            - driver: cdi
+              device_ids:
+                - nvidia.com/gpu=all
+              capabilities: [gpu]
