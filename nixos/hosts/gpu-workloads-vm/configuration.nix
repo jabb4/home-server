@@ -102,6 +102,9 @@
   # Enable rootless docker (This limits port 0-1023 so make sure to use other)
   virtualisation.docker = {
     enable = true;
+
+    # For nvidia-container-toolkit to work
+    daemon.settings.features.cdi = true;
     rootless = {
       enable = true;
       setSocketVariable = true;
