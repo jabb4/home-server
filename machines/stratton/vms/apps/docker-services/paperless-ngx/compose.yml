@@ -1,33 +1,5 @@
-# Docker Compose file for running paperless from the docker container registry.
-# This file contains everything paperless needs to run.
-# Paperless supports amd64, arm and arm64 hardware.
-#
-# All compose files of paperless configure paperless in the following way:
-#
-# - Paperless is (re)started on system boot, if it was running before shutdown.
-# - Docker volumes for storing data are managed by Docker.
-# - Folders for importing and exporting files are created in the same directory
-#   as this file and mounted to the correct folders inside the container.
-# - Paperless listens on port 8000.
-#
-# In addition to that, this Docker Compose file adds the following optional
-# configurations:
-#
-# - Instead of SQLite (default), PostgreSQL is used as the database server.
-# - Apache Tika and Gotenberg servers are started with paperless and paperless
-#   is configured to use these services. These provide support for consuming
-#   Office documents (Word, Excel, PowerPoint and their LibreOffice counter-
-#   parts).
-#
-# To install and update paperless with this file, do the following:
-#
-# - Copy this file as 'docker-compose.yml' and the files 'docker-compose.env'
-#   and '.env' into a folder.
-# - Run 'docker compose pull'.
-# - Run 'docker compose up -d'.
-#
-# For more extensive installation and update instructions, refer to the
-# documentation.
+# Verified working with rootfull docker (sudo docker compose up -d)
+
 services:
   webserver:
     container_name: webserver
@@ -45,8 +17,8 @@ services:
     
     # Filesystem
     volumes:
-      - /mnt/paperless/data:/usr/src/paperless/data
-      - /mnt/paperless/media:/usr/src/paperless/media
+      - /mnt/data/paperless/data:/usr/src/paperless/data
+      - /mnt/data/paperless/media:/usr/src/paperless/media
       - ./export:/usr/src/paperless/export
       - ./consume:/usr/src/paperless/consume
     
@@ -193,3 +165,7 @@ services:
       options:
         max-size: "10m"
         max-file: "2"
+
+volumes:
+  pgdata:
+  redisdata:
