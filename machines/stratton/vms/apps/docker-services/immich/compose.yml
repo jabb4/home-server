@@ -1,9 +1,7 @@
-# WARNING: To install Immich, follow our guide: https://immich.app/docs/install/docker-compose
-#
+# Verified working with rootfull docker (sudo docker compose up -d)
+
 # Make sure to use the docker-compose.yml of the current release:
-#
 # https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
-#
 # The compose file on main may not be compatible with the latest release.
 
 services:
@@ -31,9 +29,12 @@ services:
     
     # Environment
     environment:
-      PUID: 1000
-      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
+
+      # Service specific
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_DATABASE_NAME: ${DB_DATABASE_NAME}
     
     healthcheck:
       disable: false
@@ -62,9 +63,12 @@ services:
     
     # Environment
     environment:
-      PUID: 1000
-      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
+
+      # Service specific
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_DATABASE_NAME: ${DB_DATABASE_NAME}
     
     healthcheck:
       disable: false
@@ -88,8 +92,6 @@ services:
     
     # Environment
     environment:
-      PUID: 1000
-      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
     healthcheck:
@@ -120,8 +122,6 @@ services:
 
     # Environment
     environment:
-      PUID: 1000
-      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
       # Service specific
@@ -136,6 +136,9 @@ services:
       options:
         max-size: "10m"
         max-file: "2"
+
+volumes:
+  model-cache:
 
 
     
