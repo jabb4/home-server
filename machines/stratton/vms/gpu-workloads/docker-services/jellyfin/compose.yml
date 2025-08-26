@@ -1,4 +1,5 @@
-# SHOULD work with rootfull docker (sudo docker compose up -d)
+# Verified working with rootfull docker (sudo docker compose up -d)
+
 # This Jellyfin instance does not use nvidia gpu for transcoding even though it is on the gpu-wprkloads vm
 # This is because i have decided that it is not necesary for me to have when using infuse on apple tv because it support almost everythning
 # I still want to have the option to in the future enable GPU transcoding though.
