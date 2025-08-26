@@ -45,6 +45,7 @@
         8001                # Paperless-NGX
         8080                # SearXNG
         8081                # MicroBin
+        11000               # Nextcloud
       ];
       allowPing = true;
     };
