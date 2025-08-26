@@ -1,4 +1,4 @@
-# Verified working with rootless docker
+# Verified working with rootless docker (docker compose up -d)
 
 services:
   vaultwarden:
