@@ -1,24 +1,38 @@
+# Verified working with rootfull docker (sudo docker compose up -d)
+
 services:
   ollama:
-    image: ollama/ollama:latest
     container_name: ollama
+    image: ollama/ollama:latest
     restart: unless-stopped
+
+    # Networking
     ports:
       - 11434:11434
-    environment:
-      PUID: ${PUID:-1000}
-      PGID: ${PGID:-1000}
-      OLLAMA_KEEP_ALIVE: 2h
-      #ENABLE_IMAGE_GENERATION: True
-      #COMFYUI_BASE_URL: ${COMFYUI_BASE_URL}
+
+    # Filesystem
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - ./ollama:/root/.ollama
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
+    environment:
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      OLLAMA_KEEP_ALIVE: 2h
+    
+    # GPU support
+    # Nixos specific i think
     deploy:
       resources:
         reservations:
           devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [ gpu ]
+            - driver: cdi
+              device_ids:
+                - nvidia.com/gpu=all
+              capabilities: [gpu]
