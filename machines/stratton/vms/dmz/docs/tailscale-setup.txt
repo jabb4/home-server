@@ -1,8 +1,0 @@
-https://tailscale.com/kb/1130/lxc-unprivileged
-https://www.youtube.com/watch?v=QJzjJozAYJo
-
-If using proxmox lxc container you need to edit in /etc/pve/lxc/<lxc-id>.conf
-Add these two lines at the button:
-
-lxc.cgroup2.devices.allow: c 10:200 rwm
-lxc.mount.entry: /dev/net/tun dev/net/tun none bind,create=file
