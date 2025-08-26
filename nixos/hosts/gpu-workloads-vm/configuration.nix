@@ -118,14 +118,14 @@
       cifs-utils # For SMB client (mount smb share)
       git
       htop
-
-      # Nvidia stuff:
-      nvidia-container-toolkit
   ];
 
   # Enable nvidia driver
   # Allow unfree packages (Nvidia drivers)
   nixpkgs.config.allowUnfree = true;
+
+  # Nvidia docker toolkit
+  hardware.nvidia-container-toolkit.enable = true;
 
   hardware.graphics.enable = true;
   services.xserver.videoDrivers = [ "nvidia" ];
