@@ -4,7 +4,7 @@
 
 2. Create the VM with the disiered settings in Proxmox and select the NixOS iso
 
-3. Install Nix configs with:
+3. Install Nix configs with: (If there are issues with disko freexing in the middle and the vm frezzes then bump cpu and ram)
 ````bash
 # In proxmox console
 passwd #Change password so you can SSH
