@@ -25,6 +25,20 @@
 
 
 
+## NUT (Pi 3b+)
+### IP
+- 192.168.20.70
+### Description
+- Controlling UPS and safe shutdowns.
+
+### Host OS
+- **DietPi**
+
+### Services
+- NUT
+
+
+
 ## Stratton (4u Server)
 ### Description
 - Main server for most services
