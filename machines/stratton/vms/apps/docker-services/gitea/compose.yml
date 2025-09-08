@@ -1,0 +1,71 @@
+# SOON Verified working with rootless docker (run with docker compose up -d)
+
+services:
+  server:
+    container_name: gitea-server
+    image: docker.gitea.com/gitea:latest-rootless
+    restart: always
+    depends_on:
+      - db
+
+    # Networking
+    ports:
+      - "3002:3000"
+      - "2222:22"
+
+    # Filesystem
+    volumes:
+      - ./gitea:/data
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+
+    # Environment
+    environment:
+      # Service specific
+      GITEA__servere__ROOT_URL: https://git.local.jabbas.dev
+      GITEA__database__DB_TYPE: postgres
+      GITEA__database__HOST: db:5432
+      GITEA__database__NAME: gitea
+      GITEA__database__USER: ${DATABASE_USERNAME}
+      GITEA__database__PASSWD: ${DATABASE_PASSWORD}
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
+    
+    
+    
+    
+
+  db:
+    container_name: gitea-database
+    image: docker.io/library/postgres:14
+    restart: always
+
+    # Filesystem
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+    
+    # Environment
+    environment:
+      POSTGRES_USER: ${DATABASE_USERNAME}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: gitea
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "2"
