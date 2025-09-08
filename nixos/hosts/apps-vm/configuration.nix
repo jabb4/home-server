@@ -37,15 +37,15 @@
     firewall = {
       enable = true;
       allowedTCPPorts = [
+        2222                # Gitea SSH
         2283                # Immich
         3000                # Open-WebUI
         3001                # Homepage
-        4443                # Nextcloud
+        3002                # Gitea Web
         8000                # Vaultwarden
         8001                # Paperless-NGX
         8080                # SearXNG
         8081                # MicroBin
-        11000               # Nextcloud
       ];
       allowPing = true;
     };

@@ -105,12 +105,12 @@
 - **Host OS**: NixOS + Docker containers
 - **Services**:
   - Homepage
-  - Nextcloud
   - Immich
   - Paperless-NGX
   - Open-WebUI
   - SearxNG
   - Vaultwarden
+  - Gitea
 
 ---
 
