@@ -1,9 +1,9 @@
-# SOON Verified working with rootless docker (run with docker compose up -d)
+# Verified working with rootfull docker (sudo docker compose up -d)
 
 services:
   server:
     container_name: gitea-server
-    image: docker.gitea.com/gitea:latest-rootless
+    image: docker.gitea.com/gitea:latest
     restart: always
     depends_on:
       - db
@@ -16,6 +16,7 @@ services:
     # Filesystem
     volumes:
       - ./gitea:/data
+      - /mnt/data/gitea-repositories:/mnt/gitea-repositories
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     
@@ -26,7 +27,10 @@ services:
     # Environment
     environment:
       # Service specific
-      GITEA__servere__ROOT_URL: https://git.local.jabbas.dev
+      USER_UID: 1000
+      USER_GID: 1000
+      GITEA__repository__ROOT: /mnt/gitea-repositories
+      GITEA__server__ROOT_URL: https://git.local.jabbas.dev
       GITEA__database__DB_TYPE: postgres
       GITEA__database__HOST: db:5432
       GITEA__database__NAME: gitea
@@ -40,9 +44,7 @@ services:
         max-size: "10m"
         max-file: "2"
     
-    
-    
-    
+
 
   db:
     container_name: gitea-database

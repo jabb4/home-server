@@ -164,17 +164,17 @@ http:
       tls: {}
       service: immich
     
-    ## Nextcloud
-    nextcloud:
+    ## Gitea
+    gitea:
       entryPoints:
         - "https"
-      rule: "Host(`nextcloud.local.jabbas.dev`)"
+      rule: "Host(`gitea.local.jabbas.dev`)"
       middlewares:
         - disallow-iframe-embedding
         - default-headers
         - https-redirectscheme
       tls: {}
-      service: nextcloud
+      service: gitea
     
     ## Paperless-NGX
     paperless:
@@ -448,11 +448,11 @@ http:
           - url: "http://192.168.20.103:3001"
         passHostHeader: true
     
-    ## Nextcloud
-    nextcloud:
+    ## Gitea
+    gitea:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.103:11000"
+          - url: "http://192.168.20.103:3002"
         passHostHeader: true
     
     ## Vaultwarden

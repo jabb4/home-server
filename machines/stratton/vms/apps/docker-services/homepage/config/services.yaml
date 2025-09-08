@@ -80,20 +80,10 @@
 
 
 - Apps:
-      - Vaultwarden:
-            href: https://vaultwarden.local.jabbas.dev
-            icon: vaultwarden.png
-            siteMonitor: https://vaultwarden.local.jabbas.dev
-      
-      - MicroBin:
-            href: https://microbin.local.jabbas.dev
-            icon: microbin.png
-            siteMonitor: https://microbin.local.jabbas.dev
-      
-      - Nextcloud:
-            href: https://nextcloud.local.jabbas.dev
-            icon: nextcloud.png
-            siteMonitor: https://nextcloud.local.jabbas.dev
+      - Gitea:
+            href: https://git.local.jabbas.dev
+            icon: gitea.png
+            siteMonitor: https://git.local.jabbas.dev
       
       - Immich:
             href: https://immich.local.jabbas.dev
@@ -105,10 +95,20 @@
             icon: paperless-ngx.png
             siteMonitor: https://paperless.local.jabbas.dev
       
+      - Vaultwarden:
+            href: https://vaultwarden.local.jabbas.dev
+            icon: vaultwarden.png
+            siteMonitor: https://vaultwarden.local.jabbas.dev
+      
       - SearXNG:
             href: https://searxng.local.jabbas.dev
             icon: searxng.png
             siteMonitor: https://searxng.local.jabbas.dev
+      
+      - MicroBin:
+            href: https://microbin.local.jabbas.dev
+            icon: microbin.png
+            siteMonitor: https://microbin.local.jabbas.dev
 
       
 
