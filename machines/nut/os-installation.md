@@ -10,4 +10,8 @@
 
 5. SSH into the pi as root and complet the initial setup
 
-6. 192.168.20.70
+6. Shutdown
+
+7. Change ip to 192.168.20.70 in unifi
+
+8. Boot
