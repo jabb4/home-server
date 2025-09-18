@@ -81,7 +81,7 @@
 
 - Apps:
       - Gitea:
-            href: https://git.local.jabbas.dev
+            href: https://git.jabbas.dev
             icon: gitea.png
             siteMonitor: https://git.local.jabbas.dev
       
