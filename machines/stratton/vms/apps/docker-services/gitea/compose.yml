@@ -16,7 +16,6 @@ services:
     # Filesystem
     volumes:
       - ./gitea:/data
-      - /mnt/data/gitea-repositories:/mnt/gitea-repositories
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     
@@ -29,7 +28,11 @@ services:
       # Service specific
       USER_UID: 1000
       USER_GID: 1000
-      GITEA__repository__ROOT: /mnt/gitea-repositories
+      GITEA__api__ENABLE_SWAGGER: false
+      GITEA__security__DISABLE_WEBHOOKS: true
+      GITEA__service__DISABLE_REGISTRATION: true
+      GITEA__service__DEFAULT_KEEP_EMAIL_PRIVATE: true
+      GITEA__repository__DEFAULT_PRIVATE: private
       GITEA__server__ROOT_URL: https://git.local.jabbas.dev
       GITEA__database__DB_TYPE: postgres
       GITEA__database__HOST: db:5432
