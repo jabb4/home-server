@@ -37,7 +37,12 @@
     firewall = {
       enable = true;
       allowedTCPPorts = [
-        80
+        80 # CTFD
+        10001 # web-zippy
+        10002 # nedr
+        10003 # gyat
+        10004 # macdonald
+        10005 # mitm
       ];
       allowPing = true;
     };
