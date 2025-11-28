@@ -22,6 +22,9 @@
     - NinjaCentral:
         - icon: mdi-ninja-#ffffff
           href: https://ninjacentral.co.za/
+    - Drunkenslug:
+        - icon: mdi-glass-mug-variant-#f5b427
+          href: https://drunkenslug.com/profile
     - NZBGeek:
         - icon: nzbgeek.png
           href: https://www.nzbgeek.info/dashboard.php?myaccount
