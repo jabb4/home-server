@@ -38,6 +38,7 @@ certificatesResolvers:
       # caServer: https://acme-staging-v02.api.letsencrypt.org/directory # staging
       dnsChallenge:
         provider: cloudflare
+        delayBeforeCheck: 60  # Wait 60 seconds before checking the DNS server for acme 
         resolvers:
           - "1.1.1.1:53"
           - "1.0.0.1:53"
