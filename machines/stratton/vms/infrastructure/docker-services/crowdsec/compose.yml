@@ -1,10 +1,9 @@
-# Verified working with rootfull docker (run with sudo docker compose up -d)
 # Warning! Watch setup guide before you deploy (docs/crowdsec-setup.md)
 
 services:
   crowdsec:
     container_name: crowdsec
-    image: crowdsecurity/crowdsec:latest
+    image: crowdsecurity/crowdsec:v1.7.6
     restart: unless-stopped
 
     # Networking
@@ -36,7 +35,7 @@ services:
     
   bouncer-traefik:
     container_name: bouncer-traefik
-    image: docker.io/fbonalair/traefik-crowdsec-bouncer:latest # This is old, should look for alternative
+    image: fbonalair/traefik-crowdsec-bouncer:0.5.0 # This is old, should look for alternative
     restart: unless-stopped
     depends_on:
       - crowdsec
