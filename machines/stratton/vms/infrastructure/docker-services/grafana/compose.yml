@@ -1,10 +1,9 @@
-# Verified working with rootless docker (run with docker compose up -d)
 # Warning! Watch setup on how to import dashboard (docs/grafana-setup.md)
 
 services:
   grafana:
     container_name: grafana
-    image: docker.io/grafana/grafana-oss:latest
+    image: docker.io/grafana/grafana-oss:12.4.0
     restart: unless-stopped
     
     # Networking
@@ -28,13 +27,6 @@ services:
       # Service specific
       GF_SECURITY_ALLOW_EMBEDDING: true
       GF_AUTH_ANONYMOUS_ENABLED: true
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
 
 
 

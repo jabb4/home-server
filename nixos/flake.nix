@@ -46,7 +46,6 @@
       media-downloader-vm = mkSystem "x86_64-linux" "media-downloader-vm";
       gpu-workloads-vm = mkSystem "x86_64-linux" "gpu-workloads-vm";
       dmz-vm = mkSystem "x86_64-linux" "dmz-vm";
-      myrctf-vm = mkSystem "x86_64-linux" "myrctf-vm";
     };
   };
 }

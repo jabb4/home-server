@@ -1,17 +1,18 @@
 services:
-  prometheus:
-    image: docker.io/prom/prometheus:v3.9.1
-    container_name: prometheus
+  portainer:
+    image: portainer/portainer-ce:2.33.7
+    container_name: portainer
     restart: unless-stopped
     
     # Networking
     ports:
-      - 9090:9090
+      - 8443:9443
+      - 8000:8000
 
     # Filesystem
     volumes:
-      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-      - prometheus-data:/prometheus
+      - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
     
     # Security
     security_opt:
@@ -22,8 +23,8 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
-    
+
+
 
 volumes:
-  prometheus-data:
-    driver: local
+  portainer_data:

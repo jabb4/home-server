@@ -32,13 +32,6 @@ services:
       GID: 1000
       COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
     
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
-    
     
     
   bouncer-traefik:
@@ -65,13 +58,6 @@ services:
       # Service specific
       CROWDSEC_BOUNCER_API_KEY: ${CROWDSEC_BOUNCER_API_KEY}
       CROWDSEC_AGENT_HOST: crowdsec:8080
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
 
 
 

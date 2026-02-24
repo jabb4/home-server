@@ -37,11 +37,13 @@
     firewall = {
       enable = true;
       allowedTCPPorts = [
-        80                  # Traefik (unecrypten)
+        80                  # Traefik (unencrypted)
         443                 # Traefik (encrypted)
         3001                # Uptime-kuma
         3030                # Grafana
-        9000                # Authentic (unecrypten)
+        8000                # Portainer Edge Agent Tunnel
+        8443                # Portainer Web
+        9000                # Authentic (unencrypted)
         9090                # Prometheus
         9443                # Authentic (encrypted)
       ];
@@ -63,7 +65,8 @@
       nixos = {
         initialHashedPassword = "$y$j9T$Jih.ZSsWCOQvhyFP9jQLT0$2N.14vBexUwO1Dc3ns4f2LS0TIwU5jN4Ww8KnE05FL9"; # Run mkpasswd "password" to get hash, default password is nixos
         openssh.authorizedKeys.keys = [
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAJ0zwaPTeICiyrcPwdFbxxDUOHH+G5CkQ8iKIE31vKc" # Homeserver SSH key in Termius
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAJ0zwaPTeICiyrcPwdFbxxDUOHH+G5CkQ8iKIE31vKc" # Home-server SSH key in Termius
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHol1wiu9VO1bBu1tbt3+YN7/0csvMy94F+y8yQ0MNVN" # Apple MacBook Pro M5 SSH key
         ];
         isNormalUser = true;
         uid = 1000;
@@ -92,14 +95,10 @@
     settings.PermitRootLogin = "no";
     settings.PasswordAuthentication = false;
   };
-
-  # Enable rootless docker (This limits port 0-1023 so make sure to use other)
+  
   virtualisation.docker = {
     enable = true;
-    rootless = {
-      enable = true;
-      setSocketVariable = true;
-    };
+    extraOptions = "--log-driver=local --log-opt max-size=10m --log-opt max-file=3";
   };
 
   # Apparmor

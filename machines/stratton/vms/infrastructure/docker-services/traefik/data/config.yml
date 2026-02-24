@@ -100,6 +100,30 @@ http:
         - https-redirectscheme
       tls: {}
       service: grafana
+    
+    ## Portainer
+    portainer:
+      entryPoints:
+        - "https"
+      rule: "Host(`portainer.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: portainer
+    
+    ## Prometheus
+    prometheus:
+      entryPoints:
+        - "https"
+      rule: "Host(`prometheus.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+        - https-redirectscheme
+      tls: {}
+      service: prometheus
 
     ## Uptime-Kuma
     uptime-kuma:
@@ -113,18 +137,6 @@ http:
         #- forwardAuth-authentik
       tls: {}
       service: uptime-kuma
-
-    ## Prometheus
-    prometheus:
-      entryPoints:
-        - "https"
-      rule: "Host(`prometheus.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: prometheus
 
     ## apps
     ## Open Webui
@@ -163,18 +175,6 @@ http:
         - https-redirectscheme
       tls: {}
       service: immich
-    
-    ## Gitea
-    gitea:
-      entryPoints:
-        - "https"
-      rule: "Host(`gitea.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: gitea
     
     ## Paperless-NGX
     paperless:
@@ -225,19 +225,7 @@ http:
       tls: {}
       service: homepage
 
-    ## gpu-workloads
-    ## Ollama
-    ollama:
-      entryPoints:
-        - "https"
-      rule: "Host(`ollama.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: ollama
-    
+    ## GPU-workloads    
     ## Jellyfin
     jellyfin:
       entryPoints:
@@ -249,32 +237,8 @@ http:
         - https-redirectscheme
       tls: {}
       service: jellyfin
-    
-    ## ComfyUI
-    comfyui:
-      entryPoints:
-        - "https"
-      rule: "Host(`comfyui.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: comfyui
-    
-    ## dcgm exporter
-    dcgm-exporter:
-      entryPoints:
-        - "https"
-      rule: "Host(`gpu-prometheus-node.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-      tls: {}
-      service: dcgm-exporter
 
-    ## media-downloader
+    ## Media-downloader
     ## Jellyseerr
     jellyseerr:
       entryPoints:
@@ -398,6 +362,13 @@ http:
         passHostHeader: true
 
     ## Infrastrcture
+    ## Authentik
+    authentik:
+      loadBalancer:
+        servers:
+          - url: "https://192.168.20.100:9443"
+        passHostHeader: true
+    
     ## Grafana
     grafana:
       loadBalancer:
@@ -405,18 +376,11 @@ http:
           - url: "http://192.168.20.100:3030"
         passHostHeader: true
     
-    ## Authentik
-    authentik:
+    ## Portainer
+    portainer:
       loadBalancer:
         servers:
-          - url: "https://192.168.20.100:9443"
-        passHostHeader: true
-
-    ## Uptime-Kuma
-    uptime-kuma:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.100:3001"
+          - url: "https://192.168.20.100:8443"
         passHostHeader: true
 
     ## Prometheus
@@ -424,6 +388,13 @@ http:
       loadBalancer:
         servers:
           - url: "http://192.168.20.100:9090"
+        passHostHeader: true
+
+    ## Uptime-Kuma
+    uptime-kuma:
+      loadBalancer:
+        servers:
+          - url: "http://192.168.20.100:3001"
         passHostHeader: true
 
     ## Apps
@@ -434,25 +405,11 @@ http:
           - url: "http://192.168.20.103:2283"
         passHostHeader: true
 
-    ## Open Webui
-    open-webui:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.103:3000"
-        passHostHeader: true
-
     ## Homepage
     homepage:
       loadBalancer:
         servers:
           - url: "http://192.168.20.103:3001"
-        passHostHeader: true
-    
-    ## Gitea
-    gitea:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.103:3002"
         passHostHeader: true
     
     ## Vaultwarden
@@ -484,32 +441,11 @@ http:
         passHostHeader: true
 
     ## GPU
-    ## Ollama
-    ollama:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.105:11434"
-        passHostHeader: true
-    
     ## Jellyfin
     jellyfin:
       loadBalancer:
         servers:
           - url: "http://192.168.20.105:8096"
-        passHostHeader: true
-    
-    ## dcgm-exporter
-    dcgm-exporter:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.105:9400"
-        passHostHeader: true
-    
-    ## ComfyUI
-    comfyui:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.105:7860"
         passHostHeader: true
 
     ## Media-Downloader

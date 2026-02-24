@@ -1,10 +1,9 @@
-# Verified working with rootfull docker (run with sudo docker compose up -d)
 # Warning! Watch setup guide (docs/authentik-setup.md)
 
 services:
   postgresql:
     container_name: authentik-db
-    image: docker.io/library/postgres:16-alpine
+    image: postgres:16-alpine
     restart: unless-stopped
 
     # Networking
@@ -29,68 +28,22 @@ services:
       POSTGRES_DB: ${PG_DB:-authentik}
 
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
-      start_period: 20s
       interval: 30s
       retries: 5
+      start_period: 20s
+      test:
+      - CMD-SHELL
+      - pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
       timeout: 5s
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
-    
-
-      
-  redis:
-    container_name: authentik-redis
-    image: docker.io/library/redis:alpine
-    restart: unless-stopped
-
-    command: --save 60 1 --loglevel warning
-
-    # Networking
-    networks:
-      - authentik-internal
-
-    # Filesystem
-    volumes:
-      - redis:/data
-    
-    # Security
-    security_opt:
-      - no-new-privileges:true  # forbid privilege escalation
-    
-    # Environment
-    environment:
-      TZ: ${TIMEZONE:-Europe/Stockholm}
-
-    healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping | grep PONG"]
-      start_period: 20s
-      interval: 30s
-      retries: 5
-      timeout: 3s
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
     
 
       
   server:
     container_name: authentik-server
-    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2025.6.4}
+    image: ghcr.io/goauthentik/server:2025.12.4
     restart: unless-stopped
     depends_on:
       postgresql:
-        condition: service_healthy
-      redis:
         condition: service_healthy
       
     command: server
@@ -100,12 +53,12 @@ services:
       - traefik
       - authentik-internal
     ports:
-      - "${COMPOSE_PORT_HTTP:-9000}:9000"
-      - "${COMPOSE_PORT_HTTPS:-9443}:9443"
+      - "9000:9000"
+      - "9443:9443"
     
     # Filesystem
     volumes:
-      - ./media:/media
+      - ./data:/data
       - ./custom-templates:/templates
     
     # Security
@@ -118,29 +71,19 @@ services:
 
       # Service specific
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
-      AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
     
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
-    
 
 
   worker:
     container_name: authentik-worker
-    image: ${AUTHENTIK_IMAGE:-ghcr.io/goauthentik/server}:${AUTHENTIK_TAG:-2025.6.4}
+    image: ghcr.io/goauthentik/server:2025.12.4
     restart: unless-stopped
     depends_on:
       postgresql:
-        condition: service_healthy
-      redis:
         condition: service_healthy
 
     command: worker
@@ -151,7 +94,7 @@ services:
 
     # Filesystem
     volumes:
-      - ./media:/media
+      - ./data:/data
       - ./certs:/certs
       - ./custom-templates:/templates
     
@@ -165,18 +108,10 @@ services:
 
       # Service specific
       AUTHENTIK_SECRET_KEY: ${AUTHENTIK_SECRET_KEY:?secret key required}
-      AUTHENTIK_REDIS__HOST: redis
       AUTHENTIK_POSTGRESQL__HOST: postgresql
       AUTHENTIK_POSTGRESQL__USER: ${PG_USER:-authentik}
       AUTHENTIK_POSTGRESQL__NAME: ${PG_DB:-authentik}
       AUTHENTIK_POSTGRESQL__PASSWORD: ${PG_PASS}
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
 
 networks:
   traefik:
@@ -186,6 +121,4 @@ networks:
 
 volumes:
   database:
-    driver: local
-  redis:
     driver: local
