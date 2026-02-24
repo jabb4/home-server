@@ -106,6 +106,9 @@
     enable = true;
   };
 
+  # Enables Remote SSH with VSCode
+  programs.nix-ld.enable = true;
+
   # Install packages
   environment.systemPackages = with pkgs; [
       git
