@@ -1,5 +1,3 @@
-# Verified working with rootless docker (run with docker compose up -d)
-
 services:
   uptime-kuma:
     container_name: uptime-kuma

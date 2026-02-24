@@ -51,13 +51,6 @@ services:
       - "traefik.http.routers.traefik-secure.tls.domains[0].main=local.jabbas.dev"
       - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.local.jabbas.dev"
       - "traefik.http.routers.traefik-secure.service=api@internal"
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
 
 
 
