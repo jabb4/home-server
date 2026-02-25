@@ -18,6 +18,10 @@ entryPoints:
         - crowdsec-bouncer@file
       tls:
         certResolver: cloudflare
+        domains:
+            - main: local.jabbas.dev
+              sans:
+                - "*.local.jabbas.dev"
 
 serversTransport:
   insecureSkipVerify: true
