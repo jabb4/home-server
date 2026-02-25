@@ -10,8 +10,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: unifi
 
     ## Pi-Hole webinterface
@@ -22,10 +20,8 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
         #- forwardAuth-authentik
         - pi-hole-redirect
-      tls: {}
       service: pi-hole
     
     ## Home Assistant
@@ -36,8 +32,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: home-assistant
     
     ## Truenas webinterface
@@ -48,8 +42,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: truenas
     
     ## Proxmox
@@ -61,8 +53,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: proxmox
     
     ## Node Exporter
@@ -73,8 +63,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: proxmox-prometheus-node
 
     ## infrastrcture
@@ -86,8 +74,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: authentik
     
     ## Grafana
@@ -97,8 +83,6 @@ http:
       rule: "Host(`grafana.local.jabbas.dev`)"
       middlewares:
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: grafana
     
     ## Portainer
@@ -109,8 +93,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: portainer
     
     ## Prometheus
@@ -121,8 +103,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: prometheus
 
     ## Uptime-Kuma
@@ -133,25 +113,10 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
         #- forwardAuth-authentik
-      tls: {}
       service: uptime-kuma
 
-    ## apps
-    ## Open Webui
-    open-webui:
-      entryPoints:
-        - "https"
-      rule: "Host(`llm.local.jabbas.dev`) || Host(`llm.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-        - https-redirectscheme
-        - cloudflarewarp
-      tls: {}
-      service: open-webui
-
+    ## Apps
     ## Serxng
     searxng:
       entryPoints:
@@ -160,8 +125,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: searxng
     
     ## Immich
@@ -172,8 +135,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: immich
     
     ## Paperless-NGX
@@ -184,8 +145,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: paperless
     
     ## MicroBin
@@ -196,8 +155,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: microbin
     
     ## Vaultwarden
@@ -208,8 +165,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: vaultwarden
     
     ## Homepage
@@ -220,9 +175,7 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
         - forwardAuth-authentik
-      tls: {}
       service: homepage
 
     ## GPU-workloads    
@@ -234,8 +187,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: jellyfin
 
     ## Media-downloader
@@ -247,8 +198,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: jellyseerr
 
     ## SABnzbd
@@ -259,8 +208,6 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
-      tls: {}
       service: sabnzbd
 
     ## Radarr
@@ -271,9 +218,7 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
         #- forwardAuth-authentik
-      tls: {}
       service: radarr
 
     ## Sonarr
@@ -284,9 +229,7 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
         #- forwardAuth-authentik
-      tls: {}
       service: sonarr
 
     ## Prowlarr
@@ -297,9 +240,7 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
         #- forwardAuth-authentik
-      tls: {}
       service: prowlarr
 
     ## Bazarr
@@ -310,9 +251,7 @@ http:
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-        - https-redirectscheme
         #- forwardAuth-authentik
-      tls: {}
       service: bazarr
 
   # HTTP SERVICES
@@ -493,11 +432,6 @@ http:
 
   # HTTP MIDDLEWARES
   middlewares:
-    https-redirectscheme:
-      redirectScheme:
-        scheme: https
-        permanent: true
-    
     default-headers:
       headers:
         browserXssFilter: true
@@ -546,9 +480,10 @@ http:
     
     # Crowdsec
     crowdsec-bouncer:
-      forwardauth:
-        address: http://bouncer-traefik:8080/api/v1/forwardAuth
-        trustForwardHeader: true
+      plugin:
+        crowdsec-bouncer:
+          crowdsecLapiHost: "http://crowdsec:8080"
+          crowdsecLapiKey: '{{ env "CROWDSEC_BOUNCER_API_KEY" }}'
     
     # Get real ip from cloudflare tunnel
     cloudflarewarp:

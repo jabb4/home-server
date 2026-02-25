@@ -15,12 +15,19 @@ services:
     
     # Filesystem
     volumes:
-      - ./data/traefik.yml:/traefik.yml:ro
-      - ./data/config.yml:/config.yml:ro
-      - /srv/docker/traefik/acme.json:/acme.json
-      - traefik-logs:/var/log/traefik
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
+
+      # Static config in repo
+      - ./data/traefik.yml:/traefik.yml:ro
+      - ./data/config.yml:/config.yml:ro
+
+      # ACME state must persist on host (NOT in git) (referance to docs/traefik-setup.md)
+      - /srv/docker/traefik/acme.json:/acme.json
+
+      # Logs shared with CrowdSec
+      - traefik-logs:/var/log/traefik
+      
 
     # Security
     security_opt:
@@ -33,7 +40,8 @@ services:
       # Service specific
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
       CF_API_EMAIL: ${CF_API_EMAIL} # Cloudflare Email
-      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN} # Cloudflare Token
+      CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN} # Cloudflare API Token
+      CROWDSEC_BOUNCER_API_KEY: ${CROWDSEC_BOUNCER_API_KEY}
     
     labels:
       - "traefik.enable=true"
@@ -45,17 +53,51 @@ services:
       - "traefik.http.routers.traefik.middlewares=traefik-https-redirect"
       - "traefik.http.routers.traefik-secure.entrypoints=https"
       - "traefik.http.routers.traefik-secure.rule=Host(`traefik.local.jabbas.dev`)"
-      - "traefik.http.routers.traefik-secure.middlewares=cloudflarewarp@file,crowdsec-bouncer@file,forwardAuth-authentik@file,traefik-auth"
+      - "traefik.http.routers.traefik-secure.middlewares=forwardAuth-authentik@file,traefik-auth"
       - "traefik.http.routers.traefik-secure.tls=true"
       - "traefik.http.routers.traefik-secure.tls.certresolver=cloudflare"
       - "traefik.http.routers.traefik-secure.tls.domains[0].main=local.jabbas.dev"
       - "traefik.http.routers.traefik-secure.tls.domains[0].sans=*.local.jabbas.dev"
       - "traefik.http.routers.traefik-secure.service=api@internal"
 
+  crowdsec:
+    container_name: crowdsec
+    image: crowdsecurity/crowdsec:v1.7.6
+    restart: unless-stopped
+    depends_on:
+      - traefik
 
+    # Networking
+    networks:
+      - traefik
+
+    # Filesystem
+    volumes:
+      - ./config/acquis.yaml:/etc/crowdsec/acquis.yaml:ro
+      - crowdsec-db:/var/lib/crowdsec/data/
+      - crowdsec-config:/etc/crowdsec/
+      - traefik-logs:/var/log/traefik/:ro
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+      # Service specific
+      GID: 1000
+      COLLECTIONS: "crowdsecurity/linux crowdsecurity/traefik"
 
 networks:
   traefik:
     name: traefik
+
 volumes:
   traefik-logs:
+  crowdsec-db:
+  crowdsec-config:
+  
