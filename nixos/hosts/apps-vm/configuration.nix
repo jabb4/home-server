@@ -37,11 +37,8 @@
     firewall = {
       enable = true;
       allowedTCPPorts = [
-        2222                # Gitea SSH
         2283                # Immich
-        3000                # Open-WebUI
         3001                # Homepage
-        3002                # Gitea Web
         8000                # Vaultwarden
         8001                # Paperless-NGX
         8080                # SearXNG
@@ -66,6 +63,7 @@
         initialHashedPassword = "$y$j9T$Jih.ZSsWCOQvhyFP9jQLT0$2N.14vBexUwO1Dc3ns4f2LS0TIwU5jN4Ww8KnE05FL9"; # Run mkpasswd "password" to get hash, default password is nixos
         openssh.authorizedKeys.keys = [
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAJ0zwaPTeICiyrcPwdFbxxDUOHH+G5CkQ8iKIE31vKc" # Homeserver SSH key in Termius
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHol1wiu9VO1bBu1tbt3+YN7/0csvMy94F+y8yQ0MNVN" # Apple MacBook Pro M5 SSH key
         ];
         isNormalUser = true;
         uid = 1000;
@@ -104,19 +102,17 @@
     settings.PasswordAuthentication = false;
   };
 
-  # Enable rootless docker (This limits port 0-1023 so make sure to use other)
   virtualisation.docker = {
     enable = true;
-    rootless = {
-      enable = true;
-      setSocketVariable = true;
-    };
   };
 
   # Apparmor
   security.apparmor = {
     enable = true;
   };
+
+  # Enables Remote SSH with VSCode
+  programs.nix-ld.enable = true;
 
   # Install packages
   environment.systemPackages = with pkgs; [
