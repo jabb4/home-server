@@ -1,6 +1,6 @@
 services:
   portainer:
-    image: portainer/portainer-ce:2.33.7
+    image: portainer/portainer-ee:lts
     container_name: portainer
     restart: unless-stopped
     
@@ -24,7 +24,9 @@ services:
       PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
-
-
 volumes:
   portainer_data:
+
+networks:
+  default:
+    name: portainer_network
