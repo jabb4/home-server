@@ -15,12 +15,12 @@ services:
     
     # Filesystem
     volumes:
+      - ./data/traefik.yml:/traefik.yml:ro
+      - ./data/config.yml:/config.yml:ro
+      - /srv/docker/traefik/acme.json:/acme.json
+      - traefik-logs:/var/log/traefik
       - /etc/localtime:/etc/localtime:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
-      - ./data/traefik.yml:/traefik.yml:ro
-      - ./data/acme.json:/acme.json
-      - ./data/config.yml:/config.yml:ro
-      - traefik-logs:/var/log/traefik
 
     # Security
     security_opt:
@@ -32,7 +32,7 @@ services:
 
       # Service specific
       TRAEFIK_DASHBOARD_CREDENTIALS: ${TRAEFIK_DASHBOARD_CREDENTIALS}
-      CF_API_EMAIL: ${CF_API_EMAIL} # Cloudflare Token
+      CF_API_EMAIL: ${CF_API_EMAIL} # Cloudflare Email
       CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN} # Cloudflare Token
     
     labels:

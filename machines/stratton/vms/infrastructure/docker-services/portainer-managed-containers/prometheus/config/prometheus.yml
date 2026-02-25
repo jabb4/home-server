@@ -21,8 +21,3 @@ scrape_configs:
     scheme: 'https' 
     static_configs:
       - targets: ['stratton-prometheus-node.local.jabbas.dev']
-  
-  - job_name: 'dcgm-exporter'
-    scheme: 'https'
-    static_configs:
-      - targets: ['gpu-prometheus-node.local.jabbas.dev']
