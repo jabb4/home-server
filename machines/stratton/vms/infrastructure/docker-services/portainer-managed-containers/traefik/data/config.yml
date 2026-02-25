@@ -482,7 +482,7 @@ http:
     crowdsec-bouncer:
       plugin:
         crowdsec-bouncer:
-          crowdsecLapiHost: "http://crowdsec:8080"
+          crowdsecLapiHost: "crowdsec:8080"
           crowdsecLapiKey: '{{ env "CROWDSEC_BOUNCER_API_KEY" }}'
     
     # Get real ip from cloudflare tunnel
