@@ -18,13 +18,12 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
   "links": [],
   "panels": [
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "deuiysyycth4we"
+        "uid": "dfebck3bti1a8c"
       },
       "fieldConfig": {
         "defaults": {
@@ -74,7 +73,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "12.1.0",
+      "pluginVersion": "12.4.0",
       "targets": [
         {
           "datasource": {
@@ -99,7 +98,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "deuiysyycth4we"
+        "uid": "dfebck3bti1a8c"
       },
       "fieldConfig": {
         "defaults": {
@@ -149,7 +148,7 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "12.1.0",
+      "pluginVersion": "12.4.0",
       "targets": [
         {
           "datasource": {
@@ -174,7 +173,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "deuiysyycth4we"
+        "uid": "dfebck3bti1a8c"
       },
       "fieldConfig": {
         "defaults": {
@@ -205,6 +204,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -254,7 +254,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.1.0",
+      "pluginVersion": "12.4.0",
       "targets": [
         {
           "datasource": {
@@ -279,7 +279,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "deuiysyycth4we"
+        "uid": "dfebck3bti1a8c"
       },
       "fieldConfig": {
         "defaults": {
@@ -310,6 +310,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -359,7 +360,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.1.0",
+      "pluginVersion": "12.4.0",
       "targets": [
         {
           "datasource": {
@@ -384,7 +385,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "deuiysyycth4we"
+        "uid": "dfebck3bti1a8c"
       },
       "fieldConfig": {
         "defaults": {
@@ -415,6 +416,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -464,7 +466,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.1.0",
+      "pluginVersion": "12.4.0",
       "targets": [
         {
           "datasource": {
@@ -489,7 +491,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "deuiysyycth4we"
+        "uid": "dfebck3bti1a8c"
       },
       "fieldConfig": {
         "defaults": {
@@ -520,6 +522,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -569,7 +572,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.1.0",
+      "pluginVersion": "12.4.0",
       "targets": [
         {
           "datasource": {
@@ -580,7 +583,6 @@
           "editorMode": "code",
           "expr": "100 * (1 - avg by(instance) (rate(node_cpu_seconds_total{mode=\"idle\"}[5m])))",
           "fullMetaSearch": false,
-          "hide": false,
           "includeNullMetadata": true,
           "instant": false,
           "legendFormat": "__auto",
@@ -595,7 +597,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "deuiysyycth4we"
+        "uid": "dfebck3bti1a8c"
       },
       "fieldConfig": {
         "defaults": {
@@ -626,6 +628,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -675,7 +678,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.1.0",
+      "pluginVersion": "12.4.0",
       "targets": [
         {
           "datasource": {
@@ -700,7 +703,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "deuiysyycth4we"
+        "uid": "dfebck3bti1a8c"
       },
       "fieldConfig": {
         "defaults": {
@@ -731,6 +734,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -780,7 +784,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.1.0",
+      "pluginVersion": "12.4.0",
       "targets": [
         {
           "datasource": {
@@ -805,7 +809,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "deuiysyycth4we"
+        "uid": "dfebck3bti1a8c"
       },
       "fieldConfig": {
         "defaults": {
@@ -836,6 +840,7 @@
               "type": "linear"
             },
             "showPoints": "auto",
+            "showValues": false,
             "spanNulls": false,
             "stacking": {
               "group": "A",
@@ -883,7 +888,7 @@
           "sort": "none"
         }
       },
-      "pluginVersion": "12.1.0",
+      "pluginVersion": "12.4.0",
       "targets": [
         {
           "datasource": {
@@ -910,7 +915,6 @@
           "editorMode": "builder",
           "expr": "node_hwmon_fan_rpm{sensor=\"fan2\"}",
           "fullMetaSearch": false,
-          "hide": false,
           "includeNullMetadata": true,
           "instant": false,
           "legendFormat": "Chassi Exhaust Fan",
@@ -927,13 +931,36 @@
           "editorMode": "builder",
           "expr": "node_hwmon_fan_rpm{sensor=\"fan3\"}",
           "fullMetaSearch": false,
-          "hide": false,
           "includeNullMetadata": true,
           "instant": false,
           "legendFormat": "Chassi Intake Fans",
           "range": true,
           "refId": "C",
           "useBackend": false
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dfebck3bti1a8c"
+          },
+          "editorMode": "builder",
+          "expr": "node_hwmon_fan_rpm{sensor=\"fan4\"}",
+          "instant": false,
+          "legendFormat": "fan4",
+          "range": true,
+          "refId": "D"
+        },
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "dfebck3bti1a8c"
+          },
+          "editorMode": "builder",
+          "expr": "node_hwmon_fan_rpm{sensor=\"fan7\"}",
+          "instant": false,
+          "legendFormat": "fan7",
+          "range": true,
+          "refId": "E"
         }
       ],
       "title": "Fans",
@@ -942,7 +969,7 @@
   ],
   "preload": false,
   "refresh": "30s",
-  "schemaVersion": 41,
+  "schemaVersion": 42,
   "tags": [],
   "templating": {
     "list": []
@@ -955,5 +982,6 @@
   "timezone": "browser",
   "title": "Proxmox host",
   "uid": "ee06s4l8vo5c0a",
-  "version": 4
+  "version": 2,
+  "weekStart": ""
 }
