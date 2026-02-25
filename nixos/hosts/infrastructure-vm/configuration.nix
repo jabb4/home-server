@@ -98,7 +98,6 @@
   
   virtualisation.docker = {
     enable = true;
-    extraOptions = "--log-driver=local --log-opt max-size=10m --log-opt max-file=3";
   };
 
   # Apparmor
