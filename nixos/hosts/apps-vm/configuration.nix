@@ -46,6 +46,8 @@
         8001                # Paperless-NGX
         8080                # SABnzbd
         8081                # MicroBin
+        8096                # Jellyfin HTTP
+        8920                # Jellyfin HTTPS
         8989                # Sonarr
         9696                # Prowlarr
       ];
