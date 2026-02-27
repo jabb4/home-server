@@ -1,9 +1,7 @@
-# Verified working with rootless docker (run with docker compose up -d)
-
 services:
   homepage:
     container_name: homepage
-    image: ghcr.io/gethomepage/homepage:latest
+    image: ghcr.io/gethomepage/homepage:v1.10.1
     restart: unless-stopped
 
     # Networking
@@ -15,7 +13,6 @@ services:
       - ./config:/app/config
 
     # Security
-    user: "1000:1000"
     security_opt:
       - no-new-privileges:true  # forbid privilege escalation
     
@@ -23,8 +20,8 @@ services:
     environment:
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
-      # Service specific
       HOMEPAGE_ALLOWED_HOSTS: homepage.local.jabbas.dev
+      
       HOMEPAGE_VAR_PROXMOX_API_USERNAME: ${HOMEPAGE_VAR_PROXMOX_API_USERNAME}
       HOMEPAGE_VAR_PROXMOX_API_PASSWORD: ${HOMEPAGE_VAR_PROXMOX_API_PASSWORD}
       HOMEPAGE_VAR_QBITTORRENT_USERNAME: ${HOMEPAGE_VAR_QBITTORRENT_USERNAME}
@@ -41,10 +38,3 @@ services:
       HOMEPAGE_VAR_READARR_API: ${HOMEPAGE_VAR_READARR_API}
       HOMEPAGE_VAR_BAZARR_API: ${HOMEPAGE_VAR_BAZARR_API}
       HOMEPAGE_VAR_HOMEASSISTANT_API: ${HOMEPAGE_VAR_HOMEASSISTANT_API}
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"

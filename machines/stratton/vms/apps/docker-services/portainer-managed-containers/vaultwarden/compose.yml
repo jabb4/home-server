@@ -1,9 +1,7 @@
-# Verified working with rootless docker (docker compose up -d)
-
 services:
   vaultwarden:
     container_name: vaultwarden
-    image: vaultwarden/server:latest
+    image: vaultwarden/server:1.35.4
     restart: unless-stopped
 
     # Networking
@@ -15,7 +13,6 @@ services:
       - ./data:/data
     
     # Security
-    user: 1000:1000
     security_opt:
       - no-new-privileges:true  # forbid privilege escalation
 
@@ -25,13 +22,6 @@ services:
 
       # Service specific
       DOMAIN: https://${VAULTWARDEN_HOSTNAME}
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
 
     
 

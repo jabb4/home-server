@@ -1,9 +1,7 @@
-# Verified working with rootful docker (sudo docker compose up -d)
-
 services:
   jellyfin:
-    image: lscr.io/linuxserver/jellyfin:latest
     container_name: jellyfin
+    image: lscr.io/linuxserver/jellyfin:10.11.6
     restart: unless-stopped
 
     # Networking

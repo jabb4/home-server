@@ -39,10 +39,15 @@
       allowedTCPPorts = [
         2283                # Immich
         3001                # Homepage
+        5055                # Jellyseerr
+        6767                # Bazarr
+        7878                # Radarr
         8000                # Vaultwarden
         8001                # Paperless-NGX
-        8080                # SearXNG
+        8080                # SABnzbd
         8081                # MicroBin
+        8989                # Sonarr
+        9696                # Prowlarr
       ];
       allowPing = true;
     };

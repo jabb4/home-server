@@ -1,9 +1,9 @@
 # Verified working with rootless docker (docker compose up -d)
 
 services:
-  vaultwarden:
+  microbin:
     container_name: microbin
-    image: danielszabo99/microbin:latest # This image is not beeing updated so often. Consider look for alternatives.
+    image: danielszabo99/microbin:2.1.0
     restart: unless-stopped
 
     # Networking
@@ -63,13 +63,6 @@ services:
       MICROBIN_ENCRYPTION_SERVER_SIDE: ${MICROBIN_ENCRYPTION_SERVER_SIDE}
       MICROBIN_MAX_FILE_SIZE_ENCRYPTED_MB: ${MICROBIN_MAX_FILE_SIZE_ENCRYPTED_MB}
       MICROBIN_MAX_FILE_SIZE_UNENCRYPTED_MB: ${MICROBIN_MAX_FILE_SIZE_UNENCRYPTED_MB}
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
 
     
 

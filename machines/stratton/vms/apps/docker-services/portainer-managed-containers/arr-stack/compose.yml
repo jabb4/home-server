@@ -1,9 +1,7 @@
-# Verified working with rootfull docker (run with sudo docker compose up -d)
-
 services:
   gluetun:
     container_name: gluetun
-    image: qmcgaw/gluetun
+    image: qmcgaw/gluetun:v3.41
     restart: unless-stopped
 
     # Networking
@@ -40,17 +38,11 @@ services:
       WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES}
       UPDATER_PERIOD: 24h
 
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
+
   
   sabnzbd:
     container_name: sabnzbd
-    image: lscr.io/linuxserver/sabnzbd:latest
+    image: lscr.io/linuxserver/sabnzbd:4.5.5
     restart: unless-stopped
     depends_on:
       - gluetun
@@ -72,17 +64,11 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
+
   
   prowlarr:
     container_name: prowlarr
-    image: lscr.io/linuxserver/prowlarr:latest
+    image: lscr.io/linuxserver/prowlarr:2.3.0
     restart: unless-stopped
     depends_on:
       - sabnzbd
@@ -103,17 +89,11 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
+
   
   radarr:
     container_name: radarr
-    image: lscr.io/linuxserver/radarr:latest
+    image: lscr.io/linuxserver/radarr:6.0.4
     restart: unless-stopped
     depends_on:
       - prowlarr
@@ -136,17 +116,11 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
+
   
   sonarr:
     container_name: sonarr
-    image: lscr.io/linuxserver/sonarr:latest
+    image: lscr.io/linuxserver/sonarr:4.0.16
     restart: unless-stopped
     depends_on:
       - prowlarr
@@ -169,17 +143,11 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
+
     
   bazarr:
     container_name: bazarr
-    image: lscr.io/linuxserver/bazarr:latest
+    image: lscr.io/linuxserver/bazarr:1.5.6
     restart: unless-stopped
     depends_on:
       - gluetun
@@ -201,10 +169,3 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"

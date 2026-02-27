@@ -3,7 +3,7 @@
 services:
   recyclarr:
     container_name: recyclarr
-    image: ghcr.io/recyclarr/recyclarr
+    image: ghcr.io/recyclarr/recyclarr:v8.3.2
 
     # Filesystem
     volumes:
@@ -19,10 +19,3 @@ services:
     # Environment
     environment:
       TZ: ${TIMEZONE:-Europe/Stockholm}
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"

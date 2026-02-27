@@ -1,9 +1,7 @@
-# Verified working with rootless docker (run with docker compose up -d)
-
 services:
-  jellyseerr:
-    image: fallenbagel/jellyseerr:latest
-    container_name: jellyseerr
+  seerr:
+    image: ghcr.io/seerr-team/seerr:v3.0.1
+    container_name: seerr
     restart: unless-stopped
 
     # Networking
@@ -28,14 +26,6 @@ services:
       timeout: 3s
       interval: 15s
       retries: 3
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
-
     
 
     

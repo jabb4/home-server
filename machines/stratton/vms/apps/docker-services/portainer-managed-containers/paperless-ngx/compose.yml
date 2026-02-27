@@ -1,15 +1,13 @@
-# Verified working with rootfull docker (sudo docker compose up -d)
-
 services:
-  webserver:
-    container_name: webserver
-    image: ghcr.io/paperless-ngx/paperless-ngx:latest
+  paperless-webserver:
+    container_name: paperless-webserver
+    image: ghcr.io/paperless-ngx/paperless-ngx:v2.20.8
     restart: unless-stopped
     depends_on:
-      - db
-      - broker
-      - gotenberg
-      - tika
+      - paperless-db
+      - paperless-broker
+      - paperless-gotenberg
+      - paperless-tika
 
     # Networking
     ports:
@@ -36,32 +34,26 @@ services:
       PAPERLESS_OCR_LANGUAGE: ${PAPERLESS_OCR_LANGUAGE}
       PAPERLESS_OCR_LANGUAGES: ${PAPERLESS_OCR_LANGUAGES}
       PAPERLESS_URL: ${PAPERLESS_URL}
-      PAPERLESS_REDIS: redis://broker:6379
-      PAPERLESS_DBHOST: db
+      PAPERLESS_REDIS: redis://paperless-broker:6379
+      PAPERLESS_DBHOST: paperless-db
       PAPERLESS_DBNAME: paperless
       PAPERLESS_DBUSER: paperless
       PAPERLESS_DBPASS: ${POSTGRES_PASSWORD}
       PAPERLESS_TIKA_ENABLED: 1
-      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://gotenberg:3000
-      PAPERLESS_TIKA_ENDPOINT: http://tika:9998
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
+      PAPERLESS_TIKA_GOTENBERG_ENDPOINT: http://paperless-gotenberg:3000
+      PAPERLESS_TIKA_ENDPOINT: http://paperless-tika:9998
 
 
 
-  broker:
-    container_name: broker
-    image: docker.io/library/redis:8
+
+  paperless-broker:
+    container_name: paperless-broker
+    image: library/redis:8
     restart: unless-stopped
 
     # Filesystem
     volumes:
-      - redisdata:/data
+      - paperless-broker:/data
     
     # Security
     security_opt:
@@ -72,24 +64,17 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
-      
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
 
 
 
-  db:
-    container_name: db
-    image: docker.io/library/postgres:17-alpine
+  paperless-db:
+    container_name: paperless-db
+    image: library/postgres:18
     restart: unless-stopped
 
     # Filesystem
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - paperless-db:/var/lib/postgresql/data
     
     # Security
     security_opt:
@@ -105,19 +90,13 @@ services:
       POSTGRES_DB: paperless
       POSTGRES_USER: paperless
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
+
 
 
   
-  gotenberg:
-    container_name: gotenberg
-    image: docker.io/gotenberg/gotenberg:8.20
+  paperless-gotenberg:
+    container_name: paperless-gotenberg
+    image: gotenberg/gotenberg:8.27
     restart: unless-stopped
 
     command:
@@ -134,19 +113,13 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
-    
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
+
   
 
 
-  tika:
-    container_name: tika
-    image: docker.io/apache/tika:latest
+  paperless-tika:
+    container_name: paperless-tika
+    image: apache/tika:3.2.3.0
     restart: unless-stopped
 
     # Security
@@ -159,13 +132,8 @@ services:
       PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
+
 
 volumes:
-  pgdata:
-  redisdata:
+  paperless-db:
+  paperless-broker:

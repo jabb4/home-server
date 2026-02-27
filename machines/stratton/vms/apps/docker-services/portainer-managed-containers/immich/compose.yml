@@ -1,17 +1,11 @@
-# Verified working with rootfull docker (sudo docker compose up -d)
-
-# Make sure to use the docker-compose.yml of the current release:
-# https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml
-# The compose file on main may not be compatible with the latest release.
-
 services:
   immich-server:
-    container_name: immich_server
-    image: ghcr.io/immich-app/immich-server:${IMMICH_VERSION:-release}
+    container_name: immich-server
+    image: ghcr.io/immich-app/immich-server:v2.5.6
     restart: unless-stopped
     depends_on:
-      - redis
-      - database
+      - immich-redis
+      - immich-db
     
     # Networking
     ports:
@@ -39,23 +33,16 @@ services:
     healthcheck:
       disable: false
 
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
-
 
 
   immich-machine-learning:
-    container_name: immich_machine_learning
-    image: ghcr.io/immich-app/immich-machine-learning:${IMMICH_VERSION:-release}
+    container_name: immich-machine-learning
+    image: ghcr.io/immich-app/immich-machine-learning:v2.5.6
     restart: unless-stopped
 
     # Filesystem
     volumes:
-      - model-cache:/cache
+      - immich-model-cache:/cache
     
     # Security
     security_opt:
@@ -72,18 +59,11 @@ services:
     
     healthcheck:
       disable: false
-
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
     
 
-  redis:
-    container_name: immich_redis
-    image: docker.io/valkey/valkey:8-bookworm
+  immich-redis:
+    container_name: immich-redis
+    image: valkey/valkey:9
     restart: unless-stopped
 
     # Security
@@ -97,16 +77,9 @@ services:
     healthcheck:
       test: redis-cli ping || exit 1
     
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
-    
 
-  database:
-    container_name: immich_postgres
+  immich-db:
+    container_name: immich-db
     image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
     restart: unless-stopped
 
@@ -130,15 +103,11 @@ services:
       POSTGRES_DB: ${DB_DATABASE_NAME}
       POSTGRES_INITDB_ARGS: '--data-checksums'
     
-    # Logging
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "10m"
-        max-file: "2"
+    healthcheck:
+      disable: false
 
 volumes:
-  model-cache:
+  immich-model-cache:
 
 
     
