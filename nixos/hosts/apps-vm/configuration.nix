@@ -37,13 +37,10 @@
     firewall = {
       enable = true;
       allowedTCPPorts = [
-        2283                # Immich
         3001                # Homepage
         5055                # Jellyseerr
         6767                # Bazarr
         7878                # Radarr
-        8000                # Vaultwarden
-        8001                # Paperless-NGX
         8080                # SABnzbd
         8081                # MicroBin
         8096                # Jellyfin HTTP
@@ -87,9 +84,9 @@
     };
   };
     
-  # Mount SMB Share for Nextcloud, Immich, Paperless etc
+  # Mount SMB Share for Movies, Series, etc.
   fileSystems."/mnt/data" = {
-    device = "//192.168.20.101/app-data";
+    device = "//192.168.20.101/media-data";
     fsType = "cifs";
     options = let
       automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s,user,users";
@@ -111,6 +108,14 @@
 
   virtualisation.docker = {
     enable = true;
+    daemon.settings = {
+      log-driver = "local";
+      log-opts = {
+        max-size = "10m";
+        max-file = "5";
+        compress = "true";
+      };
+    };
   };
 
   # Apparmor

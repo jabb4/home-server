@@ -86,12 +86,15 @@
     settings.PasswordAuthentication = false;
   };
 
-  # Enable rootless docker (This limits port 0-1023 so make sure to use other)
   virtualisation.docker = {
     enable = true;
-    rootless = {
-      enable = true;
-      setSocketVariable = true;
+    daemon.settings = {
+      log-driver = "local";
+      log-opts = {
+        max-size = "10m";
+        max-file = "5";
+        compress = "true";
+      };
     };
   };
 
