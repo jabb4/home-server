@@ -117,56 +117,6 @@ http:
       service: uptime-kuma
 
     ## Apps
-    ## Serxng
-    searxng:
-      entryPoints:
-        - "https"
-      rule: "Host(`searxng.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-      service: searxng
-    
-    ## Immich
-    immich:
-      entryPoints:
-        - "https"
-      rule: "Host(`immich.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-      service: immich
-    
-    ## Paperless-NGX
-    paperless:
-      entryPoints:
-        - "https"
-      rule: "Host(`paperless.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-      service: paperless
-    
-    ## MicroBin
-    microbin:
-      entryPoints:
-        - "https"
-      rule: "Host(`microbin.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-      service: microbin
-    
-    ## Vaultwarden
-    vaultwarden:
-      entryPoints:
-        - "https"
-      rule: "Host(`vaultwarden.local.jabbas.dev`)"
-      middlewares:
-        - disallow-iframe-embedding
-        - default-headers
-      service: vaultwarden
-    
     ## Homepage
     homepage:
       entryPoints:
@@ -177,8 +127,17 @@ http:
         - default-headers
         - forwardAuth-authentik
       service: homepage
+      
+    ## MicroBin
+    microbin:
+      entryPoints:
+        - "https"
+      rule: "Host(`microbin.local.jabbas.dev`)"
+      middlewares:
+        - disallow-iframe-embedding
+        - default-headers
+      service: microbin
 
-    ## GPU-workloads    
     ## Jellyfin
     jellyfin:
       entryPoints:
@@ -189,7 +148,6 @@ http:
         - default-headers
       service: jellyfin
 
-    ## Media-downloader
     ## Jellyseerr
     jellyseerr:
       entryPoints:
@@ -337,39 +295,11 @@ http:
         passHostHeader: true
 
     ## Apps
-    ## Immich
-    immich:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.103:2283"
-        passHostHeader: true
-
     ## Homepage
     homepage:
       loadBalancer:
         servers:
           - url: "http://192.168.20.103:3001"
-        passHostHeader: true
-    
-    ## Vaultwarden
-    vaultwarden:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.103:8000"
-        passHostHeader: true
-    
-    ## Paperless-NGX
-    paperless:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.103:8001"
-        passHostHeader: true
-
-    ## Searxng
-    searxng:
-      loadBalancer:
-        servers:
-          - url: "http://192.168.20.103:8080"
         passHostHeader: true
     
     ## MicroBin
@@ -379,55 +309,53 @@ http:
           - url: "http://192.168.20.103:8081"
         passHostHeader: true
 
-    ## GPU
     ## Jellyfin
     jellyfin:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.105:8096"
+          - url: "http://192.168.20.103:8096"
         passHostHeader: true
 
-    ## Media-Downloader
     ## Jellyseerr
     jellyseerr:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.106:5055"
+          - url: "http://192.168.20.103:5055"
         passHostHeader: true
     
     ## SABnzbd
     sabnzbd:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.106:8080"
+          - url: "http://192.168.20.103:8080"
         passHostHeader: true
 
     ## Radarr
     radarr:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.106:7878"
+          - url: "http://192.168.20.103:7878"
         passHostHeader: true
 
     ## Sonarr
     sonarr:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.106:8989"
+          - url: "http://192.168.20.103:8989"
         passHostHeader: true
 
     ## Prowlarr
     prowlarr:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.106:9696"
+          - url: "http://192.168.20.103:9696"
         passHostHeader: true
 
     ## Bazarr
     bazarr:
       loadBalancer:
         servers:
-          - url: "http://192.168.20.106:6767"
+          - url: "http://192.168.20.103:6767"
         passHostHeader: true
 
   # HTTP MIDDLEWARES
