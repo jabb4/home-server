@@ -14,7 +14,7 @@ services:
 
     # Filesystem
     volumes:
-      - ./gluetun/config:/gluetun
+      - gluetun_config:/gluetun
     devices:
       - /dev/net/tun:/dev/net/tun
     
@@ -52,7 +52,7 @@ services:
 
     # Filesystem
     volumes:
-      - ./sabnzbd/config:/config
+      - sabnzbd_config:/config
       - /mnt/data/usenet:/data/usenet:rw
     
     # Security
@@ -78,7 +78,7 @@ services:
 
     # Filesystem
     volumes:
-      - ./prowlarr/config:/config
+      - prowlarr_config:/config
     
     # Security
     security_opt:
@@ -104,7 +104,7 @@ services:
 
     # Filesystem
     volumes:
-      - ./radarr/config:/config
+      - radarr_config:/config
       - /mnt/data:/data
     
     # Security
@@ -131,7 +131,7 @@ services:
 
     # Filesystem
     volumes:
-      - ./sonarr/config:/config
+      - sonarr_config:/config
       - /mnt/data:/data
     
     # Security
@@ -157,7 +157,7 @@ services:
     
     # Filesystem
     volumes:
-      - ./bazarr/config:/config
+      - bazarr_config:/config
       - /mnt/data/media:/data/media
     
     # Security
@@ -183,7 +183,7 @@ services:
     
     # Filesystem
     volumes:
-      - ./seerr/config:/app/config
+      - seerr_config:/app/config
     
     # Security
     user: "1000:1000"
@@ -200,3 +200,16 @@ services:
       timeout: 3s
       interval: 15s
       retries: 3
+
+
+volumes:
+  gluetun_config:
+  sabnzbd_config:
+  prowlarr_config:
+  radarr_config:
+  sonarr_config:
+  bazarr_config:
+  seerr_config:
+  
+  
+  

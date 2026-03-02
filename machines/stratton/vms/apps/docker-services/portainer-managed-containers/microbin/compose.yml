@@ -1,5 +1,3 @@
-# Verified working with rootless docker (docker compose up -d)
-
 services:
   microbin:
     container_name: microbin
@@ -12,7 +10,7 @@ services:
     
     # Filesystem
     volumes:
-      - ./data:/app/microbin_data
+      - microbin_data:/app/microbin_data
     
     # Security
     security_opt:
@@ -65,5 +63,5 @@ services:
       MICROBIN_MAX_FILE_SIZE_UNENCRYPTED_MB: ${MICROBIN_MAX_FILE_SIZE_UNENCRYPTED_MB}
 
     
-
-    
+volumes:
+  microbin_data:

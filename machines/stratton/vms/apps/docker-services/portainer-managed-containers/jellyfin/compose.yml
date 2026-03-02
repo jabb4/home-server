@@ -7,11 +7,10 @@ services:
     # Networking
     ports:
       - 8096:8096 # HTTP
-      - 8920:8920 # HTTPS (You need to set up SSL cert your self)
 
     # Filesystem
     volumes:
-      - ./config:/config
+      - jellyfin_config:/config
       - /mnt/data/media/tv:/data/tvshows
       - /mnt/data/media/movies:/data/movies
     
@@ -24,3 +23,6 @@ services:
       PUID: 1000
       PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
+
+volumes:
+  jellyfin_config:
