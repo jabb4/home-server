@@ -9,7 +9,6 @@ sonarr:
     api_key: !secret sonarr_api_key
 
     delete_old_custom_formats: true
-    replace_existing_custom_formats: true
 
     # See: https://recyclarr.dev/wiki/yaml/config-reference/quality-definition/
     quality_definition:
@@ -63,21 +62,11 @@ sonarr:
     custom_formats:
       # UHD Only
       - trash_ids:
-          # HDR Formats
-          - 2b239ed870daba8126a53bd5dc8dc1c8 # DV HDR10Plus
-          - 7878c33f1963fefb3d6c8657d46c2f0a # DV HDR10
-          - 1f733af03141f068a540eec352589a89 # DV HLG
-          - 27954b0a80aab882522a88a4d9eae1cd # DV SDR
-          - 6d0d8de7b57e35518ac0308b0ddf404e # DV
-          - bb019e1cd00f304f80971c965de064dc # HDR (undefined)
-          - 3e2c4e748b64a1a1118e0ea3f4cf6875 # HDR
-          - 3497799d29a085e2ac2df9d468413c94 # HDR10
-          - a3d82cbef5039f8d295478d28a887159 # HDR10+
-          - 17e889ce13117940092308f48b48b45b # HLG
-          - 2a7e3be05d3861d6df7171ec74cad727 # PQ
+          # Unified HDR
+          - 505d871304820ba7106b693be6fe4a9e # HDR
         assign_scores_to:
           - name: UHD
-      
+
       # UHD and HD
       - trash_ids:
           # Requierd
@@ -149,7 +138,6 @@ radarr:
     api_key: !secret radarr_api_key
 
     delete_old_custom_formats: true
-    replace_existing_custom_formats: true
     
     # See: https://recyclarr.dev/wiki/yaml/config-reference/quality-definition/
     quality_definition:
@@ -199,23 +187,13 @@ radarr:
       # UHD only
       - trash_ids:
           # Requierd
+          # Unified HDR
+          - 493b6d1dbec3c3364c59d7607f7e3405 # HDR
+
           # HQ Release Groups
           - 4d74ac4c4db0b64bff6ce0cffef99bf0 # UHD Bluray Tier 01
           - a58f517a70193f8e578056642178419d # UHD Bluray Tier 02
           - e71939fae578037e7aed3ee219bbe7c1 # UHD Bluray Tier 03
-
-          # All HDR Formats
-          - c53085ddbd027d9624b320627748612f # DV HDR10Plus
-          - e23edd2482476e595fb990b12e7c609c # DV HDR10
-          - 58d6a88f13e2db7f5059c41047876f00 # DV
-          - 55d53828b9d81cbe20b02efd00aa0efd # DV HLG
-          - a3e19f8f627608af0211acd02bf89735 # DV SDR
-          - b974a6cd08c1066250f1f177d7aa1225 # HDR10+
-          - dfb86d5941bc9075d6af23b09c2aeecd # HDR10
-          - e61e28db95d22bedcadf030b8f156d96 # HDR
-          - 2a4d9069cc1fe3242ff9bdaebed239bb # HDR (undefined)
-          - 08d6d8834ad9ec87b1dc7ec8148e7a1f # PQ
-          - 9364dd386c9b4a1100dde8264690add7 # HLG
         assign_scores_to:
           - name: UHD
       
