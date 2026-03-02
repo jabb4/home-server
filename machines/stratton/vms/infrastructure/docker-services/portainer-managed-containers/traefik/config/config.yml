@@ -148,15 +148,15 @@ http:
         - default-headers
       service: jellyfin
 
-    ## Jellyseerr
-    jellyseerr:
+    ## Seerr
+    seerr:
       entryPoints:
         - "https"
-      rule: "Host(`jellyseerr.local.jabbas.dev`)"
+      rule: "Host(`seerr.local.jabbas.dev`)"
       middlewares:
         - disallow-iframe-embedding
         - default-headers
-      service: jellyseerr
+      service: seerr
 
     ## SABnzbd
     sabnzbd:
@@ -316,8 +316,8 @@ http:
           - url: "http://192.168.20.103:8096"
         passHostHeader: true
 
-    ## Jellyseerr
-    jellyseerr:
+    ## Seerr
+    seerr:
       loadBalancer:
         servers:
           - url: "http://192.168.20.103:5055"
