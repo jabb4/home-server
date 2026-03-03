@@ -24,16 +24,4 @@
     6.  Go back to Catalouge section
     7. Install plugins:
        1. Intro Skipper
-       2. TheTVDB
-    8. Restart Jellyfin
-    9. Go to [Dashboard -> My Plugins](https://jellyfin.local.jabbas.dev/web/index.html#/dashboard/plugins)
-    10. Click on "TheTVDB" and check "Update Series", "Update Season", "Update Episode", "Update Movie", "Update Person" at the button
-    11. Click "Save"
-    12. Go to [Dashboard -> Libraries](https://jellyfin.local.jabbas.dev/web/index.html#/dashboard/libraries)
-    13. For both Movies and Shows do:
-        1.  Scroll to "Metadata downloaders"
-        2.  Check "TheTVDB" and make sure its at the top of the list
-        3.  Scroll to "Image fetchers"
-        4.  Check "TheTVDB" and make sure its at the top of the list
-        5.  If there are any other metadata settings, enable TheTVDB and put it in the top.
-    14. Restart Jellyfin
+    8.  Restart Jellyfin
