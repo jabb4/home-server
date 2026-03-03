@@ -33,6 +33,11 @@
             href: https://192.168.20.62
             icon: pikvm.png
             siteMonitor: https://192.168.20.62
+
+      - Portainer:
+            href: https://portainer.local.jabbas.dev
+            icon: portainer.png
+            siteMonitor: https://portainer.local.jabbas.dev
       
       - Traefik:
             href: https://traefik.local.jabbas.dev
@@ -79,32 +84,7 @@
       
 
 
-- Apps:
-      - Gitea:
-            href: https://git.local.jabbas.dev
-            icon: gitea.png
-            siteMonitor: https://git.local.jabbas.dev
-      
-      - Immich:
-            href: https://immich.local.jabbas.dev
-            icon: immich.png
-            siteMonitor: https://immich.local.jabbas.dev
-      
-      - Paperless-NGX:
-            href: https://paperless.local.jabbas.dev
-            icon: paperless-ngx.png
-            siteMonitor: https://paperless.local.jabbas.dev
-      
-      - Vaultwarden:
-            href: https://vaultwarden.local.jabbas.dev
-            icon: vaultwarden.png
-            siteMonitor: https://vaultwarden.local.jabbas.dev
-      
-      - SearXNG:
-            href: https://searxng.local.jabbas.dev
-            icon: searxng.png
-            siteMonitor: https://searxng.local.jabbas.dev
-      
+- Apps:      
       - MicroBin:
             href: https://microbin.local.jabbas.dev
             icon: microbin.png
@@ -112,28 +92,11 @@
 
       
 
-- AI:
-      - LLM (Local):
-            href: https://llm.local.jabbas.dev
-            icon: open-webui.png
-            siteMonitor: https://llm.local.jabbas.dev
-      
-      - LLM (Public):
-            href: https://llm.jabbas.dev
-            icon: open-webui.png
-            siteMonitor: https://llm.jabbas.dev
-
-      - ComfyUI:
-            href: https://comfyui.local.jabbas.dev
-            siteMonitor: https://comfyui.local.jabbas.dev
-
-
-
 - Streaming:
-      - Jellyseerr:
-            href: https://jellyseerr.local.jabbas.dev
-            icon: jellyseerr.png
-            siteMonitor: https://jellyseerr.local.jabbas.dev
+      - Seerr:
+            href: https://seerr.local.jabbas.dev
+            icon: seerr.png
+            siteMonitor: https://seerr.local.jabbas.dev
 
       - Jellyfin:
             href: https://jellyfin.local.jabbas.dev
