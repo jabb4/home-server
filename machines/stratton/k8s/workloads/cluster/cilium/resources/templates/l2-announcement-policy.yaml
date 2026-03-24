@@ -1,0 +1,10 @@
+apiVersion: cilium.io/v2alpha1
+kind: CiliumL2AnnouncementPolicy
+metadata:
+  name: {{ .Values.l2AnnouncementPolicy.name | quote }}
+spec:
+  serviceSelector:
+{{ toYaml .Values.l2AnnouncementPolicy.serviceSelector | nindent 4 }}
+  nodeSelector:
+{{ toYaml .Values.l2AnnouncementPolicy.nodeSelector | nindent 4 }}
+  loadBalancerIPs: {{ .Values.l2AnnouncementPolicy.loadBalancerIPs }}

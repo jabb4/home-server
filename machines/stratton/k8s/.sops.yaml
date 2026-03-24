@@ -1,0 +1,3 @@
+creation_rules:
+  - path_regex: (.*/)?workloads/.+\.sops\.ya?ml$
+    age: age1tneafc8h2ad3lmcvway7h5mrralurtuddqaahe3pz9jyhyhs7qxq5kjed7

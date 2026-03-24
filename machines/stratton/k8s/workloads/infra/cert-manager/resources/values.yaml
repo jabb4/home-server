@@ -1,0 +1,16 @@
+acme:
+  issuerName: letsencrypt-cloudflare
+  server: https://acme-v02.api.letsencrypt.org/directory
+  privateKeySecretName: letsencrypt-cloudflare-account-key
+
+cloudflare:
+  secretName: cloudflare-api-token-secret
+  secretKey: api-token
+
+certificates:
+  - name: infra-local-jabbas-dev
+    namespace: infra
+    secretName: infra-local-jabbas-dev-tls
+    dnsNames:
+      - local.jabbas.dev
+      - '*.local.jabbas.dev'

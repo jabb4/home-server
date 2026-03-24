@@ -1,0 +1,6 @@
+apiVersion: v2
+name: cert-manager-resources
+description: Repo-owned cert-manager resources such as the ACME ClusterIssuer and wildcard certificates.
+type: application
+version: 0.1.0
+appVersion: "v1.19.2"

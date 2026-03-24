@@ -1,0 +1,141 @@
+{{- $middlewares := .Values.sharedMiddlewares | default dict -}}
+{{- with $middlewares.crowdsecBouncer }}
+{{- if .enabled }}
+{{- $crowdsec := $.Values.crowdsecBouncer | default dict -}}
+{{- $lapiKey := required "crowdsecBouncer.lapiKey is required" (get $crowdsec "lapiKey") -}}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: crowdsec-bouncer
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  plugin:
+    crowdsec-bouncer:
+      enabled: true
+      logLevel: {{ .logLevel | quote }}
+      crowdsecMode: {{ .crowdsecMode | quote }}
+      crowdsecLapiScheme: {{ .crowdsecLapiScheme | quote }}
+      crowdsecLapiHost: {{ .crowdsecLapiHost | quote }}
+      crowdsecLapiKey: {{ $lapiKey | quote }}
+      updateIntervalSeconds: {{ .updateIntervalSeconds }}
+      httpTimeoutSeconds: {{ .httpTimeoutSeconds }}
+{{- end }}
+{{- end }}
+
+{{- with $middlewares.defaultHeaders }}
+{{- if .enabled }}
+---
+{{- end }}
+{{- end }}
+{{- with $middlewares.defaultHeaders }}
+{{- if .enabled }}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: default-headers
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  headers:
+    browserXssFilter: {{ .browserXssFilter }}
+    contentTypeNosniff: {{ .contentTypeNosniff }}
+    forceSTSHeader: {{ .forceSTSHeader }}
+    stsIncludeSubdomains: {{ .stsIncludeSubdomains }}
+    stsPreload: {{ .stsPreload }}
+    stsSeconds: {{ .stsSeconds }}
+    customRequestHeaders:
+{{ toYaml .customRequestHeaders | nindent 6 }}
+{{- end }}
+{{- end }}
+
+{{- with $middlewares.disallowIFrameEmbedding }}
+{{- if .enabled }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: disallow-iframe-embedding
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  headers:
+    frameDeny: {{ .frameDeny }}
+    customFrameOptionsValue: {{ .customFrameOptionsValue | quote }}
+{{- end }}
+{{- end }}
+
+{{- with $middlewares.rateLimit }}
+{{- if .enabled }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: rate-limit
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  rateLimit:
+    average: {{ .average }}
+    burst: {{ .burst }}
+{{- end }}
+{{- end }}
+
+{{- with $middlewares.uiDefault }}
+{{- if .enabled }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: ui-default
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  chain:
+    middlewares:
+{{- range .middlewares }}
+      - name: {{ . | quote }}
+{{- end }}
+{{- end }}
+{{- end }}
+
+{{- with $middlewares.piHoleRedirect }}
+{{- if .enabled }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: pi-hole-redirect
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  redirectRegex:
+    regex: {{ .regex | quote }}
+    replacement: {{ .replacement | quote }}
+{{- end }}
+{{- end }}
+
+{{- with $middlewares.authentikForwardAuth }}
+{{- if .enabled }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: forward-auth-authentik
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  forwardAuth:
+    address: {{ .address | quote }}
+    trustForwardHeader: {{ .trustForwardHeader }}
+    authResponseHeaders:
+{{ toYaml .authResponseHeaders | nindent 6 }}
+{{- end }}
+{{- end }}

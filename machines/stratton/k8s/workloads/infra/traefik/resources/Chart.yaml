@@ -1,0 +1,5 @@
+apiVersion: v2
+name: traefik-resources
+description: Repo-owned Traefik resources such as dashboard auth, shared middleware, and external routes.
+type: application
+version: 0.1.0

@@ -1,0 +1,18 @@
+{{- if .Values.backups.enabled }}
+apiVersion: longhorn.io/v1beta2
+kind: RecurringJob
+metadata:
+  name: {{ .Values.recurringJob.name | quote }}
+  namespace: longhorn-system
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  cron: {{ .Values.recurringJob.cron | quote }}
+  task: {{ .Values.recurringJob.task | quote }}
+  groups:
+{{- range .Values.recurringJob.groups }}
+    - {{ . | quote }}
+{{- end }}
+  retain: {{ .Values.recurringJob.retain }}
+  concurrency: {{ .Values.recurringJob.concurrency }}
+{{- end }}

@@ -1,0 +1,5 @@
+apiVersion: v2
+name: cilium-resources
+description: Cluster-specific Cilium CRs such as LoadBalancer IPAM and L2 announcements.
+type: application
+version: 0.1.0

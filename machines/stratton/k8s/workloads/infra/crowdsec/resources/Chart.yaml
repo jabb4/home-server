@@ -1,0 +1,5 @@
+apiVersion: v2
+name: crowdsec-resources
+description: Repo-owned CrowdSec resources such as Traefik bouncer credentials.
+type: application
+version: 0.1.0

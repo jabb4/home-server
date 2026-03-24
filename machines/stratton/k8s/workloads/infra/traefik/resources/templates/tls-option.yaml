@@ -1,0 +1,17 @@
+{{- with .Values.tlsOptions }}
+{{- if .enabled }}
+apiVersion: traefik.io/v1alpha1
+kind: TLSOption
+metadata:
+  name: default
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  minVersion: {{ .minVersion | quote }}
+  cipherSuites:
+{{- range .cipherSuites }}
+    - {{ . | quote }}
+{{- end }}
+{{- end }}
+{{- end }}

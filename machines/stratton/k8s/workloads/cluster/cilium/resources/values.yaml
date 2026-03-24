@@ -1,0 +1,19 @@
+ipPool:
+  name: infra-ingress
+  blocks:
+    - start: 10.0.20.80
+      stop: 10.0.20.89
+  serviceSelector:
+    matchLabels:
+      homelab.jabbas.dev/load-balancer-pool: infra-ingress
+
+l2AnnouncementPolicy:
+  name: infra-ingress
+  serviceSelector:
+    matchLabels:
+      homelab.jabbas.dev/load-balancer-pool: infra-ingress
+  nodeSelector:
+    matchExpressions:
+      - key: node-role.kubernetes.io/control-plane
+        operator: DoesNotExist
+  loadBalancerIPs: true

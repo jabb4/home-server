@@ -1,0 +1,15 @@
+{{- if .Values.networkPolicies.defaultDeny.enabled }}
+{{- range .Values.networkPolicies.defaultDeny.namespaces }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: default-deny
+  namespace: {{ . | quote }}
+spec:
+  podSelector: {}
+  policyTypes:
+    - Ingress
+    - Egress
+{{- end }}
+{{- end }}

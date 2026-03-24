@@ -1,0 +1,22 @@
+apiVersion: v1alpha1
+kind: HostnameConfig
+hostname: worker-1
+auto: off
+---
+machine:
+  kubelet:
+    extraMounts:
+      - destination: /var/mnt/longhorn
+        type: bind
+        source: /var/mnt/longhorn
+        options:
+          - bind
+          - rshared
+          - rw
+---
+apiVersion: v1alpha1
+kind: UserVolumeConfig
+name: longhorn
+provisioning:
+  diskSelector:
+    match: disk.serial == "worker-1-longhorn" && !system_disk

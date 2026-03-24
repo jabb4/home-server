@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: crowdsec
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  project: infra
+  sources:
+    - repoURL: https://crowdsecurity.github.io/helm-charts
+      chart: crowdsec
+      targetRevision: 0.22.1
+      helm:
+        releaseName: crowdsec
+        valueFiles:
+          - $values/machines/stratton/k8s/workloads/infra/crowdsec/values.yaml
+    - repoURL: https://github.com/jabb4/home-server.git
+      targetRevision: v2
+      ref: values
+    - repoURL: https://github.com/jabb4/home-server.git
+      targetRevision: v2
+      path: machines/stratton/k8s/workloads/infra/crowdsec/resources
+      helm:
+        releaseName: crowdsec-resources
+        valueFiles:
+          - secrets://secrets.sops.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: infra
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

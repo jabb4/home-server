@@ -1,0 +1,57 @@
+container_runtime: containerd
+
+lapi:
+  replicas: 1
+  envFrom:
+    - secretRef:
+        name: crowdsec-lapi-bouncers
+  persistentVolume:
+    data:
+      storageClassName: longhorn
+      size: 1Gi
+    config:
+      storageClassName: longhorn
+      size: 100Mi
+  resources:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+    limits:
+      memory: 512Mi
+
+agent:
+  acquisition:
+    - namespace: infra
+      podName: traefik-*
+      program: traefik
+  env:
+    - name: COLLECTIONS
+      value: >-
+        crowdsecurity/traefik
+        crowdsecurity/http-cve
+        crowdsecurity/whitelist-good-actors
+        crowdsecurity/base-http-scenarios
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      memory: 256Mi
+
+# Whitelist local RFC1918 addresses so community blocklists
+# and local scenarios never ban internal network traffic.
+config:
+  postoverflows:
+    s01-whitelist:
+      local-whitelist.yaml: |
+        name: local-whitelist
+        description: "Whitelist local network IPs"
+        whitelist:
+          reason: "Local network - RFC1918"
+          cidr:
+            - "10.0.0.0/8"
+            - "172.16.0.0/12"
+            - "192.168.0.0/16"
+
+appsec:
+  enabled: false

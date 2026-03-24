@@ -1,0 +1,14 @@
+{{- with .Values.tlsStore }}
+{{- if .enabled }}
+apiVersion: traefik.io/v1alpha1
+kind: TLSStore
+metadata:
+  name: default
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  defaultCertificate:
+    secretName: {{ .defaultCertSecretName | quote }}
+{{- end }}
+{{- end }}

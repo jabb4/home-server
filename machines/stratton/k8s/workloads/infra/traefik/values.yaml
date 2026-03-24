@@ -1,0 +1,89 @@
+experimental:
+  plugins:
+    crowdsec-bouncer:
+      moduleName: github.com/maxlerebourg/crowdsec-bouncer-traefik-plugin
+      version: v1.5.1
+
+deployment:
+  kind: DaemonSet
+
+ingressClass:
+  enabled: true
+  isDefaultClass: true
+  name: traefik
+
+api:
+  dashboard: true
+  debug: false
+
+# Disable unsecure dashbaoard, use dash
+ingressRoute:
+  dashboard:
+    enabled: false
+
+providers:
+  kubernetesCRD:
+    enabled: true
+    # Required: the apps namespace uses Kubernetes Ingress resources with
+    # traefik.ingress.kubernetes.io/router.middlewares referencing
+    # infra-ui-default@kubernetescrd. Traefik has no allowedNamespaces
+    # granular option — this is the only available cross-namespace control.
+    allowCrossNamespace: true
+    allowExternalNameServices: false
+    allowEmptyServices: true
+  kubernetesIngress:
+    enabled: true
+    allowExternalNameServices: false
+    allowEmptyServices: true
+    ingressClass: traefik
+    publishedService:
+      enabled: true
+
+logs:
+  general:
+    level: INFO
+    format: json
+  access:
+    enabled: true
+    format: json
+
+ports:
+  traefik:
+    expose:
+      default: false
+  web:
+    expose:
+      default: true
+    exposedPort: 80
+    http:
+      redirections:
+        entryPoint:
+          to: websecure
+          scheme: https
+          permanent: true
+  websecure:
+    expose:
+      default: true
+    exposedPort: 443
+    http:
+      tls:
+        enabled: true
+  metrics:
+    expose:
+      default: false
+
+service:
+  type: LoadBalancer
+  labels:
+    homelab.jabbas.dev/load-balancer-pool: infra-ingress
+  annotations:
+    io.cilium/lb-ipam-ips: "10.0.20.80"
+  spec:
+    externalTrafficPolicy: Local
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    memory: 512Mi

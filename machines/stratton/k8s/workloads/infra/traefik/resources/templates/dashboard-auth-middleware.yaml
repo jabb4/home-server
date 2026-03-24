@@ -1,0 +1,10 @@
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Values.dashboard.auth.middlewareName | quote }}
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  basicAuth:
+    secret: {{ .Values.dashboard.auth.secretName | quote }}

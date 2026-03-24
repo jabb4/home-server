@@ -1,0 +1,41 @@
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: root
+  namespace: argocd
+spec:
+  description: Root app-of-apps that discovers and creates all child Applications.
+  sourceRepos:
+    - https://github.com/jabb4/home-server.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: argocd
+  clusterResourceWhitelist: []
+  namespaceResourceWhitelist:
+    - group: argoproj.io
+      kind: Application
+---
+apiVersion: argoproj.io/v1alpha1
+kind: AppProject
+metadata:
+  name: foundations
+  namespace: argocd
+spec:
+  description: Cluster scaffolding managed from the home-server Git repo.
+  sourceRepos:
+    - https://github.com/jabb4/home-server.git
+  destinations:
+    - server: https://kubernetes.default.svc
+      namespace: argocd
+    - server: https://kubernetes.default.svc
+      namespace: apps
+    - server: https://kubernetes.default.svc
+      namespace: infra
+  clusterResourceWhitelist:
+    - group: ""
+      kind: Namespace
+    - group: argoproj.io
+      kind: AppProject
+  namespaceResourceWhitelist:
+    - group: "*"
+      kind: "*"

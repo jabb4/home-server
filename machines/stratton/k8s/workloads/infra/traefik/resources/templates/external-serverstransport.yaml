@@ -1,0 +1,29 @@
+{{- range .Values.externalRoutes }}
+{{- $route := . }}
+{{- with $route.transport }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: {{ required (printf "externalRoutes[%s].transport.name is required" $route.name) .name | quote }}
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+{{- with .serverName }}
+  serverName: {{ . | quote }}
+{{- end }}
+{{- with .rootCAsSecrets }}
+  rootCAsSecrets:
+{{ toYaml . | nindent 4 }}
+{{- end }}
+{{- with .certificatesSecrets }}
+  certificatesSecrets:
+{{ toYaml . | nindent 4 }}
+{{- end }}
+  # insecureSkipVerify is set because these backends use self-signed certificates.
+  # The connection is still HTTPS and encrypted; we just skip certificate chain
+  # validation. Replace with rootCAsSecrets once proper CA certs are available.
+  insecureSkipVerify: {{ .insecureSkipVerify | default false }}
+{{- end }}
+{{- end }}

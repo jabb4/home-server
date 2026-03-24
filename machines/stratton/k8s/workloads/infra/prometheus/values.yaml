@@ -1,0 +1,36 @@
+alertmanager:
+  enabled: false
+
+prometheus-pushgateway:
+  enabled: false
+
+server:
+  fullnameOverride: prometheus-server
+  baseURL: https://prometheus.local.jabbas.dev
+  retention: 15d
+
+  persistentVolume:
+    enabled: true
+    storageClass: longhorn
+    size: 20Gi
+
+  ingress:
+    enabled: true
+    ingressClassName: traefik
+    annotations:
+      traefik.ingress.kubernetes.io/router.entrypoints: websecure
+      traefik.ingress.kubernetes.io/router.tls: "true"
+      traefik.ingress.kubernetes.io/router.middlewares: infra-ui-default@kubernetescrd
+    hosts:
+      - prometheus.local.jabbas.dev
+    tls:
+      - secretName: infra-local-jabbas-dev-tls
+        hosts:
+          - prometheus.local.jabbas.dev
+
+extraScrapeConfigs: |
+  - job_name: proxmoxhost
+    scheme: http
+    static_configs:
+      - targets:
+          - 192.168.20.2:9100

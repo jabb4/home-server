@@ -1,0 +1,38 @@
+persistence:
+  enabled: true
+  storageClassName: longhorn
+  size: 5Gi
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: infra-ui-default@kubernetescrd
+  hosts:
+    - grafana.local.jabbas.dev
+  tls:
+    - secretName: infra-local-jabbas-dev-tls
+      hosts:
+        - grafana.local.jabbas.dev
+
+datasources:
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        access: proxy
+        url: http://prometheus-server.infra.svc.cluster.local
+        isDefault: true
+        editable: false
+
+grafana.ini:
+  server:
+    root_url: https://grafana.local.jabbas.dev
+  security:
+    allow_embedding: true
+  auth.anonymous:
+    enabled: true
+    org_role: Viewer

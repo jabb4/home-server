@@ -1,0 +1,46 @@
+replicaCount: 1
+
+image:
+  repository: louislam/uptime-kuma
+  tag: 2.1.3
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3001
+
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: web,websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: infra-ui-default@kubernetescrd
+  host: uptime-kuma.local.jabbas.dev
+  path: /
+  pathType: Prefix
+  tls:
+    enabled: true
+    secretName: infra-local-jabbas-dev-tls
+
+timezone: Europe/Stockholm
+
+persistence:
+  enabled: true
+  size: 5Gi
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+
+podSecurityContext:
+  fsGroup: 1000
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+resources: {}

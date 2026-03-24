@@ -1,0 +1,6 @@
+apiVersion: v2
+name: longhorn-resources
+description: Longhorn bootstrap resources kept in Git alongside the upstream chart values.
+type: application
+version: 0.1.0
+appVersion: "1.11.1"

@@ -1,0 +1,517 @@
+set shell := ["bash", "-euo", "pipefail", "-c"]
+set dotenv-load := true
+
+# -----------------------------------------------------------------------------
+# Cluster variables
+# -----------------------------------------------------------------------------
+
+cluster_name := env_var("CLUSTER_NAME")
+vip_ip := env_var("VIP_IP")
+cluster_endpoint := "https://" + vip_ip + ":6443"
+
+talos_dir := env_var("TALOS_DIR")
+clusterconfig_dir := talos_dir + "/clusterconfig"
+patches_dir := talos_dir + "/patches"
+nodes_dir := patches_dir + "/nodes"
+base_dir := patches_dir + "/base"
+rendered_dir := clusterconfig_dir + "/rendered"
+
+talosconfig := clusterconfig_dir + "/talosconfig"
+kubeconfig := clusterconfig_dir + "/kubeconfig"
+
+sops_age_key_file := env_var("SOPS_AGE_KEY_FILE")
+cilium_application := "workloads/cluster/cilium/application.yaml"
+argocd_application := "workloads/cluster/argocd/application.yaml"
+
+# Static Services VLAN assumptions for the current homelab design.
+services_cidr_prefix := "24"
+services_gateway := "10.0.20.1"
+services_dns_servers := "10.0.20.53"
+
+# Space-separated node names
+controlplanes := env_var("CONTROLPLANES")
+workers := env_var("WORKERS")
+
+# First control plane is used for bootstrap
+bootstrap_cp := `echo "$CONTROLPLANES" | awk '{print $1}'`
+
+# -----------------------------------------------------------------------------
+# Helper recipes
+# -----------------------------------------------------------------------------
+
+default:
+  @just --list
+
+show-vars:
+  @echo "cluster_name={{cluster_name}}"
+  @echo "vip_ip={{vip_ip}}"
+  @echo "cluster_endpoint={{cluster_endpoint}}"
+  @echo "controlplanes={{controlplanes}}"
+  @echo "workers={{workers}}"
+  @echo "bootstrap_cp={{bootstrap_cp}}"
+
+# -----------------------------------------------------------------------------
+# Generic local setup helpers
+# -----------------------------------------------------------------------------
+
+check-tools:
+  @command -v talosctl >/dev/null
+  @command -v kubectl >/dev/null
+  @command -v helm >/dev/null
+  @command -v yq >/dev/null
+  @command -v sops >/dev/null
+  @echo "✓ Required tools found"
+
+init-dirs:
+  @mkdir -p {{talos_dir}} {{clusterconfig_dir}} {{patches_dir}} {{nodes_dir}} {{base_dir}} {{rendered_dir}}
+  @echo "✓ Created local directories"
+
+# -----------------------------------------------------------------------------
+# SOPS helpers
+# -----------------------------------------------------------------------------
+
+edit-sops FILE:
+  @key_file="{{sops_age_key_file}}"; \
+  if [ ! -f "$key_file" ]; then \
+    echo "Missing age key: $key_file" >&2; \
+    exit 1; \
+  fi; \
+  SOPS_AGE_KEY_FILE="$key_file" sops {{FILE}}
+
+encrypt-sops FILE:
+  @key_file="{{sops_age_key_file}}"; \
+  if [ ! -f "$key_file" ]; then \
+    echo "Missing age key: $key_file" >&2; \
+    exit 1; \
+  fi; \
+  case "{{FILE}}" in \
+    *.sops.yaml|*.sops.yml) ;; \
+    *) echo "encrypt-sops expects a .sops.yaml or .sops.yml file" >&2; exit 1 ;; \
+  esac; \
+  if [ ! -f "{{FILE}}" ]; then \
+    echo "Missing input file: {{FILE}}" >&2; \
+    exit 1; \
+  fi; \
+  SOPS_AGE_KEY_FILE="$key_file" sops --encrypt --in-place {{FILE}}
+
+decrypt-sops FILE:
+  @key_file="{{sops_age_key_file}}"; \
+  if [ ! -f "$key_file" ]; then \
+    echo "Missing age key: $key_file" >&2; \
+    exit 1; \
+  fi; \
+  SOPS_AGE_KEY_FILE="$key_file" sops --decrypt {{FILE}}
+
+# -----------------------------------------------------------------------------
+# Utility functions
+# -----------------------------------------------------------------------------
+
+# Resolve a node name to its IP from environment variables:
+# cp-1      -> CP_1_IP
+# worker-1  -> WORKER_1_IP
+node-ip NODE:
+  @var_name="$(echo '{{NODE}}' | tr '[:lower:]-' '[:upper:]_')_IP"; \
+  value="${!var_name:-}"; \
+  if [ -z "$value" ]; then \
+    echo "Missing env var: $var_name" >&2; \
+    exit 1; \
+  fi; \
+  echo "$value"
+
+# Resolve a node name to its role
+node-role NODE:
+  @case "{{NODE}}" in \
+    cp-*) echo controlplane ;; \
+    worker-*) echo worker ;; \
+    *) echo "Unknown node role for {{NODE}}" >&2; exit 1 ;; \
+  esac
+
+# Resolve a Helm chart version from an Argo CD Application manifest.
+chart-version APPLICATION CHART:
+  @version="$(yq -r '.spec.sources[] | select(.chart == "{{CHART}}") | .targetRevision' {{APPLICATION}})"; \
+  if [ -z "$version" ] || [ "$version" = "null" ]; then \
+    echo "Unable to resolve {{CHART}} chart version from {{APPLICATION}}" >&2; \
+    exit 1; \
+  fi; \
+  echo "$version"
+
+# -----------------------------------------------------------------------------
+# Generate Talos base configs
+# -----------------------------------------------------------------------------
+
+gen-config: check-tools init-dirs
+  talosctl gen config {{cluster_name}} {{cluster_endpoint}} \
+    --output-dir {{clusterconfig_dir}} \
+    --force
+  @echo "✓ Generated base Talos configs"
+
+# -----------------------------------------------------------------------------
+# Render node-specific configs
+# -----------------------------------------------------------------------------
+
+render-node NODE:
+  @role="$(just node-role {{NODE}})"; \
+  node_ip="$(just node-ip {{NODE}})"; \
+  base_input="{{clusterconfig_dir}}/${role}.yaml"; \
+  tmp_output="{{rendered_dir}}/{{NODE}}.tmp.yaml"; \
+  final_output="{{rendered_dir}}/{{NODE}}.yaml"; \
+  base_patch="{{base_dir}}/${role}.yaml"; \
+  node_patch="{{nodes_dir}}/{{NODE}}.yaml"; \
+  network_patch="$(mktemp)"; \
+  trap 'rm -f "$network_patch"' EXIT; \
+  if [ ! -f "$base_input" ]; then \
+    echo "Missing base input config: $base_input" >&2; \
+    exit 1; \
+  fi; \
+  printf '%s\n' \
+    'machine:' \
+    '  network:' \
+    '    nameservers:' > "$network_patch"; \
+  dns_servers="{{services_dns_servers}}"; \
+  for ns in ${dns_servers//,/ }; do \
+    printf '      - %s\n' "$ns" >> "$network_patch"; \
+  done; \
+  printf '%s\n' \
+    '    interfaces:' \
+    '      - deviceSelector:' \
+    '          physical: true' \
+    '        dhcp: false' \
+    '        addresses:' >> "$network_patch"; \
+  printf '          - %s/%s\n' "$node_ip" "{{services_cidr_prefix}}" >> "$network_patch"; \
+  printf '%s\n' \
+    '        routes:' \
+    '          - network: 0.0.0.0/0' \
+    '            gateway: {{services_gateway}}' >> "$network_patch"; \
+  if [ "$role" = controlplane ]; then \
+    printf '%s\n' \
+      '        vip:' \
+      '          ip: {{vip_ip}}' >> "$network_patch"; \
+  fi; \
+  cp "$base_input" "$tmp_output"; \
+  if [ -f "$base_patch" ]; then \
+    talosctl machineconfig patch "$tmp_output" \
+      --patch @"$base_patch" \
+      --output "$tmp_output"; \
+  fi; \
+  talosctl machineconfig patch "$tmp_output" \
+    --patch @"$network_patch" \
+    --output "$tmp_output"; \
+  if [ -f "$node_patch" ]; then \
+    talosctl machineconfig patch "$tmp_output" \
+      --patch @"$node_patch" \
+      --output "$final_output"; \
+  else \
+    cp "$tmp_output" "$final_output"; \
+  fi; \
+  rm -f "$tmp_output"; \
+  echo "✓ Rendered $final_output"
+
+render-controlplanes:
+  for node in {{controlplanes}}; do \
+    just render-node "$node"; \
+  done
+
+render-workers:
+  for node in {{workers}}; do \
+    just render-node "$node"; \
+  done
+
+render-all: gen-config render-controlplanes render-workers
+  @echo "✓ Rendered all node configs"
+
+# -----------------------------------------------------------------------------
+# Apply configs
+# -----------------------------------------------------------------------------
+
+apply-node NODE:
+  @ip="$(just node-ip {{NODE}})"; \
+  file="{{rendered_dir}}/{{NODE}}.yaml"; \
+  if [ ! -f "$file" ]; then \
+    echo "Missing rendered config: $file" >&2; \
+    exit 1; \
+  fi; \
+  echo "==> Applying $file to {{NODE}} ($ip)"; \
+  talosctl apply-config \
+    --insecure \
+    --nodes "$ip" \
+    --file "$file"
+
+apply-node-at NODE CURRENT_IP:
+  @file="{{rendered_dir}}/{{NODE}}.yaml"; \
+  if [ ! -f "$file" ]; then \
+    echo "Missing rendered config: $file" >&2; \
+    exit 1; \
+  fi; \
+  echo "==> Applying $file to {{NODE}} via {{CURRENT_IP}}"; \
+  talosctl apply-config \
+    --insecure \
+    --nodes "{{CURRENT_IP}}" \
+    --file "$file"
+
+apply-controlplanes:
+  for node in {{controlplanes}}; do \
+    just apply-node "$node"; \
+  done
+
+apply-workers:
+  for node in {{workers}}; do \
+    just apply-node "$node"; \
+  done
+
+apply-all: apply-controlplanes apply-workers
+  @echo "✓ Applied configs to all nodes"
+
+wait-node-final NODE:
+  @ip="$(just node-ip {{NODE}})"; \
+  deadline=$((SECONDS + 600)); \
+  echo "Waiting for {{NODE}} to become reachable on final IP $ip..."; \
+  until TALOSCONFIG={{talosconfig}} talosctl version \
+    --nodes "$ip" \
+    --endpoints "$ip" \
+    --short >/dev/null 2>&1; do \
+    if [ "$SECONDS" -ge "$deadline" ]; then \
+      echo "{{NODE}} did not become reachable on final IP $ip within 10m" >&2; \
+      exit 1; \
+    fi; \
+    sleep 2; \
+  done; \
+  echo "✓ {{NODE}} reachable on final IP $ip"
+
+apply-all-current:
+  @nodes="{{controlplanes}} {{workers}}"; \
+  for node in $nodes; do \
+    final_ip="$(just --quiet node-ip "$node")"; \
+    printf 'Current IP for %s [default: %s]: ' "$node" "$final_ip"; \
+    read -r current_ip; \
+    current_ip="${current_ip:-$final_ip}"; \
+    just apply-node-at "$node" "$current_ip"; \
+    just wait-node-final "$node"; \
+  done; \
+  echo "✓ Applied configs to all nodes using current IP prompts"
+
+# -----------------------------------------------------------------------------
+# Bootstrap / access
+# -----------------------------------------------------------------------------
+
+bootstrap:
+  @bootstrap_ip="$(just node-ip {{bootstrap_cp}})"; \
+  TALOSCONFIG={{talosconfig}} talosctl bootstrap \
+    --nodes "$bootstrap_ip" \
+    --endpoints "$bootstrap_ip"; \
+  echo "✓ Bootstrapped cluster from {{bootstrap_cp}} ($bootstrap_ip)"
+
+kubeconfig:
+  @bootstrap_ip="$(just node-ip {{bootstrap_cp}})"; \
+  TALOSCONFIG={{talosconfig}} talosctl kubeconfig {{kubeconfig}} \
+    --nodes "$bootstrap_ip" \
+    --endpoints "$bootstrap_ip" \
+    --force; \
+  echo "✓ kubeconfig written to {{kubeconfig}}"
+
+talos-health:
+  @bootstrap_ip="$(just node-ip {{bootstrap_cp}})"; \
+  TALOSCONFIG={{talosconfig}} talosctl health \
+    --nodes "$bootstrap_ip" \
+    --endpoints "$bootstrap_ip"
+
+wait-k8s:
+  KUBECONFIG={{kubeconfig}} kubectl wait --for=condition=Ready nodes --all --timeout=15m
+
+wait-node-ready NODE:
+  @deadline=$((SECONDS + 600)); \
+  echo "Waiting for Kubernetes node {{NODE}} to register..."; \
+  until KUBECONFIG={{kubeconfig}} kubectl get node {{NODE}} >/dev/null 2>&1; do \
+    if [ "$SECONDS" -ge "$deadline" ]; then \
+      echo "Kubernetes node {{NODE}} did not register within 10m" >&2; \
+      exit 1; \
+    fi; \
+    sleep 2; \
+  done; \
+  KUBECONFIG={{kubeconfig}} kubectl wait --for=condition=Ready node/{{NODE}} --timeout=10m; \
+  KUBECONFIG={{kubeconfig}} kubectl get node {{NODE}} -o wide
+
+wait-expected-nodes:
+  @for node in {{controlplanes}} {{workers}}; do \
+    just wait-node-ready "$node"; \
+  done
+
+nodes:
+  KUBECONFIG={{kubeconfig}} kubectl get nodes -o wide
+
+pods:
+  KUBECONFIG={{kubeconfig}} kubectl get pods -A
+
+verify-node NODE:
+  @echo "==> Verifying {{NODE}}"; \
+  just wait-node-final {{NODE}}; \
+  just wait-node-ready {{NODE}}; \
+  echo "✓ Verified {{NODE}}"
+
+# -----------------------------------------------------------------------------
+# Helm repos
+# -----------------------------------------------------------------------------
+
+helm-repos:
+  helm repo add cilium https://helm.cilium.io --force-update
+  helm repo add argo https://argoproj.github.io/argo-helm --force-update
+  helm repo update
+
+label-longhorn-node NODE:
+  KUBECONFIG={{kubeconfig}} kubectl label node {{NODE}} node.longhorn.io/create-default-disk=true --overwrite
+  @echo "✓ Labeled {{NODE}} for Longhorn default disk creation"
+
+label-longhorn-workers:
+  for node in {{workers}}; do \
+    just label-longhorn-node "$node"; \
+  done
+
+show-longhorn-nodes:
+  KUBECONFIG={{kubeconfig}} kubectl get nodes -L node.longhorn.io/create-default-disk
+
+# -----------------------------------------------------------------------------
+# Cilium
+# -----------------------------------------------------------------------------
+
+install-cilium: check-tools helm-repos
+  @version="$(just --quiet chart-version {{cilium_application}} cilium)"; \
+  KUBECONFIG={{kubeconfig}} helm upgrade --install cilium cilium/cilium \
+    --namespace kube-system \
+    --version "$version" \
+    --values workloads/cluster/cilium/values.yaml \
+    --wait \
+    --timeout 15m
+  @echo "✓ Cilium installed"
+
+cilium-status:
+  KUBECONFIG={{kubeconfig}} kubectl -n kube-system get pods -o wide
+
+# -----------------------------------------------------------------------------
+# Argo CD
+# -----------------------------------------------------------------------------
+
+apply-sops-age-secret:
+  @key_file="{{sops_age_key_file}}"; \
+  if [ ! -f "$key_file" ]; then \
+    echo "Missing age key: $key_file" >&2; \
+    echo "Generate or restore the key file configured in .env before bootstrapping Argo CD." >&2; \
+    exit 1; \
+  fi; \
+  KUBECONFIG={{kubeconfig}} kubectl create namespace argocd --dry-run=client -o yaml | KUBECONFIG={{kubeconfig}} kubectl apply -f -; \
+  KUBECONFIG={{kubeconfig}} kubectl -n argocd create secret generic sops-age \
+    --from-file=key.txt="$key_file" \
+    --dry-run=client -o yaml | KUBECONFIG={{kubeconfig}} kubectl apply -f -; \
+  echo "✓ Applied sops-age secret from $key_file"
+
+install-argocd: check-tools helm-repos apply-sops-age-secret
+  @version="$(just --quiet chart-version {{argocd_application}} argo-cd)"; \
+  KUBECONFIG={{kubeconfig}} helm upgrade --install argocd argo/argo-cd \
+    --namespace argocd \
+    --create-namespace \
+    --version "$version" \
+    --values workloads/cluster/argocd/values.yaml \
+    --wait \
+    --timeout 15m
+  @echo "✓ Argo CD installed"
+
+argocd-password:
+  @KUBECONFIG={{kubeconfig}} kubectl -n argocd get secret argocd-initial-admin-secret \
+    -o jsonpath='{.data.password}' | base64 -d; echo
+
+argocd-port-forward:
+  KUBECONFIG={{kubeconfig}} kubectl -n argocd port-forward svc/argocd-server 8080:80
+
+bootstrap-root-app:
+  KUBECONFIG={{kubeconfig}} kubectl apply -f bootstrap/appprojects.yaml
+  KUBECONFIG={{kubeconfig}} kubectl apply -f bootstrap/root-application.yaml
+  @echo "✓ Argo CD root app applied"
+
+# -----------------------------------------------------------------------------
+# Add nodes
+# -----------------------------------------------------------------------------
+
+add-worker NODE CURRENT_IP:
+  just render-node {{NODE}}
+  just apply-node-at {{NODE}} {{CURRENT_IP}}
+  just verify-node {{NODE}}
+  just label-longhorn-node {{NODE}}
+
+add-worker-at NODE CURRENT_IP:
+  just add-worker {{NODE}} {{CURRENT_IP}}
+
+add-controlplane NODE CURRENT_IP:
+  just render-node {{NODE}}
+  just apply-node-at {{NODE}} {{CURRENT_IP}}
+  just verify-node {{NODE}}
+
+add-controlplane-at NODE CURRENT_IP:
+  just add-controlplane {{NODE}} {{CURRENT_IP}}
+
+# -----------------------------------------------------------------------------
+# Upgrades
+# -----------------------------------------------------------------------------
+
+upgrade-node NODE VERSION:
+  @ip="$(just node-ip {{NODE}})"; \
+  echo "==> Upgrading {{NODE}} ($ip) to {{VERSION}}"; \
+  TALOSCONFIG={{talosconfig}} talosctl upgrade \
+    --nodes "$ip" \
+    --endpoints "$(just node-ip {{bootstrap_cp}})" \
+    --image ghcr.io/siderolabs/installer:{{VERSION}}
+
+upgrade-controlplanes VERSION:
+  for node in {{controlplanes}}; do \
+    just upgrade-node "$node" {{VERSION}}; \
+  done
+
+upgrade-workers VERSION:
+  for node in {{workers}}; do \
+    just upgrade-node "$node" {{VERSION}}; \
+  done
+
+# -----------------------------------------------------------------------------
+# Reset helpers
+# -----------------------------------------------------------------------------
+
+reset-node NODE:
+  @ip="$(just node-ip {{NODE}})"; \
+  echo "==> Resetting {{NODE}} ($ip)"; \
+  TALOSCONFIG={{talosconfig}} talosctl reset \
+    --graceful=false \
+    --reboot \
+    --nodes "$ip" \
+    --endpoints "$(just node-ip {{bootstrap_cp}})"
+
+reset-controlplanes:
+  for node in {{controlplanes}}; do \
+    just reset-node "$node"; \
+  done
+
+reset-workers:
+  for node in {{workers}}; do \
+    just reset-node "$node"; \
+  done
+
+# -----------------------------------------------------------------------------
+# Full flow
+# -----------------------------------------------------------------------------
+
+wait-api:
+  @echo "Waiting for Kubernetes API server to become available..."
+  @bootstrap_ip="$(just node-ip {{bootstrap_cp}})"; \
+  TALOSCONFIG={{talosconfig}} talosctl health \
+    --nodes "$bootstrap_ip" \
+    --endpoints "$bootstrap_ip" \
+    --wait-timeout 10m \
+    --server=false
+
+cluster-init: render-all apply-all-current bootstrap wait-api kubeconfig install-cilium wait-expected-nodes install-argocd label-longhorn-workers bootstrap-root-app
+  @echo ""
+  @echo "══════════════════════════════════════════════"
+  @echo "✓ Cluster bootstrap complete"
+  @echo "KUBECONFIG={{kubeconfig}}"
+  @echo "Control planes: {{controlplanes}}"
+  @echo "Workers: {{workers}}"
+  @echo "══════════════════════════════════════════════"
+
+validate-gitops:
+  ./scripts/validate-gitops.sh

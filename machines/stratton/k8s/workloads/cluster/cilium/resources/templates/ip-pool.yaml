@@ -1,0 +1,9 @@
+apiVersion: cilium.io/v2
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: {{ .Values.ipPool.name | quote }}
+spec:
+  blocks:
+{{ toYaml .Values.ipPool.blocks | nindent 4 }}
+  serviceSelector:
+{{ toYaml .Values.ipPool.serviceSelector | nindent 4 }}

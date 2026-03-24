@@ -1,0 +1,20 @@
+{{- $acme := .Values.acme | default dict -}}
+{{- $email := required "acme.email is required" (get $acme "email") -}}
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+  name: {{ .Values.acme.issuerName | quote }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  acme:
+    email: {{ $email | quote }}
+    server: {{ .Values.acme.server | quote }}
+    privateKeySecretRef:
+      name: {{ .Values.acme.privateKeySecretName | quote }}
+    solvers:
+      - dns01:
+          cloudflare:
+            apiTokenSecretRef:
+              name: {{ .Values.cloudflare.secretName | quote }}
+              key: {{ .Values.cloudflare.secretKey | quote }}

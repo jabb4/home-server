@@ -1,0 +1,38 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: traefik
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  project: infra
+  sources:
+    - repoURL: https://traefik.github.io/charts
+      chart: traefik
+      targetRevision: 39.0.6
+      helm:
+        releaseName: traefik
+        valueFiles:
+          - $values/machines/stratton/k8s/workloads/infra/traefik/values.yaml
+    - repoURL: https://github.com/jabb4/home-server.git
+      targetRevision: v2
+      ref: values
+    - repoURL: https://github.com/jabb4/home-server.git
+      targetRevision: v2
+      path: machines/stratton/k8s/workloads/infra/traefik/resources
+      helm:
+        releaseName: traefik-resources
+        valueFiles:
+          - secrets://secrets.sops.yaml
+          - secrets://$values/machines/stratton/k8s/workloads/infra/crowdsec/resources/secrets.sops.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: infra
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - SkipDryRunOnMissingResource=true

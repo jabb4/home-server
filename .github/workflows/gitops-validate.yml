@@ -1,0 +1,47 @@
+name: GitOps Validate
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/gitops-validate.yml"
+      - "machines/stratton/k8s/**"
+  push:
+    branches:
+      - main
+      - v2
+    paths:
+      - ".github/workflows/gitops-validate.yml"
+      - "machines/stratton/k8s/**"
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+
+      - name: Install yq
+        run: |
+          sudo wget -qO /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/v4.46.1/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
+
+      - name: Install kubeconform
+        run: |
+          curl -sSL https://github.com/yannh/kubeconform/releases/download/v0.6.7/kubeconform-linux-amd64.tar.gz \
+            | sudo tar -xz -C /usr/local/bin kubeconform
+
+      - name: Add Helm repos
+        run: |
+          helm repo add cilium https://helm.cilium.io/
+          helm repo add longhorn https://charts.longhorn.io
+          helm repo add crowdsec https://crowdsecurity.github.io/helm-charts
+          helm repo add jetstack https://charts.jetstack.io
+          helm repo add traefik https://traefik.github.io/charts
+          helm repo update
+
+      - name: Validate GitOps manifests
+        run: ./machines/stratton/k8s/scripts/validate-gitops.sh

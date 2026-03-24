@@ -1,0 +1,14 @@
+backups:
+  enabled: false
+
+backupTarget:
+  secretName: longhorn-s3-backup-target
+
+recurringJob:
+  name: daily-backup
+  cron: "0 3 * * *"
+  task: backup
+  groups:
+    - default
+  retain: 7
+  concurrency: 1

@@ -1,0 +1,45 @@
+replicaCount: 1
+
+image:
+  repository: ghcr.io/gethomepage/homepage
+  tag: v1.10.1
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: true
+  className: traefik
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+    traefik.ingress.kubernetes.io/router.tls: "true"
+    traefik.ingress.kubernetes.io/router.middlewares: infra-ui-default@kubernetescrd
+  host: homepage.local.jabbas.dev
+  path: /
+  pathType: Prefix
+  tls:
+    enabled: true
+
+timezone: Europe/Stockholm
+allowedHosts: homepage.local.jabbas.dev
+
+existingSecret: ""
+
+# Use an externally managed Secret instead of the chart-managed one.
+# Leave this empty when using the encrypted secrets.sops.yaml flow.
+secret:
+  create: false
+  name: homepage-secrets
+  env: {}
+
+resources: {}
+
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault

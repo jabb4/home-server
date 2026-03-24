@@ -1,1 +1,25 @@
+# -----------------------------------------------------------------------------
+# Local environment files
+# -----------------------------------------------------------------------------
+
+# Ignore all .env files by default.
 .env
+**/.env
+
+# Track the cluster-specific Talos/Kubernetes environment file.
+!machines/stratton/k8s/.env
+
+# -----------------------------------------------------------------------------
+# Talos generated artifacts
+# -----------------------------------------------------------------------------
+
+# Generated machine configs, rendered node configs, talosconfig, and kubeconfig.
+machines/stratton/k8s/talos/clusterconfig/
+
+# -----------------------------------------------------------------------------
+# Editor and OS noise
+# -----------------------------------------------------------------------------
+
+.DS_Store
+*.swp
+*.swo

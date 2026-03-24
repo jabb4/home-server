@@ -1,0 +1,243 @@
+dashboard:
+  host: traefik.local.jabbas.dev
+  entryPoints:
+    - websecure
+  middlewares:
+    - ui-default
+  tls:
+    secretName: infra-local-jabbas-dev-tls
+  auth:
+    middlewareName: traefik-dashboard-auth
+    secretName: traefik-dashboard-auth
+
+sharedMiddlewares:
+  crowdsecBouncer:
+    enabled: true
+    logLevel: INFO
+    crowdsecMode: stream
+    crowdsecLapiScheme: http
+    crowdsecLapiHost: crowdsec-service.infra.svc.cluster.local:8080
+    updateIntervalSeconds: 60
+    httpTimeoutSeconds: 10
+    
+  defaultHeaders:
+    enabled: true
+    browserXssFilter: true
+    contentTypeNosniff: true
+    forceSTSHeader: true
+    stsIncludeSubdomains: true
+    stsPreload: true
+    stsSeconds: 15552000
+    customRequestHeaders:
+      X-Forwarded-Proto: https
+
+  disallowIFrameEmbedding:
+    enabled: true
+    frameDeny: true
+    customFrameOptionsValue: SAMEORIGIN
+
+  rateLimit:
+    enabled: true
+    average: 100
+    burst: 200
+
+  uiDefault:
+    enabled: true
+    middlewares:
+      - crowdsec-bouncer
+      - rate-limit
+      - default-headers
+      - disallow-iframe-embedding
+
+  piHoleRedirect:
+    enabled: true
+    regex: "^https://([^/]+)/?$"
+    replacement: "https://${1}/admin/"
+
+  authentikForwardAuth:
+    enabled: false
+    address: http://authentik-server.infra.svc.cluster.local:9000/outpost.goauthentik.io/auth/traefik
+    trustForwardHeader: true
+    authResponseHeaders:
+      - X-authentik-username
+      - X-authentik-groups
+      - X-authentik-entitlements
+      - X-authentik-email
+      - X-authentik-name
+      - X-authentik-uid
+      - X-authentik-jwt
+      - X-authentik-meta-jwks
+      - X-authentik-meta-outpost
+      - X-authentik-meta-provider
+      - X-authentik-meta-app
+      - X-authentik-meta-version
+
+tlsStore:
+  enabled: true
+  defaultCertSecretName: infra-local-jabbas-dev-tls
+
+tlsOptions:
+  enabled: true
+  minVersion: VersionTLS12
+  cipherSuites:
+    - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+    - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+    - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+    - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+    - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
+    - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+
+externalRouteDefaults:
+  entryPoints:
+    - websecure
+  tls:
+    secretName: infra-local-jabbas-dev-tls
+  passHostHeader: true
+
+externalRoutes:
+  - name: unifi
+    host: unifi.local.jabbas.dev
+    address: 192.168.10.1
+    port: 443
+    scheme: https
+    transport:
+      name: unifi-backend
+      insecureSkipVerify: true
+    middlewares:
+      - ui-default
+
+  - name: pi-hole
+    host: pi-hole.local.jabbas.dev
+    address: 192.168.20.51
+    port: 443
+    scheme: https
+    transport:
+      name: pi-hole-backend
+      insecureSkipVerify: true
+    middlewares:
+      - ui-default
+      - pi-hole-redirect
+
+  - name: home-assistant
+    host: home-assistant.local.jabbas.dev
+    address: 192.168.20.104
+    port: 8123
+    scheme: http
+    middlewares:
+      - ui-default
+
+  - name: truenas
+    host: truenas.local.jabbas.dev
+    address: 192.168.20.101
+    port: 443
+    scheme: https
+    transport:
+      name: truenas-backend
+      insecureSkipVerify: true
+    middlewares:
+      - ui-default
+
+  - name: proxmox
+    host: pve.local.jabbas.dev
+    address: 192.168.20.2
+    port: 8006
+    scheme: https
+    transport:
+      name: proxmox-backend
+      insecureSkipVerify: true
+    middlewares:
+      - ui-default
+
+  - name: proxmox-prometheus-node
+    host: stratton-prometheus-node.local.jabbas.dev
+    address: 192.168.20.2
+    port: 9100
+    scheme: http
+    middlewares:
+      - ui-default
+
+  - name: authentik
+    host: auth.local.jabbas.dev
+    address: 192.168.20.100
+    port: 9443
+    scheme: https
+    transport:
+      name: authentik-backend
+      insecureSkipVerify: true
+    middlewares:
+      - ui-default
+
+  - name: portainer
+    host: portainer.local.jabbas.dev
+    address: 192.168.20.100
+    port: 8443
+    scheme: https
+    transport:
+      name: portainer-backend
+      insecureSkipVerify: true
+    middlewares:
+      - ui-default
+
+  - name: microbin
+    host: microbin.local.jabbas.dev
+    address: 192.168.20.103
+    port: 8081
+    scheme: http
+    middlewares:
+      - ui-default
+
+  - name: jellyfin
+    host: jellyfin.local.jabbas.dev
+    address: 192.168.20.103
+    port: 8096
+    scheme: http
+    middlewares:
+      - ui-default
+
+  - name: seerr
+    host: seerr.local.jabbas.dev
+    address: 192.168.20.103
+    port: 5055
+    scheme: http
+    middlewares:
+      - ui-default
+
+  - name: sabnzbd
+    host: sabnzbd.local.jabbas.dev
+    address: 192.168.20.103
+    port: 8080
+    scheme: http
+    middlewares:
+      - ui-default
+
+  - name: radarr
+    host: radarr.local.jabbas.dev
+    address: 192.168.20.103
+    port: 7878
+    scheme: http
+    middlewares:
+      - ui-default
+
+  - name: sonarr
+    host: sonarr.local.jabbas.dev
+    address: 192.168.20.103
+    port: 8989
+    scheme: http
+    middlewares:
+      - ui-default
+
+  - name: prowlarr
+    host: prowlarr.local.jabbas.dev
+    address: 192.168.20.103
+    port: 9696
+    scheme: http
+    middlewares:
+      - ui-default
+
+  - name: bazarr
+    host: bazarr.local.jabbas.dev
+    address: 192.168.20.103
+    port: 6767
+    scheme: http
+    middlewares:
+      - ui-default
