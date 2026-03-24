@@ -150,6 +150,11 @@ Use this base configuration for each VM:
    - VLAN tag: `20`
    - Model: `VirtIO`
 
+Do not use the stock `talos-metal-amd64.iso` for workers in this cluster.
+Longhorn requires the Talos system extensions above, and `longhorn-manager`
+will crash with `iscsiadm/open-iscsi installed on the host` errors if the node
+was installed without `iscsi-tools`.
+
 Additional worker storage:
 
 - every worker should get a second `200GiB` disk dedicated to `Longhorn`
@@ -180,6 +185,20 @@ Current intended nodes:
 
 - `cp-1` on `10.0.20.11`
 - `worker-1` on `10.0.20.21`
+
+The desired Talos runtime version is also declared in
+[`.env`](/Users/jacob/Projects/home-server/machines/stratton/k8s/.env) as
+`TALOS_VERSION`. Keep that aligned with the Talos Image Factory ISO/installer
+you use for the cluster. `TALOS_SCHEMATIC_ID` should point at the same Image
+Factory schematic.
+
+The rendered Talos machine config now also sets `machine.install.image` from
+those two values, so applying the config tells Talos exactly which Image
+Factory installer image to install on disk:
+
+```text
+factory.talos.dev/metal-installer/<TALOS_SCHEMATIC_ID>:v<TALOS_VERSION>
+```
 
 Make sure each node will be reachable in Talos maintenance mode before
 continuing. When booting a stock Talos ISO, that often means a temporary DHCP
@@ -212,12 +231,16 @@ just cluster-init
 `cluster-init` will prompt for the current IP of every node while it is still
 in Talos maintenance mode. Press `Enter` to use the final `.env` IP if the node
 is already reachable there. For each node, the flow now waits for Talos to come
-back on the final static IP before continuing.
+back on the final static IP before continuing. Because the rendered machine
+config already declares the installer image, Talos installs the expected image
+as part of the normal bootstrap flow. Before Argo CD installs Longhorn,
+`cluster-init` then verifies the live Talos version, the live schematic, and
+the required Longhorn worker extensions.
 
 `cluster-init` runs:
 
 ```text
-render-all -> apply-all-current -> bootstrap -> wait-api -> kubeconfig -> install-cilium -> wait-expected-nodes -> install-argocd -> label-longhorn-workers -> bootstrap-root-app
+render-all -> apply-all-current -> bootstrap -> wait-api -> kubeconfig -> install-cilium -> wait-expected-nodes -> preflight-talos-image -> install-argocd -> label-longhorn-workers -> bootstrap-root-app
 ```
 
 Generated local state is written under:
@@ -244,7 +267,32 @@ kubectl get pods -A
 just cilium-status
 kubectl -n argocd get applications.argoproj.io
 talosctl -n 10.0.20.21 get volumestatus u-longhorn
+just preflight-talos-image
+just check-node-versions
+just check-node-schematics
+just check-longhorn-workers
 ```
+
+## Longhorn prerequisite failure recovery
+
+If `longhorn-manager` crashes with an error mentioning
+`iscsiadm/open-iscsi installed on the host`, the worker was installed or
+upgraded with the wrong Talos image.
+
+Recovery options:
+
+1. Rebuild the worker from a Talos Image Factory ISO that includes
+   `iscsi-tools` and `siderolabs/util-linux-tools`.
+2. Or upgrade the node in place to an Image Factory installer image built from
+   the correct schematic.
+
+Set `TALOS_SCHEMATIC_ID` in [`.env`](/Users/jacob/Projects/home-server/machines/stratton/k8s/.env)
+to the Image Factory schematic ID you used for the cluster. `just upgrade-node`
+now uses that schematic so future upgrades keep the required Longhorn host
+extensions instead of silently dropping them, and it verifies the node comes
+back on the expected target version and schematic. `just preflight-talos-image`
+is now validation-only; if you need to repair drift on already-installed nodes,
+use `just reconcile-talos-image`.
 
 Current GitOps-managed applications expected after bootstrap:
 

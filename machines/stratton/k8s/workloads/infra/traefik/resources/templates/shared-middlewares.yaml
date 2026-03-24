@@ -104,6 +104,25 @@ spec:
 {{- end }}
 {{- end }}
 
+{{- with $middlewares.uiInternal }}
+{{- if .enabled }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: ui-internal
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  chain:
+    middlewares:
+{{- range .middlewares }}
+      - name: {{ . | quote }}
+{{- end }}
+{{- end }}
+{{- end }}
+
 {{- with $middlewares.piHoleRedirect }}
 {{- if .enabled }}
 ---

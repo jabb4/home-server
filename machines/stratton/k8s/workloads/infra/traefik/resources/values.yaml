@@ -3,7 +3,7 @@ dashboard:
   entryPoints:
     - websecure
   middlewares:
-    - ui-default
+    - ui-internal
   tls:
     secretName: infra-local-jabbas-dev-tls
   auth:
@@ -45,6 +45,13 @@ sharedMiddlewares:
     enabled: true
     middlewares:
       - crowdsec-bouncer
+      - rate-limit
+      - default-headers
+      - disallow-iframe-embedding
+
+  uiInternal:
+    enabled: true
+    middlewares:
       - rate-limit
       - default-headers
       - disallow-iframe-embedding
@@ -103,9 +110,10 @@ clusterRoutes:
     scheme: https
     transport:
       name: argocd-backend
+      reference: infra-argocd-backend@kubernetescrd
       insecureSkipVerify: true
     middlewares:
-      - ui-default
+      - ui-internal
 
   - name: hubble
     host: hubble.local.jabbas.dev
@@ -114,7 +122,7 @@ clusterRoutes:
     port: 80
     scheme: http
     middlewares:
-      - ui-default
+      - ui-internal
 
 externalRouteDefaults:
   entryPoints:

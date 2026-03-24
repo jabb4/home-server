@@ -3,8 +3,10 @@
 {{- if or (not (hasKey . "enabled")) .enabled }}
 {{- $route := . -}}
 {{- $transportName := "" -}}
+{{- $transportRef := "" -}}
 {{- with $route.transport }}
 {{- $transportName = required (printf "clusterRoutes[%s].transport.name is required" $route.name) .name -}}
+{{- $transportRef = .reference | default $transportName -}}
 ---
 apiVersion: traefik.io/v1alpha1
 kind: ServersTransport
@@ -55,7 +57,7 @@ spec:
           port: {{ $route.port }}
           scheme: {{ $route.scheme | default "http" | quote }}
 {{- if $transportName }}
-          serversTransport: {{ $transportName | quote }}
+          serversTransport: {{ $transportRef | quote }}
 {{- else if $route.serversTransport }}
           serversTransport: {{ $route.serversTransport | quote }}
 {{- end }}

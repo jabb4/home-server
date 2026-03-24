@@ -8,6 +8,8 @@ set dotenv-load := true
 cluster_name := env_var("CLUSTER_NAME")
 vip_ip := env_var("VIP_IP")
 cluster_endpoint := "https://" + vip_ip + ":6443"
+talos_version := env_var("TALOS_VERSION")
+talos_schematic_id := env_var_or_default("TALOS_SCHEMATIC_ID", "")
 
 talos_dir := "talos"
 clusterconfig_dir := talos_dir + "/clusterconfig"
@@ -49,6 +51,9 @@ show-vars:
   @echo "controlplanes={{controlplanes}}"
   @echo "workers={{workers}}"
   @echo "bootstrap_cp={{bootstrap_cp}}"
+  @echo "talos_version={{talos_version}}"
+  @echo "talos_schematic_id={{talos_schematic_id}}"
+  @echo "desired_installer_image=$(just installer-image {{talos_version}})"
 
 # -----------------------------------------------------------------------------
 # Generic local setup helpers
@@ -135,6 +140,45 @@ chart-version APPLICATION CHART:
   fi; \
   echo "$version"
 
+talos-version-tag VERSION:
+  @case "{{VERSION}}" in \
+    v*) echo "{{VERSION}}" ;; \
+    *) echo "v{{VERSION}}" ;; \
+  esac
+
+node-version NODE:
+  @ip="$(just node-ip {{NODE}})"; \
+  TALOSCONFIG={{talosconfig}} talosctl version \
+    --nodes "$ip" \
+    --endpoints "$ip" \
+    --short 2>/dev/null | awk '/Tag:/ {print $2; exit}'
+
+node-schematic NODE:
+  @ip="$(just node-ip {{NODE}})"; \
+  TALOSCONFIG={{talosconfig}} talosctl get extensions \
+    --nodes "$ip" \
+    --endpoints "$ip" 2>/dev/null | awk '$6 == "schematic" {print $7; exit}'
+
+upgrade-endpoint NODE:
+  @for cp in {{controlplanes}}; do \
+    if [ "$cp" != "{{NODE}}" ]; then \
+      just node-ip "$cp"; \
+      exit 0; \
+    fi; \
+  done; \
+  just node-ip {{NODE}}
+
+# Resolve the Talos installer image that preserves the cluster schematic.
+installer-image VERSION:
+  @schematic_id="{{talos_schematic_id}}"; \
+  version_tag="$(just talos-version-tag {{VERSION}})"; \
+  if [ -z "$schematic_id" ]; then \
+    echo "Missing TALOS_SCHEMATIC_ID in .env." >&2; \
+    echo "Set it to your Talos Image Factory schematic ID so upgrades preserve required extensions like iscsi-tools." >&2; \
+    exit 1; \
+  fi; \
+  echo "factory.talos.dev/metal-installer/${schematic_id}:${version_tag}"
+
 # -----------------------------------------------------------------------------
 # Generate Talos base configs
 # -----------------------------------------------------------------------------
@@ -152,6 +196,7 @@ gen-config: check-tools init-dirs
 render-node NODE:
   @role="$(just node-role {{NODE}})"; \
   node_ip="$(just node-ip {{NODE}})"; \
+  install_image="$(just installer-image {{talos_version}})"; \
   base_input="{{clusterconfig_dir}}/${role}.yaml"; \
   tmp_output="{{rendered_dir}}/{{NODE}}.tmp.yaml"; \
   final_output="{{rendered_dir}}/{{NODE}}.yaml"; \
@@ -165,8 +210,11 @@ render-node NODE:
   fi; \
   printf '%s\n' \
     'machine:' \
+    '  install:' > "$network_patch"; \
+  printf '    image: "%s"\n' "$install_image" >> "$network_patch"; \
+  printf '%s\n' \
     '  network:' \
-    '    nameservers:' > "$network_patch"; \
+    '    nameservers:' >> "$network_patch"; \
   dns_servers="{{services_dns_servers}}"; \
   for ns in ${dns_servers//,/ }; do \
     printf '      - %s\n' "$ns" >> "$network_patch"; \
@@ -347,6 +395,107 @@ verify-node NODE:
   just wait-node-ready {{NODE}}; \
   echo "✓ Verified {{NODE}}"
 
+check-longhorn-worker-prereqs NODE:
+  @ip="$(just node-ip {{NODE}})"; \
+  echo "==> Checking Longhorn prerequisites on {{NODE}} ($ip)"; \
+  extensions="$(TALOSCONFIG={{talosconfig}} talosctl --nodes "$ip" --endpoints "$ip" get extensions 2>/dev/null || true)"; \
+  if ! echo "$extensions" | grep -Eq '(^|[[:space:]])iscsi-tools($|[[:space:]])'; then \
+    echo "Missing Talos extension iscsi-tools on {{NODE}}." >&2; \
+    echo "Longhorn requires a Talos Image Factory image with iscsi-tools installed." >&2; \
+    exit 1; \
+  fi; \
+  if ! echo "$extensions" | grep -Eq '(^|[[:space:]])util-linux-tools($|[[:space:]])'; then \
+    echo "Missing Talos extension util-linux-tools on {{NODE}}." >&2; \
+    echo "Longhorn requires a Talos Image Factory image with util-linux-tools installed." >&2; \
+    exit 1; \
+  fi; \
+  echo "✓ {{NODE}} has the required Talos extensions for Longhorn"
+
+check-longhorn-workers:
+  @for node in {{workers}}; do \
+    just check-longhorn-worker-prereqs "$node"; \
+  done
+
+check-node-version NODE:
+  @just check-node-version-is {{NODE}} {{talos_version}}
+
+check-node-version-is NODE VERSION:
+  @expected_tag="$(just talos-version-tag {{VERSION}})"; \
+  actual_tag="$(just node-version {{NODE}})"; \
+  if [ -z "$actual_tag" ]; then \
+    echo "Unable to determine Talos version for {{NODE}}." >&2; \
+    exit 1; \
+  fi; \
+  if [ "$actual_tag" != "$expected_tag" ]; then \
+    echo "Talos version mismatch on {{NODE}}: expected $expected_tag, got $actual_tag." >&2; \
+    exit 1; \
+  fi; \
+  echo "✓ {{NODE}} is running Talos $actual_tag"
+
+check-node-versions:
+  @for node in {{controlplanes}} {{workers}}; do \
+    just check-node-version "$node"; \
+  done
+
+check-node-schematic NODE:
+  @expected_schematic="{{talos_schematic_id}}"; \
+  actual_schematic="$(just node-schematic {{NODE}})"; \
+  if [ -z "$expected_schematic" ]; then \
+    echo "Missing TALOS_SCHEMATIC_ID in .env." >&2; \
+    exit 1; \
+  fi; \
+  if [ -z "$actual_schematic" ]; then \
+    echo "Unable to determine installed schematic on {{NODE}}." >&2; \
+    exit 1; \
+  fi; \
+  if [ "$actual_schematic" != "$expected_schematic" ]; then \
+    echo "Talos schematic mismatch on {{NODE}}: expected $expected_schematic, got $actual_schematic." >&2; \
+    exit 1; \
+  fi; \
+  echo "✓ {{NODE}} is running schematic $actual_schematic"
+
+check-node-schematics:
+  @for node in {{controlplanes}} {{workers}}; do \
+    just check-node-schematic "$node"; \
+  done
+
+preflight-talos-image:
+  @for node in {{controlplanes}} {{workers}}; do \
+    just check-node-version "$node"; \
+    just check-node-schematic "$node"; \
+  done
+  @for node in {{workers}}; do \
+    just check-longhorn-worker-prereqs "$node"; \
+  done
+  @echo "✓ Talos version, schematic, and required worker extensions are correct"
+
+reconcile-node-image NODE:
+  @expected_tag="$(just talos-version-tag {{talos_version}})"; \
+  expected_schematic="{{talos_schematic_id}}"; \
+  actual_tag="$(just node-version {{NODE}})"; \
+  actual_schematic="$(just node-schematic {{NODE}})"; \
+  if [ -z "$expected_schematic" ]; then \
+    echo "Missing TALOS_SCHEMATIC_ID in .env." >&2; \
+    exit 1; \
+  fi; \
+  if [ "$actual_tag" = "$expected_tag" ] && [ "$actual_schematic" = "$expected_schematic" ]; then \
+    echo "✓ {{NODE}} already matches Talos $expected_tag and schematic $expected_schematic"; \
+  else \
+    echo "==> Reconciling {{NODE}} to Talos $expected_tag with schematic $expected_schematic"; \
+    just upgrade-node {{NODE}} {{talos_version}}; \
+  fi; \
+  just check-node-version {{NODE}}; \
+  just check-node-schematic {{NODE}}; \
+  if [ "$(just node-role {{NODE}})" = worker ]; then \
+    just check-longhorn-worker-prereqs {{NODE}}; \
+  fi
+
+reconcile-talos-image:
+  @for node in {{controlplanes}} {{workers}}; do \
+    just reconcile-node-image "$node"; \
+  done
+  @echo "✓ Talos version, schematic, and required worker extensions are reconciled"
+
 # -----------------------------------------------------------------------------
 # Helm repos
 # -----------------------------------------------------------------------------
@@ -433,6 +582,8 @@ add-worker NODE CURRENT_IP:
   just render-node {{NODE}}
   just apply-node-at {{NODE}} {{CURRENT_IP}}
   just verify-node {{NODE}}
+  just check-node-version {{NODE}}
+  just check-longhorn-worker-prereqs {{NODE}}
   just label-longhorn-node {{NODE}}
 
 add-worker-at NODE CURRENT_IP:
@@ -442,6 +593,7 @@ add-controlplane NODE CURRENT_IP:
   just render-node {{NODE}}
   just apply-node-at {{NODE}} {{CURRENT_IP}}
   just verify-node {{NODE}}
+  just check-node-version {{NODE}}
 
 add-controlplane-at NODE CURRENT_IP:
   just add-controlplane {{NODE}} {{CURRENT_IP}}
@@ -452,11 +604,20 @@ add-controlplane-at NODE CURRENT_IP:
 
 upgrade-node NODE VERSION:
   @ip="$(just node-ip {{NODE}})"; \
+  image="$(just installer-image {{VERSION}})"; \
+  endpoint="$(just upgrade-endpoint {{NODE}})"; \
   echo "==> Upgrading {{NODE}} ($ip) to {{VERSION}}"; \
   TALOSCONFIG={{talosconfig}} talosctl upgrade \
     --nodes "$ip" \
-    --endpoints "$(just node-ip {{bootstrap_cp}})" \
-    --image ghcr.io/siderolabs/installer:{{VERSION}}
+    --endpoints "$endpoint" \
+    --image "$image"; \
+  just wait-node-final {{NODE}}; \
+  just wait-node-ready {{NODE}}; \
+  just check-node-version-is {{NODE}} {{VERSION}}; \
+  just check-node-schematic {{NODE}}; \
+  if [ "$(just node-role {{NODE}})" = worker ]; then \
+    just check-longhorn-worker-prereqs {{NODE}}; \
+  fi
 
 upgrade-controlplanes VERSION:
   for node in {{controlplanes}}; do \
@@ -507,7 +668,7 @@ wait-api: kubeconfig
   done; \
   echo "✓ Kubernetes API server is reachable"
 
-cluster-init: render-all apply-all-current bootstrap wait-api install-cilium wait-expected-nodes install-argocd label-longhorn-workers bootstrap-root-app
+cluster-init: render-all apply-all-current bootstrap wait-api install-cilium wait-expected-nodes preflight-talos-image install-argocd label-longhorn-workers bootstrap-root-app
   @echo ""
   @echo "══════════════════════════════════════════════"
   @echo "✓ Cluster bootstrap complete"
