@@ -11,6 +11,8 @@ data:
 {{ .Files.Get "files/config/custom.js" | indent 4 }}
   docker.yaml: |
 {{ .Files.Get "files/config/docker.yaml" | indent 4 }}
+  kubernetes.yaml: |
+{{ .Files.Get "files/config/kubernetes.yaml" | indent 4 }}
   proxmox.yaml: |
 {{ .Files.Get "files/config/proxmox.yaml" | indent 4 }}
   services.yaml: |
