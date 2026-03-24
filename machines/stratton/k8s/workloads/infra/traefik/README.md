@@ -24,14 +24,20 @@ Before first sync, edit:
 just edit-sops workloads/infra/traefik/resources/secrets.sops.yaml
 ```
 
-`resources/secrets.sops.yaml` now only carries the dashboard basic-auth data.
-Cloudflare ACME credentials live with the `cert-manager` workload instead.
+`resources/secrets.sops.yaml` carries the dashboard basic-auth data and the
+shared CrowdSec bouncer key because the Traefik plugin expects that key inline
+in the middleware spec. Cloudflare ACME credentials live with the
+`cert-manager` workload instead.
 
 Current route model:
 
 - in-cluster apps can keep using standard Kubernetes `Ingress`
 - shared security/headers middleware is referenced from the `infra` namespace
 - CrowdSec is part of the shared middleware chain for Traefik routes
+- Traefik talks to the CrowdSec LAPI in the dedicated `crowdsec` namespace at
+  `crowdsec-service.crowdsec.svc.cluster.local:8080`
+- selected cluster UIs that do not own their own Ingress can be exposed through
+  `resources/templates/cluster-routes.yaml`
 - external legacy services use Traefik CRDs so HTTPS backends and per-route
   middleware stay explicit
 - namespace-local wildcard TLS secrets are issued by `cert-manager` and
@@ -63,3 +69,13 @@ Not migrated yet:
 - Authentik forward-auth is scaffolded but disabled by default
 - Cloudflare Warp is intentionally not wired into the Kubernetes Traefik
   deployment
+
+CrowdSec notes:
+
+- `service.spec.externalTrafficPolicy: Local` keeps the real client IP intact
+  for the bouncer plugin.
+- Do not trust forwarded headers broadly unless you add an actual upstream
+  proxy and explicitly know which source IPs should be trusted.
+- Keep `crowdsecBouncer.lapiKey` identical in
+  `workloads/infra/crowdsec/resources/secrets.sops.yaml` and
+  `workloads/infra/traefik/resources/secrets.sops.yaml`.

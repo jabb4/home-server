@@ -64,10 +64,11 @@ You also need:
 - the repo state committed and pushed to branch `v2` before relying on Argo CD
 - the SOPS age private key present at the path configured in `.env`
 - reachability to each node while it is in Talos maintenance mode
-- the cert-manager and Traefik secrets updated in
+- the cert-manager, CrowdSec, and Traefik secrets updated in
   `workloads/infra/cert-manager/resources/secrets.sops.yaml` and
+  `workloads/infra/crowdsec/resources/secrets.sops.yaml` and
   `workloads/infra/traefik/resources/secrets.sops.yaml` before first sync if
-  you want working TLS and dashboard auth
+  you want working TLS, dashboard auth, and CrowdSec remediation
 
 Important:
 
@@ -152,7 +153,10 @@ Use this base configuration for each VM:
 Additional worker storage:
 
 - every worker should get a second `200GiB` disk dedicated to `Longhorn`
-- set the Proxmox disk serial to `<worker-name>-longhorn`
+- Talos currently matches that disk by size, not by serial, because the Proxmox
+  serial is not surfacing in `talosctl get disks` on this setup
+- keep the Longhorn disk larger than the system disk and avoid attaching any
+  other large non-system disks unless you also update the node patch
 - control planes do not get a Longhorn disk
 
 Example after creating the VM and adding the second worker disk:
@@ -162,8 +166,15 @@ qm set <vmid> --scsi1 VM-storage:200,ssd=1,discard=on,serial=<worker-name>-longh
 ```
 
 Adjust the VM ID, storage name, disk slot, and serial to match the worker you
-are adding. The important part is that the Proxmox disk serial matches the
-Talos `UserVolumeConfig` disk selector.
+are adding. Setting the serial is still useful for inventory and future
+debugging, but the current Talos `UserVolumeConfig` selector matches the
+dedicated Longhorn disk by size:
+
+```yaml
+provisioning:
+  diskSelector:
+    match: !system_disk && disk.size > 150u * GiB
+```
 
 Current intended nodes:
 
@@ -275,6 +286,7 @@ Before the first `cert-manager` and Traefik sync, edit:
 
 ```bash
 just edit-sops workloads/infra/cert-manager/resources/secrets.sops.yaml
+just edit-sops workloads/infra/crowdsec/resources/secrets.sops.yaml
 just edit-sops workloads/infra/traefik/resources/secrets.sops.yaml
 ```
 
@@ -282,7 +294,10 @@ Fill in:
 
 - `cert-manager/resources/secrets.sops.yaml`: `acme.email`
 - `cert-manager/resources/secrets.sops.yaml`: `cloudflare.apiToken`
+- `crowdsec/resources/secrets.sops.yaml`: `crowdsecBouncer.lapiKey`
 - `traefik/resources/secrets.sops.yaml`: `dashboard.basicAuthUsers`
+- `traefik/resources/secrets.sops.yaml`: `crowdsecBouncer.lapiKey`
+- Keep the two `crowdsecBouncer.lapiKey` values identical.
 
 Traefik is exposed on `10.0.20.80` through Cilium LB IPAM and L2 announcements.
 Traefik runs as a `DaemonSet`, so every worker node gets a local ingress pod.
@@ -292,8 +307,10 @@ client IPs for CrowdSec while still scaling from one worker to many.
 the `infra` and `apps` namespaces.
 Shared Traefik middleware and the external route catalog live in
 `workloads/infra/traefik/resources/values.yaml`.
-CrowdSec runs in `infra`, tails Traefik logs, and feeds decisions back through
-the Traefik bouncer plugin.
+CrowdSec runs in the dedicated `crowdsec` namespace, reads Traefik pod logs via
+the Kubernetes API, and feeds decisions back through the Traefik bouncer
+plugin. Traefik keeps `externalTrafficPolicy: Local` so CrowdSec sees the real
+client IP instead of the ingress node IP.
 
 ## Mount a TrueNAS NFS share into a service
 
@@ -390,8 +407,9 @@ Workers are expected to host Longhorn storage by default.
    - append the node name to `WORKERS`
    - add the new worker IP, for example `WORKER_2_IP=10.0.20.22`
 2. Create the Proxmox VM using the same worker baseline as above.
-3. Add the dedicated `200GiB` Longhorn disk and set its serial to
-   `worker-2-longhorn`.
+3. Add the dedicated `200GiB` Longhorn disk. Setting a serial such as
+   `worker-2-longhorn` is still recommended for inventory, but the current
+   Talos selector matches the disk by size.
    Example:
 
 ```bash
@@ -420,9 +438,10 @@ machine:
 apiVersion: v1alpha1
 kind: UserVolumeConfig
 name: longhorn
+volumeType: disk
 provisioning:
   diskSelector:
-    match: disk.serial == "worker-2-longhorn" && !system_disk
+    match: !system_disk && disk.size > 150u * GiB
 ```
 
 5. Boot the VM into Talos maintenance mode and verify it is reachable.

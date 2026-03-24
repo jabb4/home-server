@@ -4,10 +4,25 @@ alertmanager:
 prometheus-pushgateway:
   enabled: false
 
+prometheus-node-exporter:
+  enabled: false
+
 server:
   fullnameOverride: prometheus-server
   baseURL: https://prometheus.local.jabbas.dev
   retention: 15d
+  securityContext:
+    runAsUser: 65534
+    runAsNonRoot: true
+    runAsGroup: 65534
+    fsGroup: 65534
+  containerSecurityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    seccompProfile:
+      type: RuntimeDefault
 
   persistentVolume:
     enabled: true
@@ -34,3 +49,13 @@ extraScrapeConfigs: |
     static_configs:
       - targets:
           - 192.168.20.2:9100
+
+configmapReload:
+  prometheus:
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      seccompProfile:
+        type: RuntimeDefault

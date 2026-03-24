@@ -16,7 +16,7 @@ sharedMiddlewares:
     logLevel: INFO
     crowdsecMode: stream
     crowdsecLapiScheme: http
-    crowdsecLapiHost: crowdsec-service.infra.svc.cluster.local:8080
+    crowdsecLapiHost: crowdsec-service.crowdsec.svc.cluster.local:8080
     updateIntervalSeconds: 60
     httpTimeoutSeconds: 10
     
@@ -86,6 +86,35 @@ tlsOptions:
     - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
     - TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305_SHA256
     - TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305_SHA256
+
+clusterRouteDefaults:
+  entryPoints:
+    - websecure
+  tls:
+    secretName: infra-local-jabbas-dev-tls
+  passHostHeader: true
+
+clusterRoutes:
+  - name: argocd
+    host: argocd.local.jabbas.dev
+    namespace: argocd
+    serviceName: argocd-server
+    port: 443
+    scheme: https
+    transport:
+      name: argocd-backend
+      insecureSkipVerify: true
+    middlewares:
+      - ui-default
+
+  - name: hubble
+    host: hubble.local.jabbas.dev
+    namespace: kube-system
+    serviceName: hubble-ui
+    port: 80
+    scheme: http
+    middlewares:
+      - ui-default
 
 externalRouteDefaults:
   entryPoints:

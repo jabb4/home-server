@@ -30,6 +30,8 @@ spec:
     - server: https://kubernetes.default.svc
       namespace: apps
     - server: https://kubernetes.default.svc
+      namespace: crowdsec
+    - server: https://kubernetes.default.svc
       namespace: infra
   clusterResourceWhitelist:
     - group: ""

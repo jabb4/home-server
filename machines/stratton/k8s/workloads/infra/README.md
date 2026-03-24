@@ -23,6 +23,10 @@ Current workloads here:
 - `traefik/`
 - `uptime-kuma/`
 
+`crowdsec/` is still grouped under `infra/` in Git, but it deploys into its
+own runtime namespace so the agent can evolve independently from the general
+`infra` namespace policy.
+
 Future services such as `Authentik` and shared databases should also live here.
 
 Persistent app state in `infra/` should default to the Longhorn-backed

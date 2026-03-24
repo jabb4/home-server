@@ -9,7 +9,7 @@ cluster_name := env_var("CLUSTER_NAME")
 vip_ip := env_var("VIP_IP")
 cluster_endpoint := "https://" + vip_ip + ":6443"
 
-talos_dir := talos
+talos_dir := "talos"
 clusterconfig_dir := talos_dir + "/clusterconfig"
 patches_dir := talos_dir + "/patches"
 nodes_dir := patches_dir + "/nodes"
@@ -280,8 +280,8 @@ wait-node-final NODE:
 apply-all-current:
   @nodes="{{controlplanes}} {{workers}}"; \
   for node in $nodes; do \
-    final_ip="$(just --quiet node-ip "$node")"; \
-    printf 'Current IP for %s [default: %s]: ' "$node" "$final_ip"; \
+    final_ip="$(just node-ip "$node")"; \
+    printf 'Current IP for %s [press Enter to use desired IP %s]: ' "$node" "$final_ip"; \
     read -r current_ip; \
     current_ip="${current_ip:-$final_ip}"; \
     just apply-node-at "$node" "$current_ip"; \
@@ -373,7 +373,7 @@ show-longhorn-nodes:
 # -----------------------------------------------------------------------------
 
 install-cilium: check-tools helm-repos
-  @version="$(just --quiet chart-version {{cilium_application}} cilium)"; \
+  @version="$(just chart-version {{cilium_application}} cilium)"; \
   KUBECONFIG={{kubeconfig}} helm upgrade --install cilium cilium/cilium \
     --namespace kube-system \
     --version "$version" \
@@ -403,7 +403,7 @@ apply-sops-age-secret:
   echo "✓ Applied sops-age secret from $key_file"
 
 install-argocd: check-tools helm-repos apply-sops-age-secret
-  @version="$(just --quiet chart-version {{argocd_application}} argo-cd)"; \
+  @version="$(just chart-version {{argocd_application}} argo-cd)"; \
   KUBECONFIG={{kubeconfig}} helm upgrade --install argocd argo/argo-cd \
     --namespace argocd \
     --create-namespace \
@@ -495,16 +495,19 @@ reset-workers:
 # Full flow
 # -----------------------------------------------------------------------------
 
-wait-api:
+wait-api: kubeconfig
   @echo "Waiting for Kubernetes API server to become available..."
-  @bootstrap_ip="$(just node-ip {{bootstrap_cp}})"; \
-  TALOSCONFIG={{talosconfig}} talosctl health \
-    --nodes "$bootstrap_ip" \
-    --endpoints "$bootstrap_ip" \
-    --wait-timeout 10m \
-    --server=false
+  @deadline=$((SECONDS + 600)); \
+  until KUBECONFIG={{kubeconfig}} kubectl get --raw='/readyz' >/dev/null 2>&1; do \
+    if [ "$SECONDS" -ge "$deadline" ]; then \
+      echo "Kubernetes API server did not become ready within 10m" >&2; \
+      exit 1; \
+    fi; \
+    sleep 2; \
+  done; \
+  echo "✓ Kubernetes API server is reachable"
 
-cluster-init: render-all apply-all-current bootstrap wait-api kubeconfig install-cilium wait-expected-nodes install-argocd label-longhorn-workers bootstrap-root-app
+cluster-init: render-all apply-all-current bootstrap wait-api install-cilium wait-expected-nodes install-argocd label-longhorn-workers bootstrap-root-app
   @echo ""
   @echo "══════════════════════════════════════════════"
   @echo "✓ Cluster bootstrap complete"

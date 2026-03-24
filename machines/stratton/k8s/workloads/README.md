@@ -47,7 +47,7 @@ Each deployable service should live in its own workload directory.
   - deploys cert-manager from the upstream chart into `cert-manager`
   - owns the Cloudflare-backed `ClusterIssuer` and shared wildcard certificates
 - `infra/crowdsec/`
-  - deploys CrowdSec from the upstream chart into `infra`
+  - deploys CrowdSec from the upstream chart into `crowdsec`
   - tails Traefik logs and provides LAPI decisions for the Traefik bouncer plugin
   - keeps the shared Traefik bouncer key next to the workload
 - `infra/prometheus/`

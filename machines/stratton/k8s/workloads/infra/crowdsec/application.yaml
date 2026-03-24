@@ -27,7 +27,7 @@ spec:
           - secrets://secrets.sops.yaml
   destination:
     server: https://kubernetes.default.svc
-    namespace: infra
+    namespace: crowdsec
   syncPolicy:
     automated:
       prune: true

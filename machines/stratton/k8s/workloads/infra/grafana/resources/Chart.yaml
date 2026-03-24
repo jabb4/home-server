@@ -1,0 +1,5 @@
+apiVersion: v2
+name: grafana-resources
+description: Repo-owned Grafana bootstrap resources such as the admin Secret.
+type: application
+version: 0.1.0

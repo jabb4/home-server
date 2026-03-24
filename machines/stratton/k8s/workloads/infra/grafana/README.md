@@ -14,5 +14,5 @@ Current design:
 Before first sync, edit if you want to change the generated admin password:
 
 ```bash
-just edit-sops workloads/infra/grafana/secrets.sops.yaml
+just edit-sops workloads/infra/grafana/resources/secrets.sops.yaml
 ```

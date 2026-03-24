@@ -17,6 +17,7 @@ machine:
 apiVersion: v1alpha1
 kind: UserVolumeConfig
 name: longhorn
+volumeType: disk
 provisioning:
   diskSelector:
-    match: disk.serial == "worker-1-longhorn" && !system_disk
+    match: !system_disk && disk.size > 150u * GiB

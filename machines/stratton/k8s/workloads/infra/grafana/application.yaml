@@ -15,10 +15,16 @@ spec:
         releaseName: grafana
         valueFiles:
           - $values/machines/stratton/k8s/workloads/infra/grafana/values.yaml
-          - secrets://$values/machines/stratton/k8s/workloads/infra/grafana/secrets.sops.yaml
     - repoURL: https://github.com/jabb4/home-server.git
       targetRevision: v2
       ref: values
+    - repoURL: https://github.com/jabb4/home-server.git
+      targetRevision: v2
+      path: machines/stratton/k8s/workloads/infra/grafana/resources
+      helm:
+        releaseName: grafana-resources
+        valueFiles:
+          - secrets://secrets.sops.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: infra

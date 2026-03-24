@@ -25,7 +25,6 @@ spec:
         releaseName: traefik-resources
         valueFiles:
           - secrets://secrets.sops.yaml
-          - secrets://$values/machines/stratton/k8s/workloads/infra/crowdsec/resources/secrets.sops.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: infra

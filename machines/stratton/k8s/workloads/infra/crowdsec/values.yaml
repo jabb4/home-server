@@ -18,8 +18,18 @@ lapi:
       memory: 256Mi
     limits:
       memory: 512Mi
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    privileged: false
+    seccompProfile:
+      type: RuntimeDefault
 
 agent:
+  enabled: true
+  hostVarLog: false
   acquisition:
     - namespace: infra
       podName: traefik-*
@@ -37,10 +47,32 @@ agent:
       memory: 128Mi
     limits:
       memory: 256Mi
+  securityContext:
+    allowPrivilegeEscalation: false
+    capabilities:
+      drop:
+        - ALL
+    privileged: false
+    seccompProfile:
+      type: RuntimeDefault
+  wait_for_lapi:
+    securityContext:
+      allowPrivilegeEscalation: false
+      capabilities:
+        drop:
+          - ALL
+      privileged: false
+      seccompProfile:
+        type: RuntimeDefault
 
 # Whitelist local RFC1918 addresses so community blocklists
 # and local scenarios never ban internal network traffic.
 config:
+  config.yaml.local: |
+    db_config:
+      flush:
+        agents_autodelete:
+          login_password: 168h
   postoverflows:
     s01-whitelist:
       local-whitelist.yaml: |

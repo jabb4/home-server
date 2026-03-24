@@ -38,11 +38,21 @@
             href: https://portainer.local.jabbas.dev
             icon: portainer.png
             siteMonitor: https://portainer.local.jabbas.dev
+
+      - Argo CD:
+            href: https://argocd.local.jabbas.dev
+            icon: argo-cd.png
+            siteMonitor: https://argocd.local.jabbas.dev
       
       - Traefik:
             href: https://traefik.local.jabbas.dev
             icon: traefik.png
             siteMonitor: https://traefik.local.jabbas.dev
+
+      - Hubble:
+            href: https://hubble.local.jabbas.dev
+            icon: cilium.png
+            siteMonitor: https://hubble.local.jabbas.dev
       
       - Authentik:
             href: https://auth.local.jabbas.dev

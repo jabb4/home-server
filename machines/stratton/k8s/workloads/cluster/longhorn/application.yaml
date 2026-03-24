@@ -15,7 +15,6 @@ spec:
         releaseName: longhorn
         valueFiles:
           - $values/machines/stratton/k8s/workloads/cluster/longhorn/values.yaml
-          - secrets://$values/machines/stratton/k8s/workloads/cluster/longhorn/resources/secrets.sops.yaml
     - repoURL: https://github.com/jabb4/home-server.git
       targetRevision: v2
       ref: values

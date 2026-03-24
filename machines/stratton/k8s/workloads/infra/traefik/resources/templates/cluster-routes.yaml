@@ -1,0 +1,65 @@
+{{- $defaults := .Values.clusterRouteDefaults | default dict -}}
+{{- range .Values.clusterRoutes }}
+{{- if or (not (hasKey . "enabled")) .enabled }}
+{{- $route := . -}}
+{{- $transportName := "" -}}
+{{- with $route.transport }}
+{{- $transportName = required (printf "clusterRoutes[%s].transport.name is required" $route.name) .name -}}
+---
+apiVersion: traefik.io/v1alpha1
+kind: ServersTransport
+metadata:
+  name: {{ $transportName | quote }}
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+{{- with .serverName }}
+  serverName: {{ . | quote }}
+{{- end }}
+{{- with .rootCAsSecrets }}
+  rootCAsSecrets:
+{{ toYaml . | nindent 4 }}
+{{- end }}
+{{- with .certificatesSecrets }}
+  certificatesSecrets:
+{{ toYaml . | nindent 4 }}
+{{- end }}
+  insecureSkipVerify: {{ .insecureSkipVerify | default false }}
+{{- end }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ $route.name | quote }}
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  entryPoints:
+{{ toYaml $defaults.entryPoints | nindent 4 }}
+  routes:
+    - match: Host(`{{ $route.host }}`)
+      kind: Rule
+{{- with $route.middlewares }}
+      middlewares:
+{{- range . }}
+        - name: {{ . | quote }}
+{{- end }}
+{{- end }}
+      services:
+        - kind: Service
+          name: {{ $route.serviceName | quote }}
+          namespace: {{ $route.namespace | quote }}
+          passHostHeader: {{ $route.passHostHeader | default $defaults.passHostHeader }}
+          port: {{ $route.port }}
+          scheme: {{ $route.scheme | default "http" | quote }}
+{{- if $transportName }}
+          serversTransport: {{ $transportName | quote }}
+{{- else if $route.serversTransport }}
+          serversTransport: {{ $route.serversTransport | quote }}
+{{- end }}
+  tls:
+    secretName: {{ $defaults.tls.secretName | quote }}
+{{- end }}
+{{- end }}
