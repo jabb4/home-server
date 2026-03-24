@@ -27,15 +27,25 @@ spec:
             - name: http
               containerPort: 3000
           env:
+            - name: MY_POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
             - name: TZ
               value: {{ .Values.timezone | quote }}
             - name: HOMEPAGE_ALLOWED_HOSTS
-              value: {{ .Values.allowedHosts | quote }}
+              value: {{ printf "$(MY_POD_IP):3000,%s" .Values.allowedHosts | quote }}
           {{- if $envSecretName }}
           envFrom:
             - secretRef:
                 name: {{ $envSecretName | quote }}
           {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /api/healthcheck
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 15
           volumeMounts:
             - name: config
               mountPath: /app/config/bookmarks.yaml
@@ -54,8 +64,8 @@ spec:
               subPath: docker.yaml
               readOnly: true
             - name: config
-              mountPath: /app/config/kubernetes.yaml
-              subPath: kubernetes.yaml
+              mountPath: /app/config/proxmox.yaml
+              subPath: proxmox.yaml
               readOnly: true
             - name: config
               mountPath: /app/config/services.yaml
