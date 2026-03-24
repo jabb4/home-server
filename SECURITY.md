@@ -34,6 +34,5 @@ GitHub secret scanning alerts and push protection are not controlled from files
 in this repository. Enable them in the repository settings so supported secrets
 are blocked before they land on GitHub.
 
-If this repository is later moved under a GitHub organization account,
-`gitleaks-action` may also require a `GITLEAKS_LICENSE` repository secret. See
-the upstream action documentation for the current requirement.
+The workflow installs a pinned `gitleaks` CLI release directly in CI, so it
+does not depend on the deprecated Node 20 `gitleaks-action`.

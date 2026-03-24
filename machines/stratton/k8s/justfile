@@ -9,7 +9,7 @@ cluster_name := env_var("CLUSTER_NAME")
 vip_ip := env_var("VIP_IP")
 cluster_endpoint := "https://" + vip_ip + ":6443"
 
-talos_dir := env_var("TALOS_DIR")
+talos_dir := talos
 clusterconfig_dir := talos_dir + "/clusterconfig"
 patches_dir := talos_dir + "/patches"
 nodes_dir := patches_dir + "/nodes"

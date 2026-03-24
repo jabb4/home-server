@@ -155,6 +155,16 @@ Additional worker storage:
 - set the Proxmox disk serial to `<worker-name>-longhorn`
 - control planes do not get a Longhorn disk
 
+Example after creating the VM and adding the second worker disk:
+
+```bash
+qm set <vmid> --scsi1 VM-storage:200,ssd=1,discard=on,serial=<worker-name>-longhorn
+```
+
+Adjust the VM ID, storage name, disk slot, and serial to match the worker you
+are adding. The important part is that the Proxmox disk serial matches the
+Talos `UserVolumeConfig` disk selector.
+
 Current intended nodes:
 
 - `cp-1` on `10.0.20.11`
@@ -382,6 +392,12 @@ Workers are expected to host Longhorn storage by default.
 2. Create the Proxmox VM using the same worker baseline as above.
 3. Add the dedicated `200GiB` Longhorn disk and set its serial to
    `worker-2-longhorn`.
+   Example:
+
+```bash
+qm set 123 --scsi1 VM-storage:200,ssd=1,discard=on,serial=worker-2-longhorn
+```
+
 4. Create `talos/patches/nodes/worker-2.yaml`:
 
 ```yaml
