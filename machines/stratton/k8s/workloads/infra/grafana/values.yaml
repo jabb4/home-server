@@ -3,6 +3,23 @@ persistence:
   storageClassName: longhorn
   size: 5Gi
 
+initChownData:
+  enabled: false
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 472
+  runAsGroup: 472
+  fsGroup: 472
+
+containerSecurityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
 admin:
   existingSecret: grafana-admin
   userKey: admin-user

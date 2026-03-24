@@ -116,6 +116,18 @@ Cluster bootstrap is managed from [machines/stratton/k8s/justfile](/Users/jacob/
 | `worker-1` | worker | `Services` | `10.0.20.21` |
 | `kubernetes-api` | API VIP | `Services` | `10.0.20.10` |
 
+### Ingress access
+
+- `Traefik` is exposed on the `Services` VLAN through the load balancer IP
+  `10.0.20.80`
+- internal service hostnames such as `grafana.local.jabbas.dev`,
+  `argocd.local.jabbas.dev`, and `hubble.local.jabbas.dev` should resolve to
+  `10.0.20.80`
+- requests should be sent to `10.0.20.80` with the correct hostname so Traefik
+  can route by `Host` header / TLS SNI
+- do not send user traffic directly to pod IPs, ClusterIP service IPs, or node
+  IPs unless you are deliberately bypassing Traefik
+
 ### Initial cluster model
 
 - one dedicated control plane
