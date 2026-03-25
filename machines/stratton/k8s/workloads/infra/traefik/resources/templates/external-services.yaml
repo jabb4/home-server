@@ -22,7 +22,7 @@ metadata:
   namespace: infra
   labels:
     kubernetes.io/service-name: {{ .name | quote }}
-    endpointslice.kubernetes.io/managed-by: homelab.jabbas.dev/traefik-resources
+    endpointslice.kubernetes.io/managed-by: traefik-resources
   annotations:
     argocd.argoproj.io/sync-wave: "5"
 addressType: IPv4

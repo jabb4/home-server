@@ -31,7 +31,7 @@ ingress:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.middlewares: infra-crowdsecBouncer@kubernetescrd,infra-defaultHeaders@kubernetescrd,infra-rateLimit@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: infra-crowdsec-bouncer@kubernetescrd,infra-default-headers@kubernetescrd,infra-rate-limit@kubernetescrd
   hosts:
     - grafana.local.jabbas.dev
   tls:
