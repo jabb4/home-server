@@ -145,7 +145,7 @@ externalRoutes:
 
   - name: pi-hole
     host: pi-hole.local.jabbas.dev
-    address: 192.168.20.51
+    address: 10.0.10.53
     port: 443
     scheme: https
     transport:
@@ -176,7 +176,7 @@ externalRoutes:
 
   - name: proxmox
     host: pve.local.jabbas.dev
-    address: 192.168.20.2
+    address: 10.0.10.10
     port: 8006
     scheme: https
     transport:
