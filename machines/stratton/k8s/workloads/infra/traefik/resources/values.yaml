@@ -145,7 +145,7 @@ externalRoutes:
 
   - name: pi-hole
     host: pi-hole.local.jabbas.dev
-    address: 10.0.10.53
+    address: 10.0.20.53
     port: 443
     scheme: https
     transport:

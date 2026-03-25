@@ -143,7 +143,7 @@ Use this base configuration for each VM:
 4. CPU:
    - `4+` cores
 5. Memory:
-   - `4GB+`
+   - `8GB+`
    - Ballooning disabled
 6. Network:
    - Bridge: `vmbr0`
