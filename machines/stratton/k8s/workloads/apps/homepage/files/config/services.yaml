@@ -17,7 +17,7 @@
                   type: pihole
                   url: https://pi-hole.local.jabbas.dev
                   version: 6
-                  key: {{HOMEPAGE_VAR_PIHOLE_API}}
+                  key: {{HOMEPAGE_VAR_PIHOLE_PASSWORD}}
                   
       - Proxmox:
             href: https://pve.local.jabbas.dev
@@ -62,6 +62,7 @@
                   type: authentik
                   url: https://auth.local.jabbas.dev
                   key: {{HOMEPAGE_VAR_AUTHENTIK_API}}
+                  version: 2
       
       - TrueNAS:
             href: https://truenas.local.jabbas.dev
@@ -78,10 +79,10 @@
             href: https://uptime-kuma.local.jabbas.dev
             icon: uptime-kuma.png
             siteMonitor: https://uptime-kuma.local.jabbas.dev
-            widget:
-                  type: uptimekuma
-                  url: https://uptime-kuma.local.jabbas.dev
-                  slug: homepage
+            # widget:
+            #       type: uptimekuma
+            #       url: https://uptime-kuma.local.jabbas.dev
+            #       slug: homepage
 
       - Server Monitoring:
             href: https://grafana.local.jabbas.dev/d/ee06s4l8vo5c0a/proxmox-host?orgId=1&refresh=30s
