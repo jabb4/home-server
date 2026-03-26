@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: postgres
+  namespace: argocd
+  annotations:
+    argocd.argoproj.io/sync-wave: "4"
+spec:
+  project: infra
+  source:
+    repoURL: https://github.com/jabb4/home-server.git
+    targetRevision: v2
+    path: machines/stratton/k8s/workloads/infra/postgres
+    helm:
+      releaseName: postgres
+      valueFiles:
+        - secrets://secrets.sops.yaml
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: infra
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+      - SkipDryRunOnMissingResource=true

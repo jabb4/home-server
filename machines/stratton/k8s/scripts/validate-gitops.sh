@@ -10,9 +10,14 @@ schema_files=("${k8s_dir}/bootstrap/root-application.yaml" "${k8s_dir}/bootstrap
 crowdsec_resources_chart="${k8s_dir}/workloads/infra/crowdsec/resources"
 crowdsec_chart_values="${k8s_dir}/workloads/infra/crowdsec/values.yaml"
 crowdsec_chart_version="$(yq '.spec.sources[0].targetRevision' "${k8s_dir}/workloads/infra/crowdsec/application.yaml")"
+cnpg_chart_values="${k8s_dir}/workloads/infra/cloudnative-pg/values.yaml"
+cnpg_chart_version="$(yq '.spec.sources[0].targetRevision' "${k8s_dir}/workloads/infra/cloudnative-pg/application.yaml")"
 cert_manager_resources_chart="${k8s_dir}/workloads/infra/cert-manager/resources"
 cert_manager_chart_values="${k8s_dir}/workloads/infra/cert-manager/values.yaml"
 cert_manager_chart_version="$(yq '.spec.sources[0].targetRevision' "${k8s_dir}/workloads/infra/cert-manager/application.yaml")"
+authentik_chart_values="${k8s_dir}/workloads/infra/authentik/values.yaml"
+authentik_chart_version="$(yq '.spec.sources[0].targetRevision' "${k8s_dir}/workloads/infra/authentik/application.yaml")"
+postgres_chart="${k8s_dir}/workloads/infra/postgres"
 traefik_resources_chart="${k8s_dir}/workloads/infra/traefik/resources"
 traefik_chart_values="${k8s_dir}/workloads/infra/traefik/values.yaml"
 traefik_chart_version="$(yq '.spec.sources[0].targetRevision' "${k8s_dir}/workloads/infra/traefik/application.yaml")"
@@ -44,7 +49,7 @@ while IFS= read -r chart_file; do
   values_file="${chart_dir}/values.yaml"
   output_file="${tmp_dir}/$(echo "${chart_dir#${k8s_dir}/}" | tr '/' '_').yaml"
 
-  if [ "${chart_dir}" = "${traefik_resources_chart}" ] || [ "${chart_dir}" = "${crowdsec_resources_chart}" ] || [ "${chart_dir}" = "${cert_manager_resources_chart}" ]; then
+  if [ "${chart_dir}" = "${traefik_resources_chart}" ] || [ "${chart_dir}" = "${crowdsec_resources_chart}" ] || [ "${chart_dir}" = "${cert_manager_resources_chart}" ] || [ "${chart_dir}" = "${postgres_chart}" ]; then
     continue
   fi
 
@@ -61,6 +66,16 @@ if [ -f "${crowdsec_resources_chart}/Chart.yaml" ]; then
   output_file="${tmp_dir}/workloads_infra_crowdsec_resources.yaml"
   render_chart "crowdsec-resources" "${crowdsec_resources_chart}" "${crowdsec_resources_chart}/values.yaml" "${output_file}" \
     --set crowdsecBouncer.lapiKey=dummy-bouncer-key
+  schema_files+=("${output_file}")
+fi
+
+if [ -f "${postgres_chart}/Chart.yaml" ]; then
+  output_file="${tmp_dir}/workloads_infra_postgres.yaml"
+  postgres_render_args=()
+  while IFS= read -r app_name; do
+    postgres_render_args+=(--set "appSecrets.${app_name}.password=dummy-password")
+  done < <(yq -r '.apps[].name' "${postgres_chart}/values.yaml")
+  render_chart "postgres" "${postgres_chart}" "${postgres_chart}/values.yaml" "${output_file}" "${postgres_render_args[@]}"
   schema_files+=("${output_file}")
 fi
 
@@ -92,6 +107,19 @@ else
   echo "Skipping upstream CrowdSec chart validation; chart repo unavailable" >&2
 fi
 
+helm repo add cnpg https://cloudnative-pg.github.io/charts >/dev/null 2>&1 || true
+helm repo update cnpg >/dev/null 2>&1 || true
+
+if helm show chart cnpg/cloudnative-pg --version "${cnpg_chart_version}" >/dev/null 2>&1; then
+  output_file="${tmp_dir}/workloads_infra_cloudnative_pg_upstream.yaml"
+  helm template cloudnative-pg cnpg/cloudnative-pg --version "${cnpg_chart_version}" \
+    --namespace cnpg-system \
+    --values "${cnpg_chart_values}" > "${output_file}"
+  schema_files+=("${output_file}")
+else
+  echo "Skipping upstream CloudNativePG chart validation; chart repo unavailable" >&2
+fi
+
 helm repo add jetstack https://charts.jetstack.io >/dev/null 2>&1 || true
 helm repo update jetstack >/dev/null 2>&1 || true
 
@@ -103,6 +131,20 @@ if helm show chart jetstack/cert-manager --version "${cert_manager_chart_version
   schema_files+=("${output_file}")
 else
   echo "Skipping upstream cert-manager chart validation; chart repo unavailable" >&2
+fi
+
+helm repo add authentik https://charts.goauthentik.io >/dev/null 2>&1 || true
+helm repo update authentik >/dev/null 2>&1 || true
+
+if helm show chart authentik/authentik --version "${authentik_chart_version}" >/dev/null 2>&1; then
+  output_file="${tmp_dir}/workloads_infra_authentik_upstream.yaml"
+  helm template authentik authentik/authentik --version "${authentik_chart_version}" \
+    --namespace infra \
+    --values "${authentik_chart_values}" \
+    --set authentik.secret_key=dummy-secret-key > "${output_file}"
+  schema_files+=("${output_file}")
+else
+  echo "Skipping upstream authentik chart validation; chart repo unavailable" >&2
 fi
 
 helm repo add traefik https://traefik.github.io/charts >/dev/null 2>&1 || true

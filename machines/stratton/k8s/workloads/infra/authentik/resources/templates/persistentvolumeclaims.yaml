@@ -1,0 +1,20 @@
+{{- range .Values.persistence }}
+{{- $accessModes := .accessModes | default (list "ReadWriteOnce") }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .name | quote }}
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  accessModes:
+{{- range $accessModes }}
+    - {{ . | quote }}
+{{- end }}
+  resources:
+    requests:
+      storage: {{ .size | quote }}
+  storageClassName: {{ .storageClassName | quote }}
+{{- end }}

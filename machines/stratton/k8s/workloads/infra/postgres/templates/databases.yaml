@@ -1,0 +1,17 @@
+{{- range .Values.apps }}
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: {{ printf "%s-%s" $.Values.cluster.name .name | trunc 63 | trimSuffix "-" | quote }}
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "5"
+spec:
+  cluster:
+    name: {{ $.Values.cluster.name | quote }}
+  name: {{ .database | quote }}
+  owner: {{ .username | quote }}
+  ensure: {{ .ensure | default "present" | quote }}
+  databaseReclaimPolicy: {{ .databaseReclaimPolicy | default "retain" | quote }}
+{{- end }}

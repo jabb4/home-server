@@ -16,9 +16,12 @@ Cluster-core components such as `foundations`, `Cilium`, and `Argo CD` live in
 
 Current workloads here:
 
+- `authentik/`
 - `cert-manager/`
+- `cloudnative-pg/`
 - `crowdsec/`
 - `grafana/`
+- `postgres/`
 - `prometheus/`
 - `traefik/`
 - `uptime-kuma/`

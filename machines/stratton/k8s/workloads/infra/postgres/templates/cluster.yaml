@@ -1,0 +1,46 @@
+{{- $bootstrapAppName := required "cluster.bootstrapApp is required" .Values.cluster.bootstrapApp -}}
+{{- $bootstrapApp := dict -}}
+{{- range .Values.apps }}
+{{- if eq .name $bootstrapAppName }}
+{{- $_ := set $bootstrapApp "name" .name -}}
+{{- $_ := set $bootstrapApp "database" .database -}}
+{{- $_ := set $bootstrapApp "username" .username -}}
+{{- $_ := set $bootstrapApp "secretName" .secretName -}}
+{{- end }}
+{{- end }}
+{{- if not (hasKey $bootstrapApp "name") }}
+{{- fail (printf "cluster.bootstrapApp %q must match an entry in apps" $bootstrapAppName) }}
+{{- end }}
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: {{ .Values.cluster.name | quote }}
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  instances: {{ .Values.cluster.instances }}
+  imageName: {{ .Values.cluster.imageName | quote }}
+  enableSuperuserAccess: false
+  bootstrap:
+    initdb:
+      database: {{ get $bootstrapApp "database" | quote }}
+      owner: {{ get $bootstrapApp "username" | quote }}
+      secret:
+        name: {{ get $bootstrapApp "secretName" | quote }}
+  managed:
+    roles:
+{{- range .Values.apps }}
+      - name: {{ .username | quote }}
+        ensure: {{ .ensure | default "present" | quote }}
+        login: true
+        superuser: false
+        createdb: false
+        createrole: false
+        replication: false
+        passwordSecret:
+          name: {{ .secretName | quote }}
+{{- end }}
+  storage:
+    size: {{ .Values.cluster.storage.size | quote }}
+    storageClass: {{ .Values.cluster.storage.storageClass | quote }}

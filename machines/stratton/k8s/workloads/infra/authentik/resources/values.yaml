@@ -1,0 +1,16 @@
+persistence:
+  - name: authentik-data
+    size: 10Gi
+    storageClassName: longhorn
+    accessModes:
+      - ReadWriteMany
+  - name: authentik-templates
+    size: 1Gi
+    storageClassName: longhorn
+    accessModes:
+      - ReadWriteMany
+  - name: authentik-certs
+    size: 1Gi
+    storageClassName: longhorn
+    accessModes:
+      - ReadWriteOnce

@@ -1,0 +1,15 @@
+cluster:
+  name: postgres
+  instances: 1
+  imageName: ghcr.io/cloudnative-pg/postgresql:16.13-202603160825-minimal-trixie@sha256:0c85a43d81def4be549e694eb06c071f374e1d28f12d6948accd40575fcc2e98
+  bootstrapApp: authentik
+  storage:
+    size: 10Gi
+    storageClass: longhorn
+
+apps:
+  - name: authentik
+    namespace: infra
+    database: authentik
+    username: authentik
+    secretName: postgres-authentik-app

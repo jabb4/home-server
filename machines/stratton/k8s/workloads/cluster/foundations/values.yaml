@@ -12,6 +12,12 @@ namespaces:
       pod-security.kubernetes.io/audit: restricted
       pod-security.kubernetes.io/warn: restricted
 
+  - name: cnpg-system
+    labels:
+      pod-security.kubernetes.io/enforce: restricted
+      pod-security.kubernetes.io/audit: restricted
+      pod-security.kubernetes.io/warn: restricted
+
   - name: crowdsec
     labels:
       pod-security.kubernetes.io/enforce: baseline
@@ -119,12 +125,16 @@ argoProjects:
     description: Shared infrastructure services and supporting data stores.
     sourceRepos:
       - https://github.com/jabb4/home-server.git
+      - https://cloudnative-pg.github.io/charts
       - https://charts.jetstack.io
       - https://prometheus-community.github.io/helm-charts
       - https://grafana-community.github.io/helm-charts
       - https://traefik.github.io/charts
       - https://crowdsecurity.github.io/helm-charts
+      - https://charts.goauthentik.io
     destinations:
+      - server: https://kubernetes.default.svc
+        namespace: cnpg-system
       - server: https://kubernetes.default.svc
         namespace: cert-manager
       - server: https://kubernetes.default.svc

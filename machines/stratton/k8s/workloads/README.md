@@ -39,6 +39,15 @@ Each deployable service should live in its own workload directory.
   - keeps optional backup-related resources next to the workload
 - `infra/`
   - contains shared services such as ingress, identity, monitoring, uptime, and shared databases
+- `infra/cloudnative-pg/`
+  - deploys the CloudNativePG operator into `cnpg-system`
+  - provides the PostgreSQL control plane used by shared infra databases
+- `infra/postgres/`
+  - deploys the first shared PostgreSQL cluster into `infra`
+  - boots an `authentik` application database on PostgreSQL 16
+- `infra/authentik/`
+  - deploys authentik from the upstream chart into `infra`
+  - keeps the migration state PVCs and secret-key Secret next to the workload
 - `infra/traefik/`
   - deploys the Traefik ingress controller from the upstream chart
   - exposes it through a Cilium-managed `LoadBalancer` IP
