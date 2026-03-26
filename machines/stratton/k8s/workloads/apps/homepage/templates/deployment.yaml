@@ -16,6 +16,11 @@ spec:
       app.kubernetes.io/name: homepage
   template:
     metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        {{- if .Values.secret.create }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
+        {{- end }}
       labels:
         app.kubernetes.io/name: homepage
     spec:

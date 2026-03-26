@@ -13,11 +13,11 @@
             href: https://pi-hole.local.jabbas.dev
             icon: pi-hole.png
             siteMonitor: https://pi-hole.local.jabbas.dev
-            # widget:
-            #       type: pihole
-            #       url: https://pi-hole.local.jabbas.dev
-            #       version: 6
-            #       key: {{HOMEPAGE_VAR_PIHOLE_API}}
+            widget:
+                  type: pihole
+                  url: https://pi-hole.local.jabbas.dev
+                  version: 6
+                  key: {{HOMEPAGE_VAR_PIHOLE_API}}
                   
       - Proxmox:
             href: https://pve.local.jabbas.dev
@@ -58,10 +58,10 @@
             href: https://auth.local.jabbas.dev
             icon: authentik.png
             siteMonitor: https://auth.local.jabbas.dev
-            # widget:
-            #       type: authentik
-            #       url: https://auth.local.jabbas.dev
-            #       key: {{HOMEPAGE_VAR_AUTHENTIK_API}}
+            widget:
+                  type: authentik
+                  url: https://auth.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_AUTHENTIK_API}}
       
       - TrueNAS:
             href: https://truenas.local.jabbas.dev
@@ -78,10 +78,10 @@
             href: https://uptime-kuma.local.jabbas.dev
             icon: uptime-kuma.png
             siteMonitor: https://uptime-kuma.local.jabbas.dev
-            # widget:
-            #       type: uptimekuma
-            #       url: https://uptime-kuma.local.jabbas.dev
-            #       slug: homepage
+            widget:
+                  type: uptimekuma
+                  url: https://uptime-kuma.local.jabbas.dev
+                  slug: homepage
 
       - Server Monitoring:
             href: https://grafana.local.jabbas.dev/d/ee06s4l8vo5c0a/proxmox-host?orgId=1&refresh=30s
@@ -112,62 +112,62 @@
             href: https://jellyfin.local.jabbas.dev
             icon: jellyfin.png
             siteMonitor: https://jellyfin.local.jabbas.dev
-            # widget:
-            #       type: jellyfin
-            #       url: https://jellyfin.local.jabbas.dev
-            #       key: {{HOMEPAGE_VAR_JELLYFIN_API}}
-            #       enableBlocks: true
-            #       enableNowPlaying: true
-            #       enableUser: true
-            #       showEpisodeNumber: true
-            #       expandOneStreamToTwoRows: false
+            widget:
+                  type: jellyfin
+                  url: https://jellyfin.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_JELLYFIN_API}}
+                  enableBlocks: true
+                  enableNowPlaying: true
+                  enableUser: true
+                  showEpisodeNumber: true
+                  expandOneStreamToTwoRows: false
 
       - SABnzbd:
             href: https://sabnzbd.local.jabbas.dev
             icon: sabnzbd.png
             siteMonitor: https://sabnzbd.local.jabbas.dev
-            # widget:
-            #       type: sabnzbd
-            #       url: https://sabnzbd.local.jabbas.dev
-            #       key: {{HOMEPAGE_VAR_SABNZBD_API_KEY}}
+            widget:
+                  type: sabnzbd
+                  url: https://sabnzbd.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_SABNZBD_API_KEY}}
 
       - Radarr:
             href: https://radarr.local.jabbas.dev
             icon: radarr.png
             siteMonitor: https://radarr.local.jabbas.dev
-            # widget:
-            #       type: radarr
-            #       url: https://radarr.local.jabbas.dev
-            #       key: {{HOMEPAGE_VAR_RADARR_API}}
-            #       enableQueue: true
+            widget:
+                  type: radarr
+                  url: https://radarr.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_RADARR_API}}
+                  enableQueue: true
 
       - Sonarr:
             href: https://sonarr.local.jabbas.dev
             icon: sonarr.png
             siteMonitor: https://sonarr.local.jabbas.dev
-            # widget:
-            #       type: sonarr
-            #       url: https://sonarr.local.jabbas.dev
-            #       key: {{HOMEPAGE_VAR_SONARR_API}}
-            #       enableQueue: true
+            widget:
+                  type: sonarr
+                  url: https://sonarr.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_SONARR_API}}
+                  enableQueue: true
 
       - Prowlarr:
             href: https://prowlarr.local.jabbas.dev
             icon: prowlarr.png
             siteMonitor: https://prowlarr.local.jabbas.dev
-            # widget:
-            #       type: prowlarr
-            #       url: https://prowlarr.local.jabbas.dev
-            #       key: {{HOMEPAGE_VAR_PROWLARR_API}}
+            widget:
+                  type: prowlarr
+                  url: https://prowlarr.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_PROWLARR_API}}
 
       - Bazarr:
             href: https://bazarr.local.jabbas.dev
             icon: bazarr.png
             siteMonitor: https://bazarr.local.jabbas.dev
-            # widget:
-            #       type: bazarr
-            #       url: https://bazarr.local.jabbas.dev
-            #       key: {{HOMEPAGE_VAR_BAZARR_API}}
+            widget:
+                  type: bazarr
+                  url: https://bazarr.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_BAZARR_API}}
 
 
 
