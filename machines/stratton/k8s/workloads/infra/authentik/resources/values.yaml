@@ -37,6 +37,18 @@ upstream:
 
   server:
     enabled: true
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+          - ALL
     service:
       servicePortHttp: 9000
       servicePortHttps: 9443
@@ -56,6 +68,18 @@ upstream:
 
   worker:
     enabled: true
+    securityContext:
+      runAsUser: 1000
+      runAsGroup: 1000
+      fsGroup: 1000
+    containerSecurityContext:
+      runAsNonRoot: true
+      allowPrivilegeEscalation: false
+      seccompProfile:
+        type: RuntimeDefault
+      capabilities:
+        drop:
+          - ALL
     volumeMounts:
       - name: authentik-certs
         mountPath: /certs
