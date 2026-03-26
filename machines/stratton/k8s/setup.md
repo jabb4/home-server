@@ -245,10 +245,39 @@ render-all -> apply-all-current -> bootstrap -> wait-api -> kubeconfig -> instal
 
 Generated local state is written under:
 
+- `talos/clusterconfig/secrets.yaml`
 - `talos/clusterconfig/talosconfig`
 - `talos/clusterconfig/kubeconfig`
 - `talos/clusterconfig/rendered/*.yaml`
 
+Back up `talos/clusterconfig` immediately after a successful bootstrap.
+
+This directory is sensitive recovery material for the cluster:
+
+- `secrets.yaml` contains the Talos PKI material used to regenerate admin access
+- `talosconfig` gives admin access to Talos
+- `kubeconfig` gives admin access to Kubernetes
+
+If you lose this directory and do not have another encrypted backup, recovery
+becomes much harder even though the cluster itself keeps running.
+
+Recommended:
+
+- create an encrypted archive of `talos/clusterconfig`
+- store at least one copy off the admin workstation
+- do not commit `talos/clusterconfig` to Git
+
+Example with AES-256 via `7z`:
+
+```bash
+7z a -t7z -mhe=on -p talos-clusterconfig-backup.7z talos/clusterconfig
+```
+
+To decrypt and restore it later:
+
+```bash
+7z x talos-clusterconfig-backup.7z
+```
 
 
 ## Verify bootstrap
