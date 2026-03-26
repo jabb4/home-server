@@ -34,11 +34,6 @@
             icon: pikvm.png
             siteMonitor: https://192.168.20.62
 
-      - Portainer:
-            href: https://portainer.local.jabbas.dev
-            icon: portainer.png
-            siteMonitor: https://portainer.local.jabbas.dev
-
       - Argo CD:
             href: https://argocd.local.jabbas.dev
             icon: argo-cd.png
