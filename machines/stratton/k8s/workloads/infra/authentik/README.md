@@ -35,7 +35,7 @@ Traefik.
 
 To protect an app host such as `homepage.local.jabbas.dev`, you need both:
 
-- the shared Traefik middleware `infra-authentik-forward-auth@kubernetescrd`
+- the shared Traefik middleware `infra-forward-auth-authentik@kubernetescrd`
 - a public route on the same host for `/outpost.goauthentik.io/` that forwards
   to the authentik server service in `infra`
 
@@ -46,7 +46,7 @@ and forward auth does not work.
 
 Homepage shows the current pattern:
 
-- add `infra-authentik-forward-auth@kubernetescrd` to the app ingress
+- add `infra-forward-auth-authentik@kubernetescrd` to the app ingress
   middlewares
 - add a Traefik `IngressRoute` for
   `Host(app-host) && PathPrefix(/outpost.goauthentik.io/)`

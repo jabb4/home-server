@@ -15,7 +15,7 @@ ingress:
   annotations:
     traefik.ingress.kubernetes.io/router.entrypoints: websecure
     traefik.ingress.kubernetes.io/router.tls: "true"
-    traefik.ingress.kubernetes.io/router.middlewares: infra-ui-default@kubernetescrd,infra-authentik-forward-auth@kubernetescrd
+    traefik.ingress.kubernetes.io/router.middlewares: infra-ui-default@kubernetescrd,infra-forward-auth-authentik@kubernetescrd
   host: homepage.local.jabbas.dev
   path: /
   pathType: Prefix

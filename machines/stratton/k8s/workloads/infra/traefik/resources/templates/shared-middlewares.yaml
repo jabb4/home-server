@@ -158,3 +158,20 @@ spec:
 {{ toYaml .authResponseHeaders | nindent 6 }}
 {{- end }}
 {{- end }}
+
+{{- with .Values.dashboard.rootRedirect }}
+{{- if .enabled }}
+---
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .middlewareName | quote }}
+  namespace: infra
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+spec:
+  redirectRegex:
+    regex: "^https://([^/]+)/?$"
+    replacement: "https://${1}{{ .path }}"
+{{- end }}
+{{- end }}

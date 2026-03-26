@@ -4,6 +4,10 @@ dashboard:
     - websecure
   middlewares:
     - ui-internal
+  rootRedirect:
+    enabled: true
+    middlewareName: traefik-dashboard-root-redirect
+    path: /dashboard/
   tls:
     secretName: infra-local-jabbas-dev-tls
   auth:

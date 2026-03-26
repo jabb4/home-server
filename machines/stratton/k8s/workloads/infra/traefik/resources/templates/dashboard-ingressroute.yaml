@@ -9,6 +9,17 @@ spec:
   entryPoints:
 {{ toYaml .Values.dashboard.entryPoints | nindent 4 }}
   routes:
+{{- with .Values.dashboard.rootRedirect }}
+{{- if .enabled }}
+    - match: Host(`{{ $.Values.dashboard.host }}`) && Path(`/`)
+      kind: Rule
+      middlewares:
+        - name: {{ .middlewareName | quote }}
+      services:
+        - name: api@internal
+          kind: TraefikService
+{{- end }}
+{{- end }}
     - match: Host(`{{ .Values.dashboard.host }}`) && (PathPrefix(`/dashboard`) || PathPrefix(`/api`))
       kind: Rule
       middlewares:
