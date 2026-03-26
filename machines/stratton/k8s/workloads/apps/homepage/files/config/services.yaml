@@ -53,11 +53,11 @@
             href: https://auth.local.jabbas.dev
             icon: authentik.png
             siteMonitor: https://auth.local.jabbas.dev
-            widget:
-                  type: authentik
-                  url: https://auth.local.jabbas.dev
-                  key: {{HOMEPAGE_VAR_AUTHENTIK_API}}
-                  version: 2
+            # widget:
+            #       type: authentik
+            #       url: https://auth.local.jabbas.dev
+            #       key: {{HOMEPAGE_VAR_AUTHENTIK_API}}
+            #       version: 2
       
       - TrueNAS:
             href: https://truenas.local.jabbas.dev
