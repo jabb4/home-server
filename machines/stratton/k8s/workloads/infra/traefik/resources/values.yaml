@@ -193,17 +193,6 @@ externalRoutes:
     middlewares:
       - ui-default
 
-  - name: authentik
-    host: auth.local.jabbas.dev
-    address: 192.168.20.100
-    port: 9443
-    scheme: https
-    transport:
-      name: authentik-backend
-      insecureSkipVerify: true
-    middlewares:
-      - ui-default
-
   - name: portainer
     host: portainer.local.jabbas.dev
     address: 192.168.20.100

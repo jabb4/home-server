@@ -33,15 +33,15 @@ upstream:
             key: password
 
   authentik:
-    enabled: false
+    enabled: true
 
   server:
-    enabled: false
+    enabled: true
     service:
       servicePortHttp: 9000
       servicePortHttps: 9443
     ingress:
-      enabled: false
+      enabled: true
       ingressClassName: traefik
       annotations:
         traefik.ingress.kubernetes.io/router.entrypoints: websecure
@@ -55,7 +55,7 @@ upstream:
             - auth.local.jabbas.dev
 
   worker:
-    enabled: false
+    enabled: true
     volumeMounts:
       - name: authentik-certs
         mountPath: /certs
