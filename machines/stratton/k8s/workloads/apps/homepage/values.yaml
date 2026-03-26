@@ -19,6 +19,13 @@ ingress:
   host: homepage.local.jabbas.dev
   path: /
   pathType: Prefix
+  authentikOutpost:
+    enabled: true
+    path: /outpost.goauthentik.io/
+    pathType: Prefix
+    service:
+      name: authentik-upstream-server
+      port: 9000
   tls:
     enabled: true
 

@@ -3,7 +3,7 @@ dashboard:
   entryPoints:
     - websecure
   middlewares:
-    - ui-default
+    - ui-internal
   tls:
     secretName: infra-local-jabbas-dev-tls
   auth:
@@ -55,6 +55,13 @@ sharedMiddlewares:
     enabled: true
     average: 100
     burst: 200
+  
+  uiInternal:
+    enabled: true
+    middlewares:
+      - rate-limit
+      - default-headers
+      - disallow-iframe-embedding
 
   uiDefault:
     enabled: true

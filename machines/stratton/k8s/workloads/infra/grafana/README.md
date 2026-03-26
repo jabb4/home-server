@@ -16,3 +16,6 @@ Before first sync, edit if you want to change the generated admin password:
 ```bash
 just edit-sops workloads/infra/grafana/resources/secrets.sops.yaml
 ```
+
+## Dashboards
+In the dashboard dir there are json files for the dashboard. Copy past the contents into the import dashboard in grafana webui

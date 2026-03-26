@@ -28,6 +28,36 @@ Files:
 - `resources/values.yaml`: non-sensitive authentik chart values, including the shared PostgreSQL connection wiring
 - `resources/secrets.sops.yaml`: encrypted `AUTHENTIK_SECRET_KEY` values for the upstream chart
 
+## Forward Auth
+
+This repo currently uses authentik forward auth in single-application mode with
+Traefik.
+
+To protect an app host such as `homepage.local.jabbas.dev`, you need both:
+
+- the shared Traefik middleware `infra-authentik-forward-auth@kubernetescrd`
+- a public route on the same host for `/outpost.goauthentik.io/` that forwards
+  to the authentik server service in `infra`
+
+The outpost path must stay publicly reachable. Without that extra route,
+requests such as
+`https://homepage.local.jabbas.dev/outpost.goauthentik.io/ping` return `404`
+and forward auth does not work.
+
+Homepage shows the current pattern:
+
+- add `infra-authentik-forward-auth@kubernetescrd` to the app ingress
+  middlewares
+- add a Traefik `IngressRoute` for
+  `Host(app-host) && PathPrefix(/outpost.goauthentik.io/)`
+- point that route to `authentik-upstream-server` in namespace `infra` on port
+  `9000`
+
+Quick check:
+
+- `curl -vk https://app-host/outpost.goauthentik.io/ping`
+- expected result: `204 No Content`
+
 Migration steps after this workload syncs:
 
 1. Replace the placeholder secret key in `resources/secrets.sops.yaml` with the current Docker `AUTHENTIK_SECRET_KEY`.
