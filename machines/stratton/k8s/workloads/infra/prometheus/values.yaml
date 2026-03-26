@@ -45,10 +45,10 @@ server:
 
 extraScrapeConfigs: |
   - job_name: proxmoxhost
-    scheme: http
+    scheme: https
     static_configs:
       - targets:
-          - 192.168.20.2:9100
+          - stratton-prometheus-node.local.jabbas.dev
 
 configmapReload:
   prometheus:
