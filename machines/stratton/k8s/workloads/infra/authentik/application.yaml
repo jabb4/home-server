@@ -7,23 +7,14 @@ metadata:
     argocd.argoproj.io/sync-wave: "8"
 spec:
   project: infra
-  sources:
-    - repoURL: https://charts.goauthentik.io
-      chart: authentik
-      targetRevision: 2026.2.0
-      helm:
-        releaseName: authentik
-        valueFiles:
-          - $values/machines/stratton/k8s/workloads/infra/authentik/values.yaml
-          - secrets://$values/machines/stratton/k8s/workloads/infra/authentik/secrets.sops.yaml
-    - repoURL: https://github.com/jabb4/home-server.git
-      targetRevision: v2
-      ref: values
-    - repoURL: https://github.com/jabb4/home-server.git
-      targetRevision: v2
-      path: machines/stratton/k8s/workloads/infra/authentik/resources
-      helm:
-        releaseName: authentik-resources
+  source:
+    repoURL: https://github.com/jabb4/home-server.git
+    targetRevision: v2
+    path: machines/stratton/k8s/workloads/infra/authentik/resources
+    helm:
+      releaseName: authentik
+      valueFiles:
+        - secrets://secrets.sops.yaml
   destination:
     server: https://kubernetes.default.svc
     namespace: infra

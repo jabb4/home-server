@@ -1,6 +1,11 @@
 apiVersion: v2
-name: authentik-resources
-description: Repo-owned resources for the authentik workload.
+name: authentik
+description: Repo-owned wrapper chart for the upstream authentik deployment.
 type: application
 version: 0.1.0
 appVersion: "2026.2.0"
+dependencies:
+  - name: authentik
+    version: 2026.2.0
+    repository: https://charts.goauthentik.io
+    alias: upstream

@@ -1,3 +1,65 @@
+upstream:
+  global:
+    image:
+      tag: 2026.2.0
+    volumes:
+      - name: authentik-data
+        persistentVolumeClaim:
+          claimName: authentik-data
+      - name: authentik-templates
+        persistentVolumeClaim:
+          claimName: authentik-templates
+      - name: authentik-certs
+        persistentVolumeClaim:
+          claimName: authentik-certs
+    volumeMounts:
+      - name: authentik-data
+        mountPath: /data
+      - name: authentik-templates
+        mountPath: /templates
+    env:
+      - name: AUTHENTIK_POSTGRESQL__HOST
+        value: postgres-rw.infra.svc.cluster.local
+      - name: AUTHENTIK_POSTGRESQL__USER
+        value: authentik
+      - name: AUTHENTIK_POSTGRESQL__NAME
+        value: authentik
+      - name: AUTHENTIK_POSTGRESQL__PORT
+        value: "5432"
+      - name: AUTHENTIK_POSTGRESQL__PASSWORD
+        valueFrom:
+          secretKeyRef:
+            name: postgres-authentik-app
+            key: password
+
+  authentik:
+    enabled: false
+
+  server:
+    enabled: false
+    service:
+      servicePortHttp: 9000
+      servicePortHttps: 9443
+    ingress:
+      enabled: false
+      ingressClassName: traefik
+      annotations:
+        traefik.ingress.kubernetes.io/router.entrypoints: websecure
+        traefik.ingress.kubernetes.io/router.tls: "true"
+        traefik.ingress.kubernetes.io/router.middlewares: infra-ui-default@kubernetescrd
+      hosts:
+        - auth.local.jabbas.dev
+      tls:
+        - secretName: infra-local-jabbas-dev-tls
+          hosts:
+            - auth.local.jabbas.dev
+
+  worker:
+    enabled: false
+    volumeMounts:
+      - name: authentik-certs
+        mountPath: /certs
+
 persistence:
   - name: authentik-data
     size: 10Gi

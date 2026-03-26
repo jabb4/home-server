@@ -1,7 +1,8 @@
 # Authentik
 
-This workload deploys authentik from the upstream Helm chart into the `infra`
-namespace and wires it to the shared `postgres` CloudNativePG cluster.
+This workload deploys authentik into the `infra` namespace through the local
+`resources` chart, which depends on the upstream Helm chart and wires it to the
+shared `postgres` CloudNativePG cluster.
 
 The workload is intentionally committed in a migration-safe state:
 
@@ -15,22 +16,22 @@ new database before you have restored the existing data and set the current
 
 Secret flow:
 
-- non-sensitive chart settings stay in `values.yaml`
-- the upstream chart reads `secrets.sops.yaml` through `helm-secrets`
+- non-sensitive chart settings stay in `resources/values.yaml`
+- the wrapper chart reads `resources/secrets.sops.yaml` through `helm-secrets`
 - authentik renders its own Kubernetes Secret so secret changes update the pod
   template and roll the deployment
 
 Files:
 
-- `application.yaml`: Argo CD application for the upstream chart plus local resources
-- `values.yaml`: non-sensitive authentik chart values, including the shared PostgreSQL connection wiring
-- `secrets.sops.yaml`: encrypted `AUTHENTIK_SECRET_KEY` values for the upstream chart
-- `resources/`: PVCs and other repo-owned support resources
+- `application.yaml`: Argo CD application for the local wrapper chart
+- `resources/`: wrapper Helm chart with the upstream authentik dependency and repo-owned PVCs
+- `resources/values.yaml`: non-sensitive authentik chart values, including the shared PostgreSQL connection wiring
+- `resources/secrets.sops.yaml`: encrypted `AUTHENTIK_SECRET_KEY` values for the upstream chart
 
 Migration steps after this workload syncs:
 
-1. Replace the placeholder secret key in `secrets.sops.yaml` with the current Docker `AUTHENTIK_SECRET_KEY`.
+1. Replace the placeholder secret key in `resources/secrets.sops.yaml` with the current Docker `AUTHENTIK_SECRET_KEY`.
 2. Restore the old PostgreSQL data into the new `postgres` cluster.
 3. Copy the old `/data`, `/templates`, and `/certs` content into the new PVCs.
-4. Set `server.enabled: true` and `worker.enabled: true` in `values.yaml`.
+4. Set `upstream.server.enabled: true` and `upstream.worker.enabled: true` in `resources/values.yaml`.
 5. Remove the old external Traefik route for `auth.local.jabbas.dev` and enable the new ingress.

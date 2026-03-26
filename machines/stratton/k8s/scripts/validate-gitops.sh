@@ -15,8 +15,9 @@ cnpg_chart_version="$(yq '.spec.sources[0].targetRevision' "${k8s_dir}/workloads
 cert_manager_resources_chart="${k8s_dir}/workloads/infra/cert-manager/resources"
 cert_manager_chart_values="${k8s_dir}/workloads/infra/cert-manager/values.yaml"
 cert_manager_chart_version="$(yq '.spec.sources[0].targetRevision' "${k8s_dir}/workloads/infra/cert-manager/application.yaml")"
-authentik_chart_values="${k8s_dir}/workloads/infra/authentik/values.yaml"
-authentik_chart_version="$(yq '.spec.sources[0].targetRevision' "${k8s_dir}/workloads/infra/authentik/application.yaml")"
+authentik_chart="${k8s_dir}/workloads/infra/authentik/resources"
+authentik_chart_values="${authentik_chart}/values.yaml"
+authentik_chart_version="$(yq -r '.dependencies[] | select(.name == "authentik") | .version' "${authentik_chart}/Chart.yaml")"
 postgres_chart="${k8s_dir}/workloads/infra/postgres"
 traefik_resources_chart="${k8s_dir}/workloads/infra/traefik/resources"
 traefik_chart_values="${k8s_dir}/workloads/infra/traefik/values.yaml"
@@ -49,7 +50,7 @@ while IFS= read -r chart_file; do
   values_file="${chart_dir}/values.yaml"
   output_file="${tmp_dir}/$(echo "${chart_dir#${k8s_dir}/}" | tr '/' '_').yaml"
 
-  if [ "${chart_dir}" = "${traefik_resources_chart}" ] || [ "${chart_dir}" = "${crowdsec_resources_chart}" ] || [ "${chart_dir}" = "${cert_manager_resources_chart}" ] || [ "${chart_dir}" = "${postgres_chart}" ]; then
+  if [ "${chart_dir}" = "${traefik_resources_chart}" ] || [ "${chart_dir}" = "${crowdsec_resources_chart}" ] || [ "${chart_dir}" = "${cert_manager_resources_chart}" ] || [ "${chart_dir}" = "${postgres_chart}" ] || [ "${chart_dir}" = "${authentik_chart}" ]; then
     continue
   fi
 
@@ -138,9 +139,11 @@ helm repo update authentik >/dev/null 2>&1 || true
 
 if helm show chart authentik/authentik --version "${authentik_chart_version}" >/dev/null 2>&1; then
   output_file="${tmp_dir}/workloads_infra_authentik_upstream.yaml"
+  authentik_upstream_values="${tmp_dir}/workloads_infra_authentik_upstream_values.yaml"
+  yq eval '.upstream' "${authentik_chart_values}" > "${authentik_upstream_values}"
   helm template authentik authentik/authentik --version "${authentik_chart_version}" \
     --namespace infra \
-    --values "${authentik_chart_values}" \
+    --values "${authentik_upstream_values}" \
     --set authentik.secret_key=dummy-secret-key > "${output_file}"
   schema_files+=("${output_file}")
 else
