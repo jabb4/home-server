@@ -9,11 +9,35 @@
 2. Fans
    1. In the top bar click "Qfan Control"
    2. In the left top corner click on "Optimize All"
-   3. When calibration is done change all fan curvs (CPU FAN, CHA1 FAN, CHA2 FAN, CHA3 FAN) to:
-      - The first point: 35% fan at 45 C
-      - The second point: 60% fan at 70 C
-      - The third point: 100% fan at 85 C
-      - Click "Apply" when you have set curve for one fan
+   3. When calibration is done change:
+      1. CPU FAN (2x 120mm CPU fans)
+         - Q-Fan Source: CPU
+         - Step Up/Down: 5 sec
+         - The first point: 25% fan at 45 C
+         - The second point: 50% fan at 70 C
+         - The third point: 100% fan at 88 C
+         - Click "Apply" when you have set curve
+      2. CHA1 FAN (2 x 80mm exhaust fans)
+         - Q-Fan Source: Motherboard
+         - Step Up/Down: 16 sec
+         - The first point: 30% fan at 35 C
+         - The second point: 40% fan at 45 C
+         - The third point: 100% fan at 60 C
+         - Click "Apply" when you have set curve
+      3. CHA2 FAN (1 x 120mm + 1 x 80mm intake fans)
+         - Q-Fan Source: Motherboard
+         - Step Up/Down: 16 sec
+         - The first point: 35% fan at 35 C
+         - The second point: 45% fan at 45 C
+         - The third point: 100% fan at 60 C
+         - Click "Apply" when you have set curve
+      4. CHA3 FAN (1 x 80mm HDD bay fan)
+         - Q-Fan Source: Motherboard
+         - Step Up/Down: 32 sec
+         - The first point: 40% fan at 35 C
+         - The second point: 50% fan at 42 C
+         - The third point: 100% fan at 55 C
+         - Click "Apply" when you have set curve
 
 3. Overclocking RAM
    1. Click on the "Ai Tweaker" in the bar
