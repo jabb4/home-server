@@ -7,7 +7,8 @@ Current design:
 - all nodes use a `100GiB` Talos system disk
 - every worker gets a dedicated `200GiB` Longhorn disk
 - worker disk serials should follow `<worker-name>-longhorn`
-- the Longhorn UI remains internal-only behind a `ClusterIP` service
+- the Longhorn UI stays behind a `ClusterIP` service and is published
+  internally through Traefik at `longhorn.local.jabbas.dev`
 
 Longhorn is used for durable in-cluster app state such as config directories,
 SQLite databases, and shared databases.

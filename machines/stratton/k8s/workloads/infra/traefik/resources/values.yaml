@@ -128,6 +128,15 @@ clusterRoutes:
     middlewares:
       - ui-internal
 
+  - name: longhorn
+    host: longhorn.local.jabbas.dev
+    namespace: longhorn-system
+    serviceName: longhorn-frontend
+    port: 80
+    scheme: http
+    middlewares:
+      - ui-internal
+
 externalRouteDefaults:
   entryPoints:
     - websecure

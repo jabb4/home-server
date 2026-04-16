@@ -48,6 +48,11 @@
             href: https://hubble.local.jabbas.dev
             icon: cilium.png
             siteMonitor: https://hubble.local.jabbas.dev
+
+      - Longhorn:
+            href: https://longhorn.local.jabbas.dev
+            icon: longhorn.png
+            siteMonitor: https://longhorn.local.jabbas.dev
       
       - Authentik:
             href: https://auth.local.jabbas.dev
