@@ -87,16 +87,16 @@ upstream:
 persistence:
   - name: authentik-data
     size: 10Gi
-    storageClassName: longhorn
+    storageClassName: longhorn-crypto
     accessModes:
       - ReadWriteMany
   - name: authentik-templates
     size: 1Gi
-    storageClassName: longhorn
+    storageClassName: longhorn-crypto
     accessModes:
       - ReadWriteMany
   - name: authentik-certs
     size: 1Gi
-    storageClassName: longhorn
+    storageClassName: longhorn-crypto
     accessModes:
       - ReadWriteOnce

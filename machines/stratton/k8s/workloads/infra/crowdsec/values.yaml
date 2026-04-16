@@ -7,10 +7,10 @@ lapi:
         name: crowdsec-lapi-bouncers
   persistentVolume:
     data:
-      storageClassName: longhorn
+      storageClassName: longhorn-crypto
       size: 1Gi
     config:
-      storageClassName: longhorn
+      storageClassName: longhorn-crypto
       size: 100Mi
   resources:
     requests:

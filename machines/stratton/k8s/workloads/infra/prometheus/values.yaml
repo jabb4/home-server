@@ -26,7 +26,7 @@ server:
 
   persistentVolume:
     enabled: true
-    storageClass: longhorn
+    storageClass: longhorn-crypto
     size: 20Gi
 
   ingress:

@@ -5,7 +5,7 @@ cluster:
   bootstrapApp: authentik
   storage:
     size: 10Gi
-    storageClass: longhorn
+    storageClass: longhorn-crypto
 
 apps:
   - name: authentik

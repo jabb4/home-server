@@ -4,6 +4,25 @@ backups:
 backupTarget:
   secretName: longhorn-s3-backup-target
 
+encryption:
+  enabled: true
+  secretName: longhorn-crypto
+  storageClassName: longhorn-crypto
+  reclaimPolicy: Retain
+  volumeBindingMode: Immediate
+  numberOfReplicas: "1"
+  staleReplicaTimeout: "30"
+  fsType: ext4
+  dataLocality: disabled
+  unmapMarkSnapChainRemoved: ignored
+  disableRevisionCounter: "true"
+  dataEngine: v1
+  backupTargetName: default
+  cipher: aes-xts-plain64
+  hash: sha256
+  keySize: "256"
+  pbkdf: argon2i
+
 recurringJob:
   name: daily-backup
   cron: "0 3 * * *"

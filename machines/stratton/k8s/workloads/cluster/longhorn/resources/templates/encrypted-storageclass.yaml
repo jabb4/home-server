@@ -1,0 +1,35 @@
+{{- $encryption := .Values.encryption | default dict -}}
+{{- if $encryption.enabled }}
+{{- $secretName := required "encryption.secretName is required when encryption.enabled=true" (get $encryption "secretName") -}}
+{{- $storageClassName := required "encryption.storageClassName is required when encryption.enabled=true" (get $encryption "storageClassName") -}}
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ $storageClassName | quote }}
+  annotations:
+    argocd.argoproj.io/sync-wave: "0"
+    storageclass.kubernetes.io/is-default-class: "false"
+provisioner: driver.longhorn.io
+allowVolumeExpansion: true
+reclaimPolicy: {{ $encryption.reclaimPolicy | quote }}
+volumeBindingMode: {{ $encryption.volumeBindingMode | quote }}
+parameters:
+  numberOfReplicas: {{ $encryption.numberOfReplicas | quote }}
+  staleReplicaTimeout: {{ $encryption.staleReplicaTimeout | quote }}
+  fromBackup: ""
+  fsType: {{ $encryption.fsType | quote }}
+  dataLocality: {{ $encryption.dataLocality | quote }}
+  unmapMarkSnapChainRemoved: {{ $encryption.unmapMarkSnapChainRemoved | quote }}
+  disableRevisionCounter: {{ $encryption.disableRevisionCounter | quote }}
+  dataEngine: {{ $encryption.dataEngine | quote }}
+  backupTargetName: {{ $encryption.backupTargetName | quote }}
+  encrypted: "true"
+  csi.storage.k8s.io/provisioner-secret-name: {{ $secretName | quote }}
+  csi.storage.k8s.io/provisioner-secret-namespace: "longhorn-system"
+  csi.storage.k8s.io/node-publish-secret-name: {{ $secretName | quote }}
+  csi.storage.k8s.io/node-publish-secret-namespace: "longhorn-system"
+  csi.storage.k8s.io/node-stage-secret-name: {{ $secretName | quote }}
+  csi.storage.k8s.io/node-stage-secret-namespace: "longhorn-system"
+  csi.storage.k8s.io/node-expand-secret-name: {{ $secretName | quote }}
+  csi.storage.k8s.io/node-expand-secret-namespace: "longhorn-system"
+{{- end }}

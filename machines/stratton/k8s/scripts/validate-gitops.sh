@@ -26,6 +26,7 @@ cilium_chart_values="${k8s_dir}/workloads/cluster/cilium/values.yaml"
 cilium_chart_version="$(yq '.spec.sources[0].targetRevision' "${k8s_dir}/workloads/cluster/cilium/application.yaml")"
 longhorn_chart_values="${k8s_dir}/workloads/cluster/longhorn/values.yaml"
 longhorn_chart_version="$(yq '.spec.sources[0].targetRevision' "${k8s_dir}/workloads/cluster/longhorn/application.yaml")"
+longhorn_resources_chart="${k8s_dir}/workloads/cluster/longhorn/resources"
 
 render_chart() {
   local name="$1"
@@ -50,7 +51,7 @@ while IFS= read -r chart_file; do
   values_file="${chart_dir}/values.yaml"
   output_file="${tmp_dir}/$(echo "${chart_dir#${k8s_dir}/}" | tr '/' '_').yaml"
 
-  if [ "${chart_dir}" = "${traefik_resources_chart}" ] || [ "${chart_dir}" = "${crowdsec_resources_chart}" ] || [ "${chart_dir}" = "${cert_manager_resources_chart}" ] || [ "${chart_dir}" = "${postgres_chart}" ] || [ "${chart_dir}" = "${authentik_chart}" ]; then
+  if [ "${chart_dir}" = "${traefik_resources_chart}" ] || [ "${chart_dir}" = "${crowdsec_resources_chart}" ] || [ "${chart_dir}" = "${cert_manager_resources_chart}" ] || [ "${chart_dir}" = "${postgres_chart}" ] || [ "${chart_dir}" = "${authentik_chart}" ] || [ "${chart_dir}" = "${longhorn_resources_chart}" ]; then
     continue
   fi
 
@@ -189,7 +190,6 @@ else
   echo "Skipping upstream Longhorn chart validation; chart repo unavailable" >&2
 fi
 
-longhorn_resources_chart="${k8s_dir}/workloads/cluster/longhorn/resources"
 if [ -f "${longhorn_resources_chart}/Chart.yaml" ]; then
   output_file="${tmp_dir}/workloads_cluster_longhorn_resources_backups_enabled.yaml"
   render_chart "longhorn-resources-backups" "${longhorn_resources_chart}" "${longhorn_resources_chart}/values.yaml" "${output_file}" \
@@ -198,6 +198,7 @@ if [ -f "${longhorn_resources_chart}/Chart.yaml" ]; then
     --set backupTarget.credentials.accessKeyId=dummy-access-key \
     --set backupTarget.credentials.secretAccessKey=dummy-secret-key \
     --set backupTarget.credentials.endpoint=https://s3.example.invalid \
+    --set encryption.globalKey.value=dummy-encryption-passphrase \
     --set defaultBackupStore.backupTarget=s3://dummy-bucket@eu-central-1/ \
     --set defaultBackupStore.pollInterval=300
   schema_files+=("${output_file}")

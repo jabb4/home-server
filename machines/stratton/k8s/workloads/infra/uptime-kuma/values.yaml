@@ -30,7 +30,7 @@ persistence:
   size: 5Gi
   accessModes:
     - ReadWriteOnce
-  storageClassName: longhorn
+  storageClassName: longhorn-crypto
 
 podSecurityContext:
   runAsNonRoot: true

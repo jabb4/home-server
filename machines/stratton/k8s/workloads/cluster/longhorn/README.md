@@ -29,12 +29,31 @@ This workload is split into two parts:
   `resources/secrets.sops.yaml`
 - the local `resources/` chart that can create:
   - the S3 backup target secret
+  - the cluster-wide encryption secret and `longhorn-crypto` storage class
   - the recurring backup job
 
 The built-in Longhorn `StorageClass` is used directly and remains non-default.
 Its replica policy can be changed over time for new volumes while keeping the
 same storage class name. Existing volumes still need their replica count updated
 separately inside Longhorn when the cluster grows.
+
+The repo also defines an opt-in encrypted `StorageClass` named
+`longhorn-crypto`. It mirrors the current single-replica `longhorn` class but
+uses a cluster-wide LUKS key from `resources/secrets.sops.yaml`. Backups taken
+from encrypted Longhorn volumes are encrypted as well. Longhorn requires
+`dm_crypt` and `cryptsetup` on worker nodes before provisioning encrypted
+volumes.
+
+Existing PVCs do not migrate in place when you change `storageClassName`.
+Create a fresh encrypted PVC and move the data at the application layer, or
+recreate the workload and restore from an app-native backup.
+
+Recommended first migrations:
+
+1. `infra/postgres` because it holds the shared application database.
+2. `infra/authentik` because it stores auth state, templates, and cert material.
+3. `infra/grafana` if you want dashboards, datasource config, and admin state encrypted.
+4. Leave `infra/prometheus` on plain `longhorn` unless you specifically need encrypted metrics at rest; it has the highest write churn and the lowest sensitivity.
 
 Backups are disabled by default. Longhorn storage works without an S3 target.
 When backups are enabled, the upstream Longhorn chart owns the backup target
