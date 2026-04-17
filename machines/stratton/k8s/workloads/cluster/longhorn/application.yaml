@@ -16,10 +16,10 @@ spec:
         valueFiles:
           - $values/machines/stratton/k8s/workloads/cluster/longhorn/values.yaml
     - repoURL: https://github.com/jabb4/home-server.git
-      targetRevision: v2
+      targetRevision: main
       ref: values
     - repoURL: https://github.com/jabb4/home-server.git
-      targetRevision: v2
+      targetRevision: main
       path: machines/stratton/k8s/workloads/cluster/longhorn/resources
       helm:
         releaseName: longhorn-resources

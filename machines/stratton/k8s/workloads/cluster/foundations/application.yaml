@@ -9,7 +9,7 @@ spec:
   project: foundations
   source:
     repoURL: https://github.com/jabb4/home-server.git
-    targetRevision: v2
+    targetRevision: main
     path: machines/stratton/k8s/workloads/cluster/foundations
     helm:
       releaseName: foundations

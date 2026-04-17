@@ -16,7 +16,7 @@ spec:
         valueFiles:
           - $values/machines/stratton/k8s/workloads/cluster/argocd/values.yaml
     - repoURL: https://github.com/jabb4/home-server.git
-      targetRevision: v2
+      targetRevision: main
       ref: values
   destination:
     server: https://kubernetes.default.svc

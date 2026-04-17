@@ -12,7 +12,7 @@ Current cluster shape:
 - GitOps controller: `Argo CD`
 - cluster app state: `Longhorn`
 - large shared file data: static `TrueNAS NFS` shares
-- GitOps source: `https://github.com/jabb4/home-server.git` on `targetRevision: v2`
+- GitOps source: `https://github.com/jabb4/home-server.git` on `targetRevision: main`
 
 Bootstrap entrypoint:
 
@@ -61,7 +61,7 @@ You also need:
 
 - L3 reachability from the admin workstation to `10.0.20.0/24`
 - the repository checked out locally
-- the repo state committed and pushed to branch `v2` before relying on Argo CD
+- the repo state committed and pushed to branch `main` before relying on Argo CD
 - the SOPS age private key present at the path configured in `.env`
 - reachability to each node while it is in Talos maintenance mode
 - the cert-manager, CrowdSec, and Traefik secrets updated in
@@ -79,7 +79,7 @@ Important:
 - The day-0 Cilium and Argo CD Helm versions are read from their committed
   `application.yaml` files, so there is only one chart-version source of truth.
 - Argo CD syncs from GitHub, not from your local checkout. Local-only changes
-  will not appear in cluster state until they are committed and pushed to `v2`.
+  will not appear in cluster state until they are committed and pushed to `main`.
 
 ## Configure `.env`
 
