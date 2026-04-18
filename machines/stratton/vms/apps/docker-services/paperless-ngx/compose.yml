@@ -1,7 +1,7 @@
 services:
   paperless-webserver:
     container_name: paperless-webserver
-    image: ghcr.io/paperless-ngx/paperless-ngx:2.20.8
+    image: ghcr.io/paperless-ngx/paperless-ngx:2.20.8@sha256:e231ec11a1907bfdf172b4f120b4ef1994feb71e6cc624e8b88c53e2da3dfb62
     restart: unless-stopped
     depends_on:
       - paperless-db
@@ -48,7 +48,7 @@ services:
 
   paperless-broker:
     container_name: paperless-broker
-    image: library/redis:8
+    image: library/redis:8@sha256:1f073813b641755b70b0200da64131bbeeb4ec5b633ca67772229b49820caafa
     restart: unless-stopped
 
     # Filesystem
@@ -69,7 +69,7 @@ services:
 
   paperless-db:
     container_name: paperless-db
-    image: library/postgres:18
+    image: library/postgres:18@sha256:52e6ffd11fddd081ae63880b635b2a61c14008c17fc98cdc7ce5472265516dd0
     restart: unless-stopped
 
     # Filesystem
