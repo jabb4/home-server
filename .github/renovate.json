@@ -69,11 +69,31 @@
       ]
     },
     {
-      "description": "Apply a baseline soak period only to regular version bumps.",
+      "description": "Apply a baseline soak period to regular Helm and git-tag version bumps.",
+      "matchManagers": [
+        "custom.regex",
+        "helmv3"
+      ],
       "matchUpdateTypes": [
         "major",
         "minor",
         "patch"
+      ],
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "description": "Apply a baseline soak period only to Docker Hub image version bumps.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
+      ],
+      "matchRegistryUrls": [
+        "https://index.docker.io",
+        "https://index.docker.io/**"
       ],
       "minimumReleaseAge": "3 days"
     },
@@ -95,7 +115,6 @@
       "description": "Let infra app version updates age longer.",
       "matchManagers": [
         "custom.regex",
-        "helm-values",
         "helmv3"
       ],
       "matchFileNames": [
@@ -105,6 +124,25 @@
         "major",
         "minor",
         "patch"
+      ],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Let Docker Hub-backed infra app images age longer.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchFileNames": [
+        "machines/stratton/k8s/workloads/infra/**"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
+      ],
+      "matchRegistryUrls": [
+        "https://index.docker.io",
+        "https://index.docker.io/**"
       ],
       "minimumReleaseAge": "7 days"
     },
@@ -142,28 +180,7 @@
       "groupName": "authentik",
       "addLabels": [
         "k8s-critical"
-      ],
-      "minimumReleaseAge": "7 days"
-    },
-    {
-      "description": "Skip stability-day checks for registries that do not publish usable release timestamps.",
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "patch"
-      ],
-      "matchRegistryUrls": [
-        "https://ghcr.io",
-        "https://ghcr.io/**",
-        "https://quay.io",
-        "https://quay.io/**",
-        "https://lscr.io",
-        "https://lscr.io/**"
-      ],
-      "minimumReleaseAge": null
+      ]
     },
     {
       "description": "Mark major updates explicitly even before review.",
