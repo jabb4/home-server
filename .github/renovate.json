@@ -1,0 +1,136 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:best-practices",
+    ":dependencyDashboard",
+    ":approveMajorUpdates",
+    ":semanticCommitsDisabled",
+    ":separateMultipleMajorReleases"
+  ],
+  "enabledManagers": [
+    "custom.regex",
+    "docker-compose",
+    "helm-values",
+    "helmv3"
+  ],
+  "labels": [
+    "dependencies"
+  ],
+  "prConcurrentLimit": 5,
+  "prHourlyLimit": 2,
+  "minimumReleaseAge": "3 days",
+  "customManagers": [
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^machines\\/stratton\\/k8s\\/workloads\\/.+\\/application\\.ya?ml$/"
+      ],
+      "matchStrings": [
+        "- repoURL: (?<registryUrl>https:\\/\\/[^\\s]+)\\n\\s+chart: (?<depName>[^\\s]+)\\n\\s+targetRevision: (?<currentValue>[^\\s]+)"
+      ],
+      "datasourceTemplate": "helm"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^machines\\/stratton\\/k8s\\/workloads\\/infra\\/authentik\\/resources\\/values\\.yaml$/"
+      ],
+      "matchStrings": [
+        "image:\\n\\s+tag: (?<currentValue>[^\\s]+)"
+      ],
+      "depNameTemplate": "ghcr.io/goauthentik/server",
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^machines\\/stratton\\/k8s\\/workloads\\/cluster\\/argocd\\/values\\.yaml$/"
+      ],
+      "matchStrings": [
+        "image: (?<depName>[^:\\s]+(?:\\/[^:\\s]+)*):(?<currentValue>[^\\s]+)"
+      ],
+      "datasourceTemplate": "docker"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^machines\\/stratton\\/k8s\\/workloads\\/infra\\/traefik\\/values\\.yaml$/"
+      ],
+      "matchStrings": [
+        "moduleName: github\\.com\\/(?<packageName>[^\\s]+)\\n\\s+version: (?<currentValue>[^\\s]+)"
+      ],
+      "depNameTemplate": "{{{packageName}}}",
+      "datasourceTemplate": "github-tags"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Mark all Kubernetes GitOps updates clearly in PRs.",
+      "matchManagers": [
+        "custom.regex",
+        "helm-values",
+        "helmv3"
+      ],
+      "matchFileNames": [
+        "machines/stratton/k8s/**"
+      ],
+      "addLabels": [
+        "k8s"
+      ]
+    },
+    {
+      "description": "Mark VM Docker Compose updates clearly in PRs.",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "machines/stratton/vms/**/compose.yml"
+      ],
+      "addLabels": [
+        "docker"
+      ]
+    },
+    {
+      "description": "Keep cluster-critical chart updates separate and let them age longer.",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchFileNames": [
+        "machines/stratton/k8s/workloads/cluster/argocd/application.yaml",
+        "machines/stratton/k8s/workloads/cluster/cilium/application.yaml",
+        "machines/stratton/k8s/workloads/cluster/longhorn/application.yaml",
+        "machines/stratton/k8s/workloads/infra/cert-manager/application.yaml",
+        "machines/stratton/k8s/workloads/infra/cloudnative-pg/application.yaml",
+        "machines/stratton/k8s/workloads/infra/traefik/application.yaml"
+      ],
+      "addLabels": [
+        "k8s-critical"
+      ],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Keep the Authentik wrapper dependency aligned with the app image override.",
+      "matchFileNames": [
+        "machines/stratton/k8s/workloads/infra/authentik/resources/Chart.yaml",
+        "machines/stratton/k8s/workloads/infra/authentik/resources/values.yaml"
+      ],
+      "groupName": "authentik",
+      "addLabels": [
+        "k8s-critical"
+      ],
+      "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Mark major updates explicitly even before review.",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "addLabels": [
+        "major"
+      ]
+    }
+  ],
+  "prBodyNotes": [
+    "{{#if isMajor}}This is a major update. Read the upstream release notes and migration notes before merging.{{/if}}"
+  ]
+}
