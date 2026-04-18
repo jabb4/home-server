@@ -3,7 +3,7 @@
 services:
   cloudflare-tunnel:
     container_name: cloudflare-tunnel
-    image: cloudflare/cloudflared:latest
+    image: cloudflare/cloudflared:2026.3.0
     restart: always
 
     command: tunnel --no-autoupdate run --token $CF_TOKEN
