@@ -8,6 +8,7 @@
     ":separateMultipleMajorReleases"
   ],
   "enabledManagers": [
+    "custom.jsonata",
     "custom.regex",
     "docker-compose",
     "helm-values",
@@ -18,7 +19,6 @@
   ],
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
-  "minimumReleaseAge": "3 days",
   "customManagers": [
     {
       "customType": "regex",
@@ -31,24 +31,15 @@
       "datasourceTemplate": "helm"
     },
     {
-      "customType": "regex",
+      "customType": "jsonata",
+      "fileFormat": "yaml",
       "managerFilePatterns": [
         "/^machines\\/stratton\\/k8s\\/workloads\\/infra\\/authentik\\/resources\\/values\\.yaml$/"
       ],
       "matchStrings": [
-        "image:\\n\\s+tag: (?<currentValue>[^\\s]+)"
+        "upstream.global.image.{\"currentValue\": tag}"
       ],
       "depNameTemplate": "ghcr.io/goauthentik/server",
-      "datasourceTemplate": "docker"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^machines\\/stratton\\/k8s\\/workloads\\/cluster\\/argocd\\/values\\.yaml$/"
-      ],
-      "matchStrings": [
-        "image: (?<depName>[^:\\s]+(?:\\/[^:\\s]+)*):(?<currentValue>[^\\s]+)"
-      ],
       "datasourceTemplate": "docker"
     },
     {
@@ -67,6 +58,7 @@
     {
       "description": "Mark all Kubernetes GitOps updates clearly in PRs.",
       "matchManagers": [
+        "custom.jsonata",
         "custom.regex",
         "helm-values",
         "helmv3"
@@ -91,8 +83,18 @@
       ]
     },
     {
-      "description": "Treat all infra app updates as k8s-critical and let them age longer.",
+      "description": "Apply a baseline soak period only to regular version bumps.",
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
+      ],
+      "minimumReleaseAge": "3 days"
+    },
+    {
+      "description": "Mark all infra app updates as k8s-critical.",
       "matchManagers": [
+        "custom.jsonata",
         "custom.regex",
         "helm-values",
         "helmv3"
@@ -102,20 +104,25 @@
       ],
       "addLabels": [
         "k8s-critical"
-      ],
-      "minimumReleaseAge": "7 days"
+      ]
     },
     {
-      "description": "Do not apply minimum release age to non-Docker-Hub image registries that do not provide usable release timestamps.",
-      "matchDatasources": [
-        "docker"
+      "description": "Let infra app version updates age longer.",
+      "matchManagers": [
+        "custom.jsonata",
+        "custom.regex",
+        "helm-values",
+        "helmv3"
       ],
-      "matchRegistryUrls": [
-        "https://ghcr.io/**",
-        "https://quay.io/**",
-        "https://lscr.io/**"
+      "matchFileNames": [
+        "machines/stratton/k8s/workloads/infra/**"
       ],
-      "minimumReleaseAge": null
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
+      ],
+      "minimumReleaseAge": "7 days"
     },
     {
       "description": "Keep cluster-critical chart updates separate and let them age longer.",
@@ -126,6 +133,11 @@
         "machines/stratton/k8s/workloads/cluster/argocd/application.yaml",
         "machines/stratton/k8s/workloads/cluster/cilium/application.yaml",
         "machines/stratton/k8s/workloads/cluster/longhorn/application.yaml"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
       ],
       "addLabels": [
         "k8s-critical"
@@ -138,11 +150,36 @@
         "machines/stratton/k8s/workloads/infra/authentik/resources/Chart.yaml",
         "machines/stratton/k8s/workloads/infra/authentik/resources/values.yaml"
       ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
+      ],
       "groupName": "authentik",
       "addLabels": [
         "k8s-critical"
       ],
       "minimumReleaseAge": "7 days"
+    },
+    {
+      "description": "Skip stability-day checks for registries that do not publish usable release timestamps.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
+      ],
+      "matchRegistryUrls": [
+        "https://ghcr.io",
+        "https://ghcr.io/**",
+        "https://quay.io",
+        "https://quay.io/**",
+        "https://lscr.io",
+        "https://lscr.io/**"
+      ],
+      "minimumReleaseAge": null
     },
     {
       "description": "Mark major updates explicitly even before review.",
