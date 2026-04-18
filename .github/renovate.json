@@ -8,7 +8,6 @@
     ":separateMultipleMajorReleases"
   ],
   "enabledManagers": [
-    "custom.jsonata",
     "custom.regex",
     "docker-compose",
     "helm-values",
@@ -31,18 +30,6 @@
       "datasourceTemplate": "helm"
     },
     {
-      "customType": "jsonata",
-      "fileFormat": "yaml",
-      "managerFilePatterns": [
-        "/^machines\\/stratton\\/k8s\\/workloads\\/infra\\/authentik\\/resources\\/values\\.yaml$/"
-      ],
-      "matchStrings": [
-        "upstream.global.image.{\"currentValue\": tag}"
-      ],
-      "depNameTemplate": "ghcr.io/goauthentik/server",
-      "datasourceTemplate": "docker"
-    },
-    {
       "customType": "regex",
       "managerFilePatterns": [
         "/^machines\\/stratton\\/k8s\\/workloads\\/infra\\/traefik\\/values\\.yaml$/"
@@ -58,7 +45,6 @@
     {
       "description": "Mark all Kubernetes GitOps updates clearly in PRs.",
       "matchManagers": [
-        "custom.jsonata",
         "custom.regex",
         "helm-values",
         "helmv3"
@@ -94,7 +80,6 @@
     {
       "description": "Mark all infra app updates as k8s-critical.",
       "matchManagers": [
-        "custom.jsonata",
         "custom.regex",
         "helm-values",
         "helmv3"
@@ -109,7 +94,6 @@
     {
       "description": "Let infra app version updates age longer.",
       "matchManagers": [
-        "custom.jsonata",
         "custom.regex",
         "helm-values",
         "helmv3"
