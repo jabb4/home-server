@@ -106,6 +106,18 @@
       "minimumReleaseAge": "7 days"
     },
     {
+      "description": "Do not apply minimum release age to non-Docker-Hub image registries that do not provide usable release timestamps.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchRegistryUrls": [
+        "https://ghcr.io/**",
+        "https://quay.io/**",
+        "https://lscr.io/**"
+      ],
+      "minimumReleaseAge": null
+    },
+    {
       "description": "Keep cluster-critical chart updates separate and let them age longer.",
       "matchManagers": [
         "custom.regex"
