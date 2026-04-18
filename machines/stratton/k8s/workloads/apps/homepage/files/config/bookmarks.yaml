@@ -2,6 +2,8 @@
     - Github:
         - icon: github-light.png
           href: https://github.com/py-er
+    - Mend (Renovate):
+        - href: https://developer.mend.io/github/jabb4
     - Cloudflare:
         - icon: cloudflare.png
           href: https://dash.cloudflare.com
