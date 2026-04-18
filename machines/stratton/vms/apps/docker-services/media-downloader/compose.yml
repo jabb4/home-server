@@ -1,7 +1,7 @@
 services:
   gluetun:
     container_name: gluetun
-    image: qmcgaw/gluetun:v3.41
+    image: qmcgaw/gluetun:v3.41@sha256:1a5bf4b4820a879cdf8d93d7ef0d2d963af56670c9ebff8981860b6804ebc8ab
     restart: unless-stopped
 
     # Networking
@@ -42,7 +42,7 @@ services:
   
   sabnzbd:
     container_name: sabnzbd
-    image: lscr.io/linuxserver/sabnzbd:4.5.5
+    image: lscr.io/linuxserver/sabnzbd:4.5.5@sha256:7ac6fe8a521c7099e1768af90529dfee5976b87c7dccffdcc9ced00149e1aedb
     restart: unless-stopped
     depends_on:
       - gluetun
@@ -68,7 +68,7 @@ services:
   
   prowlarr:
     container_name: prowlarr
-    image: lscr.io/linuxserver/prowlarr:2.3.0
+    image: lscr.io/linuxserver/prowlarr:2.3.0@sha256:e50f3b188a7d1771b61f395c4203e35476bd3047683508740305e830e15bacf7
     restart: unless-stopped
     depends_on:
       - sabnzbd
@@ -93,7 +93,7 @@ services:
   
   radarr:
     container_name: radarr
-    image: lscr.io/linuxserver/radarr:6.0.4
+    image: lscr.io/linuxserver/radarr:6.0.4@sha256:c8a55bd83672d3b63dc20edf325277ce7dc3b69d4400568cc5bbc9e6a227ebf4
     restart: unless-stopped
     depends_on:
       - prowlarr
@@ -120,7 +120,7 @@ services:
   
   sonarr:
     container_name: sonarr
-    image: lscr.io/linuxserver/sonarr:4.0.16
+    image: lscr.io/linuxserver/sonarr:4.0.16@sha256:21c1c3d52248589bb064f5adafec18cad45812d7a01d317472955eef051e619b
     restart: unless-stopped
     depends_on:
       - prowlarr
@@ -147,7 +147,7 @@ services:
     
   bazarr:
     container_name: bazarr
-    image: lscr.io/linuxserver/bazarr:1.5.6
+    image: lscr.io/linuxserver/bazarr:1.5.6@sha256:d736df5df0286373a26d34f47aa413cb8aeada74f6338dac372a6d37ba1b3b0d
     restart: unless-stopped
     depends_on:
       - gluetun
@@ -173,7 +173,7 @@ services:
 
   seerr:
     container_name: seerr
-    image: ghcr.io/seerr-team/seerr:v3.0.1
+    image: ghcr.io/seerr-team/seerr:v3.0.1@sha256:1b5fc1ea825631d9d165364472663b817a4c58ef6aa1013f58d82c1570d7c866
     restart: unless-stopped
     init: true
 

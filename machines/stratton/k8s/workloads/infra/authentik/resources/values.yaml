@@ -2,7 +2,7 @@ upstream:
   global:
     image:
       repository: ghcr.io/goauthentik/server
-      tag: 2026.2.0
+      tag: 2026.2.0@sha256:cfd955129ff142be93e7818682a04194b39c2ae8909a33f18e98b055baac27bf
       digest: ""
     volumes:
       - name: authentik-data
