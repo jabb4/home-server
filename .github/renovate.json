@@ -91,6 +91,21 @@
       ]
     },
     {
+      "description": "Treat all infra app updates as k8s-critical and let them age longer.",
+      "matchManagers": [
+        "custom.regex",
+        "helm-values",
+        "helmv3"
+      ],
+      "matchFileNames": [
+        "machines/stratton/k8s/workloads/infra/**"
+      ],
+      "addLabels": [
+        "k8s-critical"
+      ],
+      "minimumReleaseAge": "7 days"
+    },
+    {
       "description": "Keep cluster-critical chart updates separate and let them age longer.",
       "matchManagers": [
         "custom.regex"
@@ -98,10 +113,7 @@
       "matchFileNames": [
         "machines/stratton/k8s/workloads/cluster/argocd/application.yaml",
         "machines/stratton/k8s/workloads/cluster/cilium/application.yaml",
-        "machines/stratton/k8s/workloads/cluster/longhorn/application.yaml",
-        "machines/stratton/k8s/workloads/infra/cert-manager/application.yaml",
-        "machines/stratton/k8s/workloads/infra/cloudnative-pg/application.yaml",
-        "machines/stratton/k8s/workloads/infra/traefik/application.yaml"
+        "machines/stratton/k8s/workloads/cluster/longhorn/application.yaml"
       ],
       "addLabels": [
         "k8s-critical"
