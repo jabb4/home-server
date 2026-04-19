@@ -1,6 +1,6 @@
 services:
   prometheus_node_exporter:
-    image: quay.io/prometheus/node-exporter:v1.8.2@sha256:4032c6d5bfd752342c3e631c2f1de93ba6b86c41db6b167b9a35372c139e7706
+    image: quay.io/prometheus/node-exporter:v1.11.1@sha256:0f422f62c15f154af8d8572b23d623aebfb10cec73a5c654d18f911f3f9df241
     container_name: prometheus_node_exporter
     ports:
       - 9100:9100
