@@ -68,7 +68,7 @@ services:
   
   prowlarr:
     container_name: prowlarr
-    image: lscr.io/linuxserver/prowlarr:2.3.0@sha256:e50f3b188a7d1771b61f395c4203e35476bd3047683508740305e830e15bacf7
+    image: lscr.io/linuxserver/prowlarr:2.3.5@sha256:6df73ab9e99d0dbaad27c39d8a47c600333eebea80fcb56253a0bb8b630c8115
     restart: unless-stopped
     depends_on:
       - sabnzbd
@@ -93,7 +93,7 @@ services:
   
   radarr:
     container_name: radarr
-    image: lscr.io/linuxserver/radarr:6.0.4@sha256:c8a55bd83672d3b63dc20edf325277ce7dc3b69d4400568cc5bbc9e6a227ebf4
+    image: lscr.io/linuxserver/radarr:6.1.1@sha256:6f1dda18354ea7f28cead8f6d099fc8222498c3ae165f567d504ed04d70980d7
     restart: unless-stopped
     depends_on:
       - prowlarr
@@ -120,7 +120,7 @@ services:
   
   sonarr:
     container_name: sonarr
-    image: lscr.io/linuxserver/sonarr:4.0.16@sha256:21c1c3d52248589bb064f5adafec18cad45812d7a01d317472955eef051e619b
+    image: lscr.io/linuxserver/sonarr:4.0.17@sha256:e6c9a091735fede0c2a205c69e7d4c2f0188eaf2bec7e42d8a26c017e5f2a910
     restart: unless-stopped
     depends_on:
       - prowlarr
@@ -173,7 +173,7 @@ services:
 
   seerr:
     container_name: seerr
-    image: ghcr.io/seerr-team/seerr:v3.0.1@sha256:1b5fc1ea825631d9d165364472663b817a4c58ef6aa1013f58d82c1570d7c866
+    image: ghcr.io/seerr-team/seerr:v3.2.0@sha256:c4cbd5121236ac2f70a843a0b920b68a27976be57917555f1c45b08a1e6b2aad
     restart: unless-stopped
     init: true
 
