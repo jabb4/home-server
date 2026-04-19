@@ -19,6 +19,22 @@
   ],
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
+  "customDatasources": {
+    "immich_postgres_release": {
+      "defaultRegistryUrlTemplate": "https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml",
+      "format": "yaml",
+      "transformTemplates": [
+        "{\"releases\":[{\"version\": $split($substringAfter(services.database.image, 'ghcr.io/immich-app/postgres:'), '@')[0], \"digest\": $split(services.database.image, '@')[1], \"sourceUrl\": \"https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml\"}]}"
+      ]
+    },
+    "immich_valkey_release": {
+      "defaultRegistryUrlTemplate": "https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml",
+      "format": "yaml",
+      "transformTemplates": [
+        "{\"releases\":[{\"version\": $split($substringAfter(services.redis.image, 'docker.io/valkey/valkey:'), '@')[0], \"digest\": $split(services.redis.image, '@')[1], \"sourceUrl\": \"https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml\"}]}"
+      ]
+    }
+  },
   "customManagers": [
     {
       "customType": "regex",
@@ -40,6 +56,34 @@
       ],
       "depNameTemplate": "{{{packageName}}}",
       "datasourceTemplate": "github-tags"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^machines\\/stratton\\/vms\\/apps\\/docker-services\\/immich\\/compose\\.yml$/"
+      ],
+      "matchStrings": [
+        "(?<indentation>\\s*)image:\\s+ghcr\\.io\\/immich-app\\/postgres:(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[a-f0-9]+)"
+      ],
+      "depNameTemplate": "ghcr.io/immich-app/postgres",
+      "packageNameTemplate": "ghcr.io/immich-app/postgres",
+      "datasourceTemplate": "custom.immich_postgres_release",
+      "versioningTemplate": "docker",
+      "autoReplaceStringTemplate": "{{{indentation}}}image: ghcr.io/immich-app/postgres:{{{newValue}}}@{{{newDigest}}}"
+    },
+    {
+      "customType": "regex",
+      "managerFilePatterns": [
+        "/^machines\\/stratton\\/vms\\/apps\\/docker-services\\/immich\\/compose\\.yml$/"
+      ],
+      "matchStrings": [
+        "(?<indentation>\\s*)image:\\s+valkey\\/valkey:(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[a-f0-9]+)"
+      ],
+      "depNameTemplate": "valkey/valkey",
+      "packageNameTemplate": "valkey/valkey",
+      "datasourceTemplate": "custom.immich_valkey_release",
+      "versioningTemplate": "docker",
+      "autoReplaceStringTemplate": "{{{indentation}}}image: valkey/valkey:{{{newValue}}}@{{{newDigest}}}"
     }
   ],
   "packageRules": [
@@ -182,6 +226,47 @@
       "addLabels": [
         "k8s-critical"
       ]
+    },
+    {
+      "description": "Keep Immich application images bundled together.",
+      "matchFileNames": [
+        "machines/stratton/vms/apps/docker-services/immich/compose.yml"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/immich-app/postgres",
+        "ghcr.io/immich-app/immich-machine-learning",
+        "ghcr.io/immich-app/immich-server",
+        "valkey/valkey"
+      ],
+      "groupName": "immich",
+      "addLabels": [
+        "docker"
+      ]
+    },
+    {
+      "description": "Follow Immich database and cache recommendations from the released compose bundle, not raw registry lookups.",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "matchFileNames": [
+        "machines/stratton/vms/apps/docker-services/immich/compose.yml"
+      ],
+      "matchPackageNames": [
+        "ghcr.io/immich-app/postgres",
+        "valkey/valkey"
+      ],
+      "enabled": false
+    },
+    {
+      "description": "Do not apply stability-day checks to the Immich release-compose bundle lookups.",
+      "matchManagers": [
+        "custom.regex"
+      ],
+      "matchDatasources": [
+        "custom.immich_postgres_release",
+        "custom.immich_valkey_release"
+      ],
+      "minimumReleaseAge": null
     },
     {
       "description": "Mark major updates explicitly even before review.",
