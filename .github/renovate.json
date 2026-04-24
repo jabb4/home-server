@@ -127,11 +127,12 @@
       "minimumReleaseAge": "3 days"
     },
     {
-      "description": "Apply a baseline soak period only to Docker Hub image version bumps.",
+      "description": "Apply a baseline soak period only to Docker Hub image version and digest bumps.",
       "matchDatasources": [
         "docker"
       ],
       "matchUpdateTypes": [
+        "digest",
         "major",
         "minor",
         "patch"
@@ -173,7 +174,7 @@
       "minimumReleaseAge": "7 days"
     },
     {
-      "description": "Let Docker Hub-backed infra app images age longer.",
+      "description": "Let Docker Hub-backed infra app image version and digest bumps age longer.",
       "matchDatasources": [
         "docker"
       ],
@@ -181,6 +182,7 @@
         "machines/stratton/k8s/workloads/infra/**"
       ],
       "matchUpdateTypes": [
+        "digest",
         "major",
         "minor",
         "patch"
