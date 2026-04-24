@@ -48,7 +48,7 @@ services:
 
   paperless-broker:
     container_name: paperless-broker
-    image: library/redis:8@sha256:d372cf7cd5ab47fb6ad1a73c45ea1104d6f3fa11cc833ff0b3ac997890b4ccec
+    image: library/redis:8.6.2@sha256:d372cf7cd5ab47fb6ad1a73c45ea1104d6f3fa11cc833ff0b3ac997890b4ccec
     restart: unless-stopped
 
     # Filesystem
@@ -69,7 +69,7 @@ services:
 
   paperless-db:
     container_name: paperless-db
-    image: library/postgres:18@sha256:059fa0289cc5a184034e05a1f4f6d6fd79f69dc718b8b04ab60b6b469eed411e
+    image: library/postgres:18.3@sha256:059fa0289cc5a184034e05a1f4f6d6fd79f69dc718b8b04ab60b6b469eed411e
     restart: unless-stopped
 
     # Filesystem
