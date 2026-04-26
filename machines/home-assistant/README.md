@@ -1,10 +1,14 @@
-# Home Assistant VM
+# Home Assistant
 
-Home Assistant runs outside Kubernetes on the VM at `192.168.20.104` and is
+Home Assistant runs outside Kubernetes on a Raspberry Pi at `10.0.20.60` and is
 published through the Kubernetes Traefik external route:
 
 - Host: `home-assistant.local.jabbas.dev`
-- Backend: `http://192.168.20.104:8123`
+- Backend: `http://10.0.20.60:8123`
+- Network: Services VLAN, `10.0.20.0/24`
+
+Use a UniFi DHCP reservation for the Raspberry Pi MAC address rather than a
+static address configured only on the Pi.
 
 ## Reverse Proxy
 
