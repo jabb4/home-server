@@ -18,12 +18,11 @@ Current operating model:
     workloads
 - `machines/stratton/vms/`
   - VM-level notes for `cp-1`, `worker-1`, `apps`, `dmz`, `truenas`, and
-    other Stratton-hosted VMs
+    `home-assistant`
 - `nixos/`
   - NixOS host configs for the VMs that still use them, currently `apps-vm`
     and `dmz-vm`
-- `machines/home-assistant/`, `machines/rocky/`, `machines/jordan/`,
-  `machines/nut/`
+- `machines/rocky/`, `machines/jordan/`, `machines/nut/`
   - docs and host-specific notes for the non-Stratton machines
 - `scripts/`
   - repo-level helper scripts
@@ -37,8 +36,8 @@ For the k8s cluster setup, follow
 | --- | --- | --- | --- |
 | Default LAN | `192.168.10.0/24` | user devices and admin workstation | client origin network |
 | Management | `10.0.10.0/24` | admin-only interfaces | Proxmox, switch/AP management, other host admin surfaces |
-| Services | `10.0.20.0/24` | Kubernetes nodes and internal service ingress | Talos nodes, Kubernetes API VIP, Traefik load balancer, Pi-hole, Home Assistant |
-| Legacy VM Network | `192.168.20.0/24` | VMs and services not yet moved into Kubernetes or changed VLAN | `TrueNAS`, `apps-vm`, `dmz-vm`, `NUT` |
+| Services | `10.0.20.0/24` | Kubernetes nodes and internal service ingress | Talos nodes, Kubernetes API VIP, Traefik load balancer, Pi-hole |
+| Legacy VM Network | `192.168.20.0/24` | VMs and services not yet moved into Kubernetes or changed VLAN | `TrueNAS`, `apps-vm`, `dmz-vm`, `Home Assistant`, `NUT` |
 
 The old legacy VM network is still active. A dedicated DMZ VLAN may still be
 introduced later, but it is not the current live layout.
@@ -52,12 +51,12 @@ introduced later, but it is not the current live layout.
 | `10.0.20.11` | `cp-1` Talos control plane |
 | `10.0.20.21` | `worker-1` Talos worker |
 | `10.0.20.53` | Pi-hole|
-| `10.0.20.60` | Home Assistant Raspberry Pi |
 | `10.0.20.80` | Traefik load balancer IP |
 | `192.168.20.70` | NUT UPS controller |
 | `192.168.20.101` | TrueNAS |
 | `192.168.20.102` | `dmz-vm` |
 | `192.168.20.103` | `apps-vm` |
+| `192.168.20.104` | Home Assistant VM |
 
 ## Core Machines
 
@@ -69,15 +68,9 @@ introduced later, but it is not the current live layout.
   - `cp-1`
   - `worker-1`
   - `TrueNAS`
+  - `Home Assistant`
   - `apps-vm`
   - `dmz-vm`
-
-### Home Assistant
-
-- Hardware: Raspberry Pi
-- Role: home automation controller
-- IP: `10.0.20.60`
-- Service: `Home Assistant`
 
 ### Rocky
 
@@ -160,10 +153,7 @@ These services still run outside the cluster today.
 ### Dedicated VMs
 
 - `TrueNAS`
-
-### Dedicated Hardware
-
-- `Home Assistant` on Raspberry Pi
+- `Home Assistant`
 
 ### `apps-vm`
 
@@ -205,7 +195,7 @@ centralized even where the workloads are not.
   [`machines/stratton/k8s/setup.md`](machines/stratton/k8s/setup.md)
 - Kubernetes workloads:
   [`machines/stratton/k8s/workloads/README.md`](machines/stratton/k8s/workloads/README.md)
-- Home Assistant:
-  [`machines/home-assistant/README.md`](machines/home-assistant/README.md)
+- Home Assistant VM:
+  [`machines/stratton/vms/home-assistant/README.md`](machines/stratton/vms/home-assistant/README.md)
 - TrueNAS note:
   [`machines/stratton/vms/truenas/README.md`](machines/stratton/vms/truenas/README.md)
