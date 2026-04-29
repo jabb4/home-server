@@ -170,7 +170,7 @@ externalRoutes:
 
   - name: home-assistant
     host: home-assistant.local.jabbas.dev
-    address: 192.168.20.104
+    address: 10.0.20.60
     port: 8123
     scheme: http
     middlewares:
