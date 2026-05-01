@@ -1,0 +1,41 @@
+services:
+  pihole:
+    container_name: pihole
+    image: ${PIHOLE_IMAGE:-pihole/pihole:latest}
+    restart: unless-stopped
+    network_mode: host
+    cap_add:
+      - SYS_NICE
+    environment:
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+      FTLCONF_webserver_api_password: ${PIHOLE_WEB_PASSWORD:?set PIHOLE_WEB_PASSWORD in .env}
+      FTLCONF_webserver_domain: pi-hole.local.jabbas.dev
+      FTLCONF_webserver_port: 127.0.0.1:8080
+      FTLCONF_dns_upstreams: |-
+        1.1.1.1
+        1.0.0.1
+      FTLCONF_dns_domainNeeded: "true"
+      FTLCONF_dns_expandHosts: "true"
+      FTLCONF_dns_interface: eth0
+      FTLCONF_dns_listeningMode: SINGLE
+      FTLCONF_dns_hosts: |-
+        192.168.20.100 infrastrcture.machine.local.jabbas.dev infrastructure.machine.local.jabbas.dev
+        192.168.20.103 apps.machine.local.jabbas.dev
+        10.0.20.80 proxy.machine.local.jabbas.dev stratton-traefik.machine.local.jabbas.dev
+        10.0.20.53 pi-hole.machine.local.jabbas.dev rocky.machine.local.jabbas.dev
+        10.0.10.10 proxmox.machine.local.jabbas.dev
+      FTLCONF_dns_rateLimit_count: 10000
+      FTLCONF_dns_rateLimit_interval: 60
+      FTLCONF_dhcp_active: "false"
+      FTLCONF_ntp_ipv4_active: "false"
+      FTLCONF_ntp_ipv6_active: "false"
+      FTLCONF_ntp_sync_active: "false"
+      FTLCONF_misc_dnsmasq_lines: |-
+        address=/local.jabbas.dev/10.0.20.53
+    volumes:
+      - ./etc-pihole:/etc/pihole
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"

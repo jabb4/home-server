@@ -103,7 +103,7 @@ introduced later, but it is not the current live layout.
 - Hardware: SMLIGHT SLZB-MR4U Multiradio
 - Role: Zigbee and Thread coordinator
 - IP: `10.0.20.61`
-- Service: Home Assistant radio coordinator
+- Service: Zigbee2MQTT radio coordinator
 
 ## Kubernetes on Stratton
 

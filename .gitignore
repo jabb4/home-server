@@ -10,6 +10,14 @@
 !machines/stratton/k8s/.env
 
 # -----------------------------------------------------------------------------
+# Runtime state
+# -----------------------------------------------------------------------------
+
+machines/rocky/docker-services/traefik/acme/
+machines/rocky/docker-services/homepage/config/logs/
+machines/rocky/docker-services/pi-hole/etc-pihole/
+
+# -----------------------------------------------------------------------------
 # Talos generated artifacts
 # -----------------------------------------------------------------------------
 

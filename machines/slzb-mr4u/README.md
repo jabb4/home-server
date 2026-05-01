@@ -1,7 +1,7 @@
 # SLZB-MR4U
 
-The SMLIGHT SLZB-MR4U Multiradio is the dedicated radio coordinator for Home
-Assistant.
+The SMLIGHT SLZB-MR4U Multiradio is the dedicated Zigbee2MQTT radio
+coordinator for Home Assistant.
 
 ## Network
 
@@ -35,30 +35,22 @@ Minimum firewall intent:
 
 - Use `CC2674P10` for the fresh Zigbee network.
 - Keep `EFR32MG26` available for Thread/Matter later.
+- Use Zigbee2MQTT with the `zstack` adapter.
+- Do not configure ZHA for this deployment.
 - Do not keep the old SONOFF ZBDongle-E running as a second coordinator.
 - The old SONOFF dongle can be reflashed as a Zigbee router later if useful.
 
-If using Zigbee2MQTT or ZHA over Ethernet, confirm the exact socket path and
-radio mapping in SLZB-OS before configuring Home Assistant. The default
-SMLIGHT socket port is commonly `6638`, but the active port should be treated
-as device configuration.
+Confirm the exact socket path and radio mapping in SLZB-OS before configuring
+Zigbee2MQTT. The default SMLIGHT socket port is commonly `6638`, but the active
+port should be treated as device configuration.
 
-Example Zigbee2MQTT serial setting:
+Zigbee2MQTT serial setting:
 
 ```yaml
 serial:
   port: tcp://10.0.20.61:6638
   adapter: zstack
 ```
-
-Example ZHA socket path:
-
-```text
-socket://10.0.20.61:6638
-```
-
-For ZHA, select the Texas Instruments / `znp` radio type when using the
-`CC2674P10` radio.
 
 ## Fresh Zigbee Install Notes
 
@@ -69,9 +61,12 @@ state from the SONOFF ZBDongle-E.
 2. Update SLZB-OS and record the radio firmware and socket settings.
 3. Configure `CC2674P10` as the Zigbee coordinator over Ethernet.
 4. Unplug the SONOFF ZBDongle-E before starting the new Zigbee network.
-5. Pair mains-powered Zigbee routers first, such as plugs, bulbs, and relays.
-6. Pair battery devices after the router mesh is in place.
-7. Rebuild groups, bindings, dashboards, and automations after entity names are
+5. Start Zigbee2MQTT with `adapter: zstack`.
+6. If Zigbee2MQTT shows the onboarding UI, choose the option that uses the
+   existing/app configuration.
+7. Pair mains-powered Zigbee routers first, such as plugs, bulbs, and relays.
+8. Pair battery devices after the router mesh is in place.
+9. Rebuild groups, bindings, dashboards, and automations after entity names are
    stable.
 
 Avoid changing VLAN design during the Zigbee rebuild. A broader IoT network can
@@ -81,3 +76,5 @@ be introduced later after Home Assistant and Zigbee are stable.
 
 - [SMLIGHT SLZB-MR4U](https://smlight.tech/us/slzbmr4)
 - [SMLIGHT SLZB-OS manuals](https://smlight.tech/support/manuals/books/slzb-os)
+- [Zigbee2MQTT adapter settings](https://www.zigbee2mqtt.io/guide/configuration/adapter-settings.html)
+- [How to Set Up the SLZB-06 Zigbee Coordinator in Home Assistant](https://www.youtube.com/watch?v=8bf5IH1iY_E)

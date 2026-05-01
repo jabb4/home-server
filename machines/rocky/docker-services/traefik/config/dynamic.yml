@@ -1,0 +1,175 @@
+http:
+  routers:
+    # Always-on services.
+    home-assistant:
+      entryPoints:
+        - websecure
+      rule: Host(`home-assistant.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - default-headers
+      service: home-assistant
+
+    unifi:
+      entryPoints:
+        - websecure
+      rule: Host(`unifi.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - admin-ui
+      service: unifi
+
+    pi-hole:
+      entryPoints:
+        - websecure
+      rule: Host(`pi-hole.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - pi-hole-redirect
+        - admin-ui
+      service: pi-hole
+
+    homepage:
+      entryPoints:
+        - websecure
+      rule: Host(`homepage.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - default-headers
+        - disallow-iframe-embedding
+      service: homepage
+
+    pikvm:
+      entryPoints:
+        - websecure
+      rule: Host(`pikvm.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - admin-proxy
+      service: pikvm
+
+    # Rocky Traefik dashboard.
+    traefik-rocky-root:
+      entryPoints:
+        - websecure
+      rule: Host(`traefik-rocky.local.jabbas.dev`) && Path(`/`)
+      priority: 120
+      middlewares:
+        - traefik-dashboard-root-redirect
+        - admin-auth
+      service: api@internal
+
+    traefik-rocky:
+      entryPoints:
+        - websecure
+      rule: Host(`traefik-rocky.local.jabbas.dev`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+      priority: 110
+      middlewares:
+        - admin-ui
+      service: api@internal
+
+    # Forward Kubernetes-only names to Stratton when it is online.
+    kubernetes-catchall:
+      entryPoints:
+        - websecure
+      rule: HostRegexp(`^.+\.local\.jabbas\.dev$`)
+      priority: 1
+      middlewares:
+        - default-headers
+      service: kubernetes-traefik
+
+  services:
+    # Always-on services.
+    home-assistant:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://10.0.20.60:8123
+
+    unifi:
+      loadBalancer:
+        passHostHeader: true
+        serversTransport: insecure-https
+        servers:
+          - url: https://192.168.10.1
+
+    pi-hole:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://127.0.0.1:8080
+
+    homepage:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://127.0.0.1:3001
+
+    pikvm:
+      loadBalancer:
+        passHostHeader: true
+        serversTransport: insecure-https
+        servers:
+          - url: https://192.168.20.62
+
+    # Stratton Kubernetes ingress.
+    kubernetes-traefik:
+      loadBalancer:
+        passHostHeader: true
+        serversTransport: kubernetes-traefik
+        servers:
+          - url: https://10.0.20.80
+
+  middlewares:
+    admin-ui:
+      chain:
+        middlewares:
+          - admin-auth
+          - default-headers
+          - disallow-iframe-embedding
+
+    admin-proxy:
+      chain:
+        middlewares:
+          - admin-auth
+          - default-headers
+
+    admin-auth:
+      basicAuth:
+        users:
+          - '{{ env "TRAEFIK_BASIC_AUTH_USERS" }}'
+        realm: rocky-traefik
+        removeHeader: true
+
+    default-headers:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+    disallow-iframe-embedding:
+      headers:
+        frameDeny: true
+        customFrameOptionsValue: SAMEORIGIN
+
+    pi-hole-redirect:
+      redirectRegex:
+        regex: "^https://([^/]+)/?$"
+        replacement: "https://${1}/admin/"
+
+    traefik-dashboard-root-redirect:
+      redirectRegex:
+        regex: "^https://([^/]+)/?$"
+        replacement: "https://${1}/dashboard/"
+
+  serversTransports:
+    insecure-https:
+      insecureSkipVerify: true
+
+    kubernetes-traefik:
+      serverName: local.jabbas.dev

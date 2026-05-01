@@ -1,0 +1,186 @@
+- Infrastructure:
+      - Unifi:
+            href: https://unifi.local.jabbas.dev/network/default/dashboard
+            icon: unifi.png
+            siteMonitor: https://unifi.local.jabbas.dev
+            widget:
+                  type: unifi
+                  url: https://unifi.local.jabbas.dev
+                  username: {{HOMEPAGE_VAR_UNIFI_USERNAME}}
+                  password: {{HOMEPAGE_VAR_UNIFI_PASSWORD}}
+      
+      - Pi-hole:
+            href: https://pi-hole.local.jabbas.dev
+            icon: pi-hole.png
+            siteMonitor: https://pi-hole.local.jabbas.dev
+            widget:
+                  type: pihole
+                  url: https://pi-hole.local.jabbas.dev
+                  version: 6
+                  key: {{HOMEPAGE_VAR_PIHOLE_API}}
+                  
+      - Proxmox:
+            href: https://pve.local.jabbas.dev
+            icon: proxmox.png
+            siteMonitor: https://pve.local.jabbas.dev
+            widget:
+                  type: proxmox
+                  url: https://pve.local.jabbas.dev
+                  username: {{HOMEPAGE_VAR_PROXMOX_API_USERNAME}}
+                  password: {{HOMEPAGE_VAR_PROXMOX_API_PASSWORD}}
+
+      - PiKVM:
+            href: https://pikvm.local.jabbas.dev
+            icon: pikvm.png
+            siteMonitor: https://pikvm.local.jabbas.dev
+
+      - Argo CD:
+            href: https://argocd.local.jabbas.dev
+            icon: argo-cd.png
+            siteMonitor: https://argocd.local.jabbas.dev
+      
+      - Rocky Traefik:
+            href: https://traefik-rocky.local.jabbas.dev/dashboard/
+            icon: traefik.png
+            siteMonitor: https://traefik-rocky.local.jabbas.dev/dashboard/
+
+      - Hubble:
+            href: https://hubble.local.jabbas.dev
+            icon: cilium.png
+            siteMonitor: https://hubble.local.jabbas.dev
+
+      - Longhorn:
+            href: https://longhorn.local.jabbas.dev
+            icon: longhorn.png
+            siteMonitor: https://longhorn.local.jabbas.dev
+      
+      - Authentik:
+            href: https://auth.local.jabbas.dev
+            icon: authentik.png
+            siteMonitor: https://auth.local.jabbas.dev
+            # widget:
+            #       type: authentik
+            #       url: https://auth.local.jabbas.dev
+            #       key: {{HOMEPAGE_VAR_AUTHENTIK_API}}
+            #       version: 2
+      
+      - TrueNAS:
+            href: https://truenas.local.jabbas.dev
+            icon: truenas.png
+            siteMonitor: https://truenas.local.jabbas.dev
+            widget:
+                  type: truenas
+                  url: https://truenas.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_TRUENAS_API}}
+                  enablePools: true
+                  nasType: scale
+
+      - Uptime-Kuma:
+            href: https://uptime-kuma.local.jabbas.dev
+            icon: uptime-kuma.png
+            siteMonitor: https://uptime-kuma.local.jabbas.dev
+            # widget:
+            #       type: uptimekuma
+            #       url: https://uptime-kuma.local.jabbas.dev
+            #       slug: homepage
+
+      - Server Monitoring:
+            href: https://grafana.local.jabbas.dev/d/ee06s4l8vo5c0a/proxmox-host?orgId=1&refresh=30s
+            icon: grafana.png
+            siteMonitor: https://grafana.local.jabbas.dev
+            widget:
+                type: iframe
+                name: CPU Temp
+                src: https://grafana.local.jabbas.dev/d-solo/ee06s4l8vo5c0a/proxmox-host?orgId=1&refresh=30s&panelId=4
+      
+
+
+- Apps:      
+      - MicroBin:
+            href: https://microbin.local.jabbas.dev
+            icon: microbin.png
+            siteMonitor: https://microbin.local.jabbas.dev
+
+      
+
+- Streaming:
+      - Seerr:
+            href: https://seerr.local.jabbas.dev
+            icon: seerr.png
+            siteMonitor: https://seerr.local.jabbas.dev
+
+      - Jellyfin:
+            href: https://jellyfin.local.jabbas.dev
+            icon: jellyfin.png
+            siteMonitor: https://jellyfin.local.jabbas.dev
+            widget:
+                  type: jellyfin
+                  url: https://jellyfin.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_JELLYFIN_API}}
+                  enableBlocks: true
+                  enableNowPlaying: true
+                  enableUser: true
+                  showEpisodeNumber: true
+                  expandOneStreamToTwoRows: false
+
+      - SABnzbd:
+            href: https://sabnzbd.local.jabbas.dev
+            icon: sabnzbd.png
+            siteMonitor: https://sabnzbd.local.jabbas.dev
+            widget:
+                  type: sabnzbd
+                  url: https://sabnzbd.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_SABNZBD_API_KEY}}
+
+      - Radarr:
+            href: https://radarr.local.jabbas.dev
+            icon: radarr.png
+            siteMonitor: https://radarr.local.jabbas.dev
+            widget:
+                  type: radarr
+                  url: https://radarr.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_RADARR_API}}
+                  enableQueue: true
+
+      - Sonarr:
+            href: https://sonarr.local.jabbas.dev
+            icon: sonarr.png
+            siteMonitor: https://sonarr.local.jabbas.dev
+            widget:
+                  type: sonarr
+                  url: https://sonarr.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_SONARR_API}}
+                  enableQueue: true
+
+      - Prowlarr:
+            href: https://prowlarr.local.jabbas.dev
+            icon: prowlarr.png
+            siteMonitor: https://prowlarr.local.jabbas.dev
+            widget:
+                  type: prowlarr
+                  url: https://prowlarr.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_PROWLARR_API}}
+
+      - Bazarr:
+            href: https://bazarr.local.jabbas.dev
+            icon: bazarr.png
+            siteMonitor: https://bazarr.local.jabbas.dev
+            widget:
+                  type: bazarr
+                  url: https://bazarr.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_BAZARR_API}}
+
+
+
+- Home Automation:
+      - Home-Assistant:
+            href: https://home-assistant.local.jabbas.dev
+            icon: home-assistant.png
+            siteMonitor: https://home-assistant.local.jabbas.dev
+            widget:
+                  type: homeassistant
+                  url: https://home-assistant.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_HOMEASSISTANT_API}}
+                  custom:
+                        - state: sensor.0x54ef441000b84716_power
+                          label: Server power draw
