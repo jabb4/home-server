@@ -10,7 +10,7 @@ Current design:
 - the ingress IP is `10.0.20.80`
 - Traefik runs as a `DaemonSet` on worker nodes
 - `cert-manager` owns ACME and issues the wildcard certificates Traefik serves
-- the dashboard is published at `traefik.local.jabbas.dev` behind basic auth
+- the dashboard is published at `traefik-stratton.local.jabbas.dev` behind basic auth
 - CrowdSec protects routes through the Traefik bouncer plugin in `stream` mode
 - shared Traefik CRD middleware is managed from `resources/templates/`
 - legacy non-Kubernetes services are routed through static `Service` +

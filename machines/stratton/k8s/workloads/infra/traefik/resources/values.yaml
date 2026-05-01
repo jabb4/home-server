@@ -1,5 +1,5 @@
 dashboard:
-  host: traefik.local.jabbas.dev
+  host: traefik-stratton.local.jabbas.dev
   entryPoints:
     - websecure
   middlewares:

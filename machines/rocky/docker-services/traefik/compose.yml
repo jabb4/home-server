@@ -11,6 +11,8 @@ services:
       CF_DNS_API_TOKEN: ${CF_DNS_API_TOKEN:?set CF_DNS_API_TOKEN in .env}
       TRAEFIK_BASIC_AUTH_USERS: ${TRAEFIK_BASIC_AUTH_USERS:?set TRAEFIK_BASIC_AUTH_USERS in .env}
     command:
+      - "--global.checknewversion=false"
+      - "--global.sendanonymoususage=false"
       - "--api.dashboard=true"
       - "--api.debug=false"
       - "--entrypoints.web.address=:80"
@@ -27,7 +29,7 @@ services:
       - "--certificatesresolvers.cloudflare.acme.email=${ACME_EMAIL:?set ACME_EMAIL in .env}"
       - "--certificatesresolvers.cloudflare.acme.storage=/letsencrypt/acme.json"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge.provider=cloudflare"
-      - "--certificatesresolvers.cloudflare.acme.dnschallenge.delaybeforecheck=60"
+      - "--certificatesresolvers.cloudflare.acme.dnschallenge.propagation.delaybeforechecks=60s"
       - "--certificatesresolvers.cloudflare.acme.dnschallenge.resolvers=1.1.1.1:53,1.0.0.1:53"
       - "--log.level=INFO"
       - "--log.format=json"

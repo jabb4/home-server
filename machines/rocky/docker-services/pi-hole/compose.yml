@@ -1,7 +1,7 @@
 services:
   pihole:
     container_name: pihole
-    image: ${PIHOLE_IMAGE:-pihole/pihole:latest}
+    image: pihole/pihole:2026.04.1
     restart: unless-stopped
     network_mode: host
     cap_add:

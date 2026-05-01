@@ -7,7 +7,7 @@ http:
       rule: Host(`home-assistant.local.jabbas.dev`)
       priority: 100
       middlewares:
-        - default-headers
+        - ui-headers
       service: home-assistant
 
     unifi:
@@ -16,7 +16,7 @@ http:
       rule: Host(`unifi.local.jabbas.dev`)
       priority: 100
       middlewares:
-        - admin-ui
+        - ui-headers
       service: unifi
 
     pi-hole:
@@ -25,8 +25,7 @@ http:
       rule: Host(`pi-hole.local.jabbas.dev`)
       priority: 100
       middlewares:
-        - pi-hole-redirect
-        - admin-ui
+        - ui-headers
       service: pi-hole
 
     homepage:
@@ -45,27 +44,17 @@ http:
       rule: Host(`pikvm.local.jabbas.dev`)
       priority: 100
       middlewares:
-        - admin-proxy
+        - ui-headers
       service: pikvm
-
-    # Rocky Traefik dashboard.
-    traefik-rocky-root:
-      entryPoints:
-        - websecure
-      rule: Host(`traefik-rocky.local.jabbas.dev`) && Path(`/`)
-      priority: 120
-      middlewares:
-        - traefik-dashboard-root-redirect
-        - admin-auth
-      service: api@internal
 
     traefik-rocky:
       entryPoints:
         - websecure
-      rule: Host(`traefik-rocky.local.jabbas.dev`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+      rule: Host(`traefik-rocky.local.jabbas.dev`)
       priority: 110
       middlewares:
-        - admin-ui
+        - ui-headers
+        - traefik-auth
       service: api@internal
 
     # Forward Kubernetes-only names to Stratton when it is online.
@@ -74,8 +63,6 @@ http:
         - websecure
       rule: HostRegexp(`^.+\.local\.jabbas\.dev$`)
       priority: 1
-      middlewares:
-        - default-headers
       service: kubernetes-traefik
 
   services:
@@ -121,20 +108,13 @@ http:
           - url: https://10.0.20.80
 
   middlewares:
-    admin-ui:
+    ui-headers:
       chain:
         middlewares:
-          - admin-auth
           - default-headers
           - disallow-iframe-embedding
 
-    admin-proxy:
-      chain:
-        middlewares:
-          - admin-auth
-          - default-headers
-
-    admin-auth:
+    traefik-auth:
       basicAuth:
         users:
           - '{{ env "TRAEFIK_BASIC_AUTH_USERS" }}'
@@ -156,16 +136,6 @@ http:
       headers:
         frameDeny: true
         customFrameOptionsValue: SAMEORIGIN
-
-    pi-hole-redirect:
-      redirectRegex:
-        regex: "^https://([^/]+)/?$"
-        replacement: "https://${1}/admin/"
-
-    traefik-dashboard-root-redirect:
-      redirectRegex:
-        regex: "^https://([^/]+)/?$"
-        replacement: "https://${1}/dashboard/"
 
   serversTransports:
     insecure-https:

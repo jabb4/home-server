@@ -74,7 +74,7 @@ Edit `.env`:
 
 ```bash
 TIMEZONE=Europe/Stockholm
-PIHOLE_IMAGE=pihole/pihole:latest
+PIHOLE_IMAGE=pihole/pihole:2026.04.1
 PIHOLE_WEB_PASSWORD=<admin-password>
 ```
 
@@ -97,9 +97,8 @@ PIHOLE_WEB_PASSWORD=<admin-password>
 Change the upstream DNS servers in `compose.yml` before first start if the
 current Pi-hole uses different upstreams.
 
-`PIHOLE_IMAGE` defaults to `pihole/pihole:latest` to follow Pi-hole's current
-stable Docker release. Pin it to a date-based tag if you want controlled
-upgrade windows.
+`PIHOLE_IMAGE` is pinned to a date-based Pi-hole Docker release instead of
+`latest`, so upgrades are explicit.
 
 The current machine records from the standalone `pihole.toml` are managed with
 `FTLCONF_dns_hosts`. The old `*.local.jabbas.dev` CNAME records are not carried

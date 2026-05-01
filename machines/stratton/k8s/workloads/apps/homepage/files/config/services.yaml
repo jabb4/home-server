@@ -40,9 +40,9 @@
             siteMonitor: https://argocd.local.jabbas.dev
       
       - Traefik:
-            href: https://traefik.local.jabbas.dev/dashboard/
+            href: https://traefik-stratton.local.jabbas.dev/dashboard/
             icon: traefik.png
-            siteMonitor: https://traefik.local.jabbas.dev/dashboard/
+            siteMonitor: https://traefik-stratton.local.jabbas.dev/dashboard/
 
       - Hubble:
             href: https://hubble.local.jabbas.dev

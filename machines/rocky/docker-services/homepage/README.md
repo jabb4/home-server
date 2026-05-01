@@ -72,9 +72,8 @@ curl -I https://homepage.local.jabbas.dev
 With Stratton offline, Homepage should still load. Services that live on
 Stratton or in Kubernetes may show as down until Stratton is powered on.
 
-Widgets that call services protected by Rocky Traefik basic auth may need direct
-backend URLs or may show errors. The links still work and will prompt for basic
-auth when opened.
+Widgets for services hosted on Stratton may show errors while Stratton is
+powered off. The links still work again once Stratton is online.
 
 ## Rollback
 

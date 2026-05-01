@@ -11,10 +11,10 @@ Rocky keeps Pi-hole DNS on `10.0.20.53:53`. Pi-hole's web UI moves to
 | Host | Backend | Auth |
 | --- | --- | --- |
 | `home-assistant.local.jabbas.dev` | `http://10.0.20.60:8123` | Home Assistant auth only |
-| `unifi.local.jabbas.dev` | `https://192.168.10.1` | Traefik basic auth |
-| `pi-hole.local.jabbas.dev` | `http://127.0.0.1:8080` | Traefik basic auth and Pi-hole auth |
+| `unifi.local.jabbas.dev` | `https://192.168.10.1` | UniFi auth only |
+| `pi-hole.local.jabbas.dev` | `http://127.0.0.1:8080` | Pi-hole auth only |
 | `homepage.local.jabbas.dev` | `http://127.0.0.1:3001` | No extra auth |
-| `pikvm.local.jabbas.dev` | `https://192.168.20.62` | Traefik basic auth and PiKVM auth |
+| `pikvm.local.jabbas.dev` | `https://192.168.20.62` | PiKVM auth only |
 | `traefik-rocky.local.jabbas.dev` | `api@internal` | Traefik basic auth |
 | `*.local.jabbas.dev` fallback | `https://10.0.20.80` | Kubernetes Traefik handles the route |
 
@@ -141,6 +141,7 @@ htpasswd -nbB <user> <password>
 
 Copy the full output into `.env` as `TRAEFIK_BASIC_AUTH_USERS`. Keep the single
 quotes around the value because the bcrypt hash contains `$`.
+This basic auth is only used for `traefik-rocky.local.jabbas.dev`.
 
 Example:
 
@@ -204,12 +205,16 @@ Check routes:
 
 ```bash
 curl -I https://home-assistant.local.jabbas.dev
-curl -I https://pi-hole.local.jabbas.dev
+curl -I https://pi-hole.local.jabbas.dev/admin/
 curl -I https://homepage.local.jabbas.dev
 curl -I https://unifi.local.jabbas.dev
 curl -I https://pikvm.local.jabbas.dev
 curl -I https://traefik-rocky.local.jabbas.dev/dashboard/
 ```
+
+`traefik-rocky.local.jabbas.dev` should return `401` until credentials are
+provided. The other always-on routes should use their own application auth, not
+Traefik basic auth.
 
 With Stratton online, also test a Kubernetes-only hostname:
 
