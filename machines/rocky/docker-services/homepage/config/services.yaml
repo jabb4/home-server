@@ -187,5 +187,5 @@
                   url: https://home-assistant.local.jabbas.dev
                   key: {{HOMEPAGE_VAR_HOMEASSISTANT_API}}
                   custom:
-                        - state: sensor.0x54ef441000b84716_power
-                          label: Server power draw
+                        - state: sensor.server_rack_plug_power
+                          label: Server rack power draw
