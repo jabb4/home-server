@@ -1,4 +1,0 @@
-apiVersion: v1alpha1
-kind: HostnameConfig
-hostname: cp-1
-auto: off

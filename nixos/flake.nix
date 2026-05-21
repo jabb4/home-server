@@ -42,10 +42,6 @@
   in {
     nixosConfigurations = {
       apps-vm = mkSystem "x86_64-linux" "apps-vm";
-      infrastructure-vm = mkSystem "x86_64-linux" "infrastructure-vm";
-      media-downloader-vm = mkSystem "x86_64-linux" "media-downloader-vm";
-      gpu-workloads-vm = mkSystem "x86_64-linux" "gpu-workloads-vm";
-      dmz-vm = mkSystem "x86_64-linux" "dmz-vm";
     };
   };
 }

@@ -1,0 +1,25 @@
+services:
+  recyclarr:
+    container_name: recyclarr
+    image: ghcr.io/recyclarr/recyclarr:8.6.0
+    restart: unless-stopped
+
+    # Filesystem
+    volumes:
+      - ./config:/config
+    read_only: true
+    tmpfs: /tmp
+
+    # Security
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
+
+    # Environment
+    environment:
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+      CRON_SCHEDULE: "@weekly"
+      SONARR_URL: ${SONARR_URL:?set SONARR_URL in .env}
+      SONARR_API_KEY: ${SONARR_API_KEY:?set SONARR_API_KEY in .env}
+      RADARR_URL: ${RADARR_URL:?set RADARR_URL in .env}
+      RADARR_API_KEY: ${RADARR_API_KEY:?set RADARR_API_KEY in .env}

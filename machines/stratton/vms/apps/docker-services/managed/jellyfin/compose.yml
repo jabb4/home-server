@@ -1,0 +1,28 @@
+services:
+  jellyfin:
+    container_name: jellyfin
+    image: lscr.io/linuxserver/jellyfin:10.11.8
+    restart: unless-stopped
+
+    # Networking
+    ports:
+      - 8096:8096 # HTTP
+
+    # Filesystem
+    volumes:
+      - jellyfin_config:/config
+      - /mnt/data/media/tv:/data/tvshows
+      - /mnt/data/media/movies:/data/movies
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true  # forbid privilege escalation
+
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+volumes:
+  jellyfin_config:

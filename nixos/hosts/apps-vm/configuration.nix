@@ -37,11 +37,10 @@
     firewall = {
       enable = true;
       allowedTCPPorts = [
-        5055                # Jellyseerr
+        5055                # Seerr
         6767                # Bazarr
         7878                # Radarr
         8080                # SABnzbd
-        8081                # MicroBin
         8096                # Jellyfin HTTP
         8920                # Jellyfin HTTPS
         8989                # Sonarr
