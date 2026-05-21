@@ -13,10 +13,10 @@ Current operating model:
 ## Repo Layout
 
 - `machines/rocky/docker-services/`
-  - `dockhand/` — the GitOps controller itself (must be brought up by hand
-    before anything else)
-  - `managed/` — Dockhand-managed Compose stacks on Rocky: `pi-hole`, `traefik`,
-    `homepage`
+  - `dockhand/`, `pi-hole/`, `traefik/` — bootstrap stacks brought up by hand;
+    not managed by Dockhand because a bad reconcile here would break the
+    control plane (GitOps repo pull, DNS, or ingress)
+  - `managed/` — Dockhand-managed Compose stacks on Rocky: `homepage`
 - `machines/stratton/vms/apps/docker-services/managed/`
   - Dockhand-managed Compose stacks on `apps-vm`: `jellyfin`, `media-downloader`,
     `recyclarr`
@@ -114,7 +114,7 @@ Let's Encrypt wildcard cert for `*.local.jabbas.dev` via the Cloudflare DNS-01
 challenge.
 
 The full route table lives in
-[`machines/rocky/docker-services/managed/traefik/README.md`](machines/rocky/docker-services/managed/traefik/README.md).
+[`machines/rocky/docker-services/traefik/README.md`](machines/rocky/docker-services/traefik/README.md).
 
 ## Services Running on `apps-vm`
 
@@ -130,7 +130,7 @@ Large file libraries live on `TrueNAS NFS` and are mounted into the apps VM.
 - Rocky control plane:
   [`machines/rocky/README.md`](machines/rocky/README.md)
 - Rocky Traefik (ingress):
-  [`machines/rocky/docker-services/managed/traefik/README.md`](machines/rocky/docker-services/managed/traefik/README.md)
+  [`machines/rocky/docker-services/traefik/README.md`](machines/rocky/docker-services/traefik/README.md)
 - Dockhand (GitOps):
   [`machines/rocky/docker-services/dockhand/README.md`](machines/rocky/docker-services/dockhand/README.md)
 - Home Assistant:

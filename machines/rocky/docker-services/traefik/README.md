@@ -3,6 +3,12 @@
 Single edge proxy for the homelab. Runs on Rocky/DietPi and fronts every
 `*.local.jabbas.dev` route, regardless of which host the backend lives on.
 
+This stack is **not managed by Dockhand**: a bad reconcile here would knock out
+`dockhand.local.jabbas.dev` itself, making the GitOps controller unreachable
+until somebody SSHes to Rocky. It's brought up by hand and updated by
+re-running `docker compose pull && docker compose up -d` on Rocky. Renovate
+still opens PRs against the image tag.
+
 Rocky keeps Pi-hole DNS on `10.0.20.53:53`. Pi-hole's web UI moves to
 `127.0.0.1:8080`, and Traefik binds Rocky's `80` and `443`.
 

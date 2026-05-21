@@ -11,7 +11,9 @@ Compose stacks from this repository and reconciles them on the hosts it manages.
 
 This stack sits at `machines/rocky/docker-services/dockhand/`, not under
 `docker-services/managed/`, because Dockhand cannot reconcile itself: bringing
-it up has to happen by hand on Rocky before any GitOps loop exists.
+it up has to happen by hand on Rocky before any GitOps loop exists. The same
+applies to `pi-hole/` and `traefik/` next to it — those are the other two
+stacks the control plane depends on and the only other ones outside `managed/`.
 
 ## Why on Rocky
 
@@ -42,8 +44,10 @@ In the UI:
 
 1. Create an admin account.
 2. Add this git repository as a source. Point it at the directory containing the
-   compose file for each stack (e.g. `machines/rocky/docker-services/managed/pi-hole`).
-   Do not add this Dockhand directory itself as a managed stack.
+   compose file for each stack (e.g.
+   `machines/rocky/docker-services/managed/homepage`).
+   Do not add the `dockhand/`, `pi-hole/`, or `traefik/` directories — those
+   stacks are bootstrap and stay outside Dockhand's reconciliation loop.
 3. Register the remote Docker host `apps-vm`.
 4. Create one stack per service, choosing the right host and the right compose
    path in the repo.

@@ -23,10 +23,17 @@ in `README.md`. Read it first when context is needed.
 Local-only changes do not affect any host. Always commit + push when you want
 state to converge.
 
-Dockhand itself lives at `machines/rocky/docker-services/dockhand/`, **not**
-under `managed/`. It bootstraps the GitOps loop, so it has to be brought up by
-hand on Rocky once before anything else can be managed. Edits to that stack are
-applied by re-running `docker compose up -d` on Rocky, not via Dockhand.
+Three Rocky stacks live **outside** `managed/` and are brought up by hand:
+
+- `dockhand/` — the GitOps controller; it can't reconcile itself.
+- `pi-hole/` — if a reconcile breaks Pi-hole, Rocky's resolver dies and
+  Dockhand can't `git pull` from GitHub to recover.
+- `traefik/` — if a reconcile breaks Traefik, `dockhand.local.jabbas.dev`
+  becomes unreachable and the UI can't recover the situation.
+
+Edits to those stacks are applied by re-running `docker compose pull && docker
+compose up -d` on Rocky, not via Dockhand. Renovate still opens version-bump
+PRs against them like any other stack.
 
 ## Hosts and what runs where
 
@@ -46,7 +53,7 @@ Rocky Traefik is the **only** edge proxy. Every `*.local.jabbas.dev` name
 resolves to Rocky via the Pi-hole wildcard
 `address=/local.jabbas.dev/10.0.20.53` and is routed to the right backend by
 explicit entries in
-`machines/rocky/docker-services/managed/traefik/config/dynamic.yml`.
+`machines/rocky/docker-services/traefik/config/dynamic.yml`.
 There is no wildcard fallback — adding a new public name means adding a router
 and a service to that file.
 
@@ -54,10 +61,14 @@ When adding a new routed service:
 
 1. Add it to `dynamic.yml` (router + service + appropriate middleware chain).
 2. Add it to the routes table in
-   `machines/rocky/docker-services/managed/traefik/README.md`.
+   `machines/rocky/docker-services/traefik/README.md`.
 3. Add it to
    `machines/rocky/docker-services/managed/homepage/config/services.yaml` if it
    should appear on the dashboard.
+4. On Rocky, `cd` into the Traefik stack and run
+   `docker compose up -d` (Traefik isn't Dockhand-managed — see "How edits land"
+   above). The file provider auto-reloads `dynamic.yml`, so usually no restart
+   is needed; only `compose up -d` if the compose itself changed.
 
 ## Per-stack conventions
 

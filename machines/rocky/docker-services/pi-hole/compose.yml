@@ -31,12 +31,9 @@ services:
       FTLCONF_misc_dnsmasq_lines: |-
         address=/local.jabbas.dev/10.0.20.53
     volumes:
-      - pihole_data:/etc/pihole
+      - ./etc-pihole:/etc/pihole
     logging:
       driver: json-file
       options:
         max-size: 10m
         max-file: "3"
-
-volumes:
-  pihole_data:

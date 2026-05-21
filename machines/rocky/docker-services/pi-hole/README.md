@@ -2,6 +2,12 @@
 
 This stack runs Pi-hole in Docker on Rocky/DietPi.
 
+This stack is **not managed by Dockhand**: Pi-hole is on the same chicken-and-egg
+loop as Dockhand and Traefik, since Dockhand can't `git pull` from GitHub if the
+local resolver is broken. It is brought up by hand on Rocky and updated by
+re-running `docker compose pull && docker compose up -d` there. Renovate still
+opens PRs against the image tag.
+
 It is designed to run next to the Rocky Traefik stack:
 
 - Pi-hole DNS binds Rocky's `10.0.20.53:53`.
@@ -32,12 +38,11 @@ commands below check both service names and machine names.
 ```text
 compose.yml       Docker Compose service
 .env.example      Required local environment values
+etc-pihole/       Runtime Pi-hole state, ignored by git
 ```
 
-Pi-hole state lives in the Docker named volume `pihole_data`, mounted at
-`/etc/pihole` inside the container. The volume is managed by Docker (under
-`/var/lib/docker/volumes/pihole_data/_data` on the host) rather than as a bind
-mount, so no `etc-pihole/` directory sits next to `compose.yml`.
+Pi-hole state lives in `./etc-pihole/` next to `compose.yml`, bind-mounted to
+`/etc/pihole` inside the container. The directory is gitignored.
 
 ## Before Migrating
 
@@ -66,6 +71,7 @@ From this directory:
 ```bash
 cp .env.example .env
 chmod 600 .env
+mkdir -p etc-pihole
 ```
 
 Edit `.env`:
@@ -141,43 +147,6 @@ gravity afterwards:
 | `https://v.firebog.net/hosts/Prigent-Ads.txt` | Enabled | tracking |
 | `https://blocklistproject.github.io/Lists/ads.txt` | Disabled | ads |
 | `https://blocklistproject.github.io/Lists/tracking.txt` | Enabled | tracking |
-
-## Migrating Existing `etc-pihole/` Data Into The Named Volume
-
-If Pi-hole was previously running with a bind-mounted `./etc-pihole/` directory
-next to this `compose.yml`, copy that data into the new `pihole_data` named
-volume before the first `docker compose up -d`:
-
-```bash
-# From this directory, with the Pi-hole container stopped.
-docker compose down
-
-# Pre-create the named volume.
-docker volume create pihole_data
-
-# Copy the bind-mount contents into the volume, preserving ownership.
-docker run --rm \
-  -v "$PWD/etc-pihole:/from:ro" \
-  -v pihole_data:/to \
-  alpine sh -c 'cp -a /from/. /to/'
-
-# Start with the new mount.
-docker compose up -d
-
-# Sanity-check the volume is populated.
-docker run --rm -v pihole_data:/data alpine ls /data
-```
-
-Once Pi-hole comes up cleanly and DNS works, the old `etc-pihole/` directory
-can be archived or removed.
-
-If Pi-hole's startup logs complain about ownership inside `/etc/pihole/`, fix
-it with:
-
-```bash
-docker exec pihole chown -R pihole:pihole /etc/pihole
-docker restart pihole
-```
 
 ## Migration From Standalone Pi-hole
 
