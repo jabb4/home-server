@@ -67,6 +67,24 @@ http:
         - ui-headers
       service: pikvm
 
+    pve:
+      entryPoints:
+        - websecure
+      rule: Host(`pve.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - ui-headers
+      service: pve
+
+    truenas:
+      entryPoints:
+        - websecure
+      rule: Host(`truenas.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - ui-headers
+      service: truenas
+
     # apps-vm media stack.
     jellyfin:
       entryPoints:
@@ -171,6 +189,20 @@ http:
         serversTransport: insecure-https
         servers:
           - url: https://192.168.20.62
+
+    pve:
+      loadBalancer:
+        passHostHeader: true
+        serversTransport: insecure-https
+        servers:
+          - url: https://10.0.10.10:8006
+
+    truenas:
+      loadBalancer:
+        passHostHeader: true
+        serversTransport: insecure-https
+        servers:
+          - url: https://192.168.20.101
 
     # apps-vm media stack.
     jellyfin:

@@ -23,6 +23,8 @@ Rocky keeps Pi-hole DNS on `10.0.20.53:53`. Pi-hole's web UI moves to
 | `home-assistant.local.jabbas.dev` | `http://10.0.20.60:8123` | Home Assistant auth only |
 | `unifi.local.jabbas.dev` | `https://192.168.10.1` | UniFi auth only |
 | `pikvm.local.jabbas.dev` | `https://192.168.20.62` | PiKVM auth only |
+| `pve.local.jabbas.dev` | `https://10.0.10.10:8006` | Proxmox auth only |
+| `truenas.local.jabbas.dev` | `https://192.168.20.101` | TrueNAS auth only |
 | `jellyfin.local.jabbas.dev` | `http://192.168.20.103:8096` | Jellyfin auth only |
 | `seerr.local.jabbas.dev` | `http://192.168.20.103:5055` | Seerr auth only |
 | `sabnzbd.local.jabbas.dev` | `http://192.168.20.103:8080` | SABnzbd auth only |
