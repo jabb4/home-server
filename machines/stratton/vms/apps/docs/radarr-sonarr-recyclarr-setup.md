@@ -12,5 +12,9 @@
 1. Go to Settings -> Media Management and add root folder /data/media/tv/
 
 ## When you have done the above on both radarr and sonarr
-4. Put your Sonarr and Radarr base url and api key into recyclarr config/secrets.yml
-4. Run recyclarr container to sync quality profiles (sudo docker compose run --rm recyclarr sync)
+4. Put the Sonarr/Radarr URLs and API keys into the Recyclarr stack's `.env`
+   file on `apps-vm` (`cp .env.example .env` then fill in `SONARR_API_KEY` and
+   `RADARR_API_KEY`).
+5. Start the Recyclarr container (`sudo docker compose up -d`). It runs in cron
+   mode and syncs on `@weekly`; for an immediate sync run
+   `sudo docker compose exec recyclarr recyclarr sync`.

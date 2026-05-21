@@ -2,27 +2,16 @@
 # Local environment files
 # -----------------------------------------------------------------------------
 
-# Ignore all .env files by default.
+# Ignore all .env files.
 .env
 **/.env
-
-# Track the cluster-specific Talos/Kubernetes environment file.
-!machines/stratton/k8s/.env
 
 # -----------------------------------------------------------------------------
 # Runtime state
 # -----------------------------------------------------------------------------
 
-machines/rocky/docker-services/traefik/acme/
-machines/rocky/docker-services/homepage/config/logs/
-machines/rocky/docker-services/pi-hole/etc-pihole/
-
-# -----------------------------------------------------------------------------
-# Talos generated artifacts
-# -----------------------------------------------------------------------------
-
-# Generated machine configs, rendered node configs, talosconfig, and kubeconfig.
-machines/stratton/k8s/talos/clusterconfig/
+machines/rocky/docker-services/managed/traefik/acme/
+machines/rocky/docker-services/managed/homepage/config/logs/
 
 # -----------------------------------------------------------------------------
 # Editor and OS noise

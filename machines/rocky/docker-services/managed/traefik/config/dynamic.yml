@@ -1,0 +1,250 @@
+http:
+  routers:
+    # Rocky-local services.
+    homepage:
+      entryPoints:
+        - websecure
+      rule: Host(`homepage.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - default-headers
+        - disallow-iframe-embedding
+      service: homepage
+
+    pi-hole:
+      entryPoints:
+        - websecure
+      rule: Host(`pi-hole.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - ui-headers
+      service: pi-hole
+
+    dockhand:
+      entryPoints:
+        - websecure
+      rule: Host(`dockhand.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - ui-headers
+      service: dockhand
+
+    traefik-rocky:
+      entryPoints:
+        - websecure
+      rule: Host(`traefik-rocky.local.jabbas.dev`)
+      priority: 110
+      middlewares:
+        - ui-headers
+        - traefik-auth
+      service: api@internal
+
+    # Always-on services elsewhere on the network.
+    home-assistant:
+      entryPoints:
+        - websecure
+      rule: Host(`home-assistant.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - ui-headers
+      service: home-assistant
+
+    unifi:
+      entryPoints:
+        - websecure
+      rule: Host(`unifi.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - ui-headers
+      service: unifi
+
+    pikvm:
+      entryPoints:
+        - websecure
+      rule: Host(`pikvm.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - ui-headers
+      service: pikvm
+
+    # apps-vm media stack.
+    jellyfin:
+      entryPoints:
+        - websecure
+      rule: Host(`jellyfin.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - default-headers
+      service: jellyfin
+
+    seerr:
+      entryPoints:
+        - websecure
+      rule: Host(`seerr.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - ui-headers
+      service: seerr
+
+    sabnzbd:
+      entryPoints:
+        - websecure
+      rule: Host(`sabnzbd.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - ui-headers
+      service: sabnzbd
+
+    sonarr:
+      entryPoints:
+        - websecure
+      rule: Host(`sonarr.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - ui-headers
+      service: sonarr
+
+    radarr:
+      entryPoints:
+        - websecure
+      rule: Host(`radarr.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - ui-headers
+      service: radarr
+
+    prowlarr:
+      entryPoints:
+        - websecure
+      rule: Host(`prowlarr.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - ui-headers
+      service: prowlarr
+
+    bazarr:
+      entryPoints:
+        - websecure
+      rule: Host(`bazarr.local.jabbas.dev`)
+      priority: 100
+      middlewares:
+        - ui-headers
+      service: bazarr
+
+  services:
+    # Rocky-local services.
+    homepage:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://127.0.0.1:3001
+
+    pi-hole:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://127.0.0.1:8080
+
+    dockhand:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://127.0.0.1:3000
+
+    # Always-on services elsewhere on the network.
+    home-assistant:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://10.0.20.60:8123
+
+    unifi:
+      loadBalancer:
+        passHostHeader: true
+        serversTransport: insecure-https
+        servers:
+          - url: https://192.168.10.1
+
+    pikvm:
+      loadBalancer:
+        passHostHeader: true
+        serversTransport: insecure-https
+        servers:
+          - url: https://192.168.20.62
+
+    # apps-vm media stack.
+    jellyfin:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://192.168.20.103:8096
+
+    seerr:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://192.168.20.103:5055
+
+    sabnzbd:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://192.168.20.103:8080
+
+    sonarr:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://192.168.20.103:8989
+
+    radarr:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://192.168.20.103:7878
+
+    prowlarr:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://192.168.20.103:9696
+
+    bazarr:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://192.168.20.103:6767
+
+  middlewares:
+    ui-headers:
+      chain:
+        middlewares:
+          - default-headers
+          - disallow-iframe-embedding
+
+    traefik-auth:
+      basicAuth:
+        users:
+          - '{{ env "TRAEFIK_BASIC_AUTH_USERS" }}'
+        realm: rocky-traefik
+        removeHeader: true
+
+    default-headers:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+    disallow-iframe-embedding:
+      headers:
+        frameDeny: true
+        customFrameOptionsValue: SAMEORIGIN
+
+  serversTransports:
+    insecure-https:
+      insecureSkipVerify: true

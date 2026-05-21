@@ -1,0 +1,215 @@
+services:
+  gluetun:
+    container_name: gluetun
+    image: qmcgaw/gluetun:v3.41
+    restart: unless-stopped
+
+    # Networking
+    ports:
+      - 8080:8080 # SABnzbd
+      - 9696:9696 # Prowlarr
+      - 8989:8989 # Sonarr
+      - 7878:7878 # Radarr
+      - 6767:6767 # Bazarr
+
+    # Filesystem
+    volumes:
+      - gluetun_config:/gluetun
+    devices:
+      - /dev/net/tun:/dev/net/tun
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true
+    cap_add:
+      - NET_ADMIN
+      
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+      # Service specific
+      VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER}
+      SERVER_CITIES: ${SERVER_CITIES}
+      VPN_TYPE: wireguard
+      WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY} # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/mullvad.md
+      WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES}
+      UPDATER_PERIOD: 24h
+
+
+  
+  sabnzbd:
+    container_name: sabnzbd
+    image: lscr.io/linuxserver/sabnzbd:4.5.5
+    restart: unless-stopped
+    depends_on:
+      - gluetun
+
+    # Networking
+    network_mode: "service:gluetun"
+
+    # Filesystem
+    volumes:
+      - sabnzbd_config:/config
+      - /mnt/data/usenet:/data/usenet:rw
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true
+
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+  
+  prowlarr:
+    container_name: prowlarr
+    image: lscr.io/linuxserver/prowlarr:2.3.5
+    restart: unless-stopped
+    depends_on:
+      - sabnzbd
+
+    # Networking
+    network_mode: "service:gluetun"
+
+    # Filesystem
+    volumes:
+      - prowlarr_config:/config
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true
+
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+  
+  radarr:
+    container_name: radarr
+    image: lscr.io/linuxserver/radarr:6.1.1
+    restart: unless-stopped
+    depends_on:
+      - prowlarr
+      - sabnzbd
+
+    # Networking
+    network_mode: "service:gluetun"
+
+    # Filesystem
+    volumes:
+      - radarr_config:/config
+      - /mnt/data:/data
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true
+
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+  
+  sonarr:
+    container_name: sonarr
+    image: lscr.io/linuxserver/sonarr:4.0.17
+    restart: unless-stopped
+    depends_on:
+      - prowlarr
+      - sabnzbd
+
+    # Networking
+    network_mode: "service:gluetun"
+
+    # Filesystem
+    volumes:
+      - sonarr_config:/config
+      - /mnt/data:/data
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true
+
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+
+    
+  bazarr:
+    container_name: bazarr
+    image: lscr.io/linuxserver/bazarr:1.5.6
+    restart: unless-stopped
+    depends_on:
+      - gluetun
+
+    # Networking
+    network_mode: "service:gluetun"
+    
+    # Filesystem
+    volumes:
+      - bazarr_config:/config
+      - /mnt/data/media:/data/media
+    
+    # Security
+    security_opt:
+      - no-new-privileges:true
+
+    # Environment
+    environment:
+      PUID: 1000
+      PGID: 1000
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+  
+
+  seerr:
+    container_name: seerr
+    image: ghcr.io/seerr-team/seerr:v3.2.0
+    restart: unless-stopped
+    init: true
+
+    # Networking
+    ports:
+      - 5055:5055
+    
+    # Filesystem
+    volumes:
+      - seerr_config:/app/config
+    
+    # Security
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
+
+    # Environment
+    environment:
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+    
+    healthcheck:
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      start_period: 20s
+      timeout: 3s
+      interval: 15s
+      retries: 3
+
+
+volumes:
+  gluetun_config:
+  sabnzbd_config:
+  prowlarr_config:
+  radarr_config:
+  sonarr_config:
+  bazarr_config:
+  seerr_config:
+  
+  
+  

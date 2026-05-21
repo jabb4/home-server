@@ -1,6 +1,0 @@
-apiVersion: v2
-name: postgres
-description: Shared PostgreSQL cluster for infra workloads.
-type: application
-version: 0.1.0
-appVersion: "16.13"

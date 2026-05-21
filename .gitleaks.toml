@@ -5,9 +5,6 @@ useDefault = true
 
 [allowlist]
 description = "Allow documented placeholders and non-secret examples that are intentionally committed."
-paths = [
-  '''^machines/stratton/vms/infrastructure/docs/grafana-setup\.md$''',
-]
 regexes = [
   '''<PASSWORD>''',
   '''XXXXXXXXXXXXXXXXXX''',

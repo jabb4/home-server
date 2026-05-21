@@ -1,7 +1,7 @@
 # Home Assistant
 
-Home Assistant runs outside Kubernetes on a dedicated Raspberry Pi at
-`10.0.20.60` and is published through the Kubernetes Traefik external route.
+Home Assistant runs on a dedicated Raspberry Pi at `10.0.20.60` and is
+published through the Rocky Traefik edge proxy.
 
 ## Network
 
@@ -25,7 +25,7 @@ When Home Assistant is behind Traefik, it must trust the proxy IPs that send
 Typical Home Assistant log symptom:
 
 ```text
-Received X-Forwarded-For header from an untrusted proxy 10.0.20.21
+Received X-Forwarded-For header from an untrusted proxy 10.0.20.53
 ```
 
 Configure Home Assistant with:
@@ -34,7 +34,7 @@ Configure Home Assistant with:
 http:
   use_x_forwarded_for: true
   trusted_proxies:
-    - 10.0.20.0/24
+    - 10.0.20.53/32
 ```
 
 After changing `configuration.yaml`, restart Home Assistant.
@@ -128,19 +128,6 @@ Port: 3493
 The NUT `upsremote` user is only needed for systems configured as NUT shutdown
 clients, such as hosts running `upsmon` to shut down automatically on low
 battery.
-
-## Migration Notes
-
-Current migration direction:
-
-1. Keep Home Assistant running on Stratton until the new Raspberry Pi install
-   is ready.
-2. Bring the SLZB-MR4U online at `10.0.20.61`.
-3. Build a fresh Zigbee2MQTT network on the SLZB-MR4U rather than migrating the
-   old SONOFF coordinator state.
-4. Move Home Assistant to the Raspberry Pi at `10.0.20.60`.
-5. Update the Traefik external route to `10.0.20.60:8123`.
-6. Re-pair Zigbee devices and repair automations after entity names are stable.
 
 Reference:
 

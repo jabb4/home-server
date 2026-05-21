@@ -1,277 +1,53 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "extends": [
-    "config:best-practices",
-    ":maintainLockFilesDisabled",
+    "config:recommended",
     ":dependencyDashboard",
     ":approveMajorUpdates",
     ":semanticCommitsDisabled",
     ":separateMultipleMajorReleases"
   ],
   "enabledManagers": [
-    "custom.regex",
-    "docker-compose",
-    "helm-values",
-    "helmv3"
+    "docker-compose"
   ],
   "labels": [
     "dependencies"
   ],
   "prConcurrentLimit": 5,
   "prHourlyLimit": 2,
-  "customDatasources": {
-    "immich_postgres_release": {
-      "defaultRegistryUrlTemplate": "https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml",
-      "format": "yaml",
-      "transformTemplates": [
-        "{\"releases\":[{\"version\": $split($substringAfter(services.database.image, 'ghcr.io/immich-app/postgres:'), '@')[0], \"digest\": $split(services.database.image, '@')[1], \"sourceUrl\": \"https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml\"}]}"
-      ]
-    },
-    "immich_valkey_release": {
-      "defaultRegistryUrlTemplate": "https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml",
-      "format": "yaml",
-      "transformTemplates": [
-        "{\"releases\":[{\"version\": $split($substringAfter(services.redis.image, 'docker.io/valkey/valkey:'), '@')[0], \"digest\": $split(services.redis.image, '@')[1], \"sourceUrl\": \"https://github.com/immich-app/immich/releases/latest/download/docker-compose.yml\"}]}"
-      ]
-    }
-  },
-  "customManagers": [
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^machines\\/stratton\\/k8s\\/workloads\\/.+\\/application\\.ya?ml$/"
-      ],
-      "matchStrings": [
-        "- repoURL: (?<registryUrl>https:\\/\\/[^\\s]+)\\n\\s+chart: (?<depName>[^\\s]+)\\n\\s+targetRevision: (?<currentValue>[^\\s]+)"
-      ],
-      "datasourceTemplate": "helm"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^machines\\/stratton\\/k8s\\/workloads\\/infra\\/traefik\\/values\\.yaml$/"
-      ],
-      "matchStrings": [
-        "moduleName: github\\.com\\/(?<packageName>[^\\s]+)\\n\\s+version: (?<currentValue>[^\\s]+)"
-      ],
-      "depNameTemplate": "{{{packageName}}}",
-      "datasourceTemplate": "github-tags"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^machines\\/stratton\\/vms\\/apps\\/docker-services\\/immich\\/compose\\.yml$/"
-      ],
-      "matchStrings": [
-        "(?<indentation>\\s*)image:\\s+ghcr\\.io\\/immich-app\\/postgres:(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[a-f0-9]+)"
-      ],
-      "depNameTemplate": "ghcr.io/immich-app/postgres",
-      "packageNameTemplate": "ghcr.io/immich-app/postgres",
-      "datasourceTemplate": "custom.immich_postgres_release",
-      "versioningTemplate": "docker",
-      "autoReplaceStringTemplate": "{{{indentation}}}image: ghcr.io/immich-app/postgres:{{{newValue}}}@{{{newDigest}}}"
-    },
-    {
-      "customType": "regex",
-      "managerFilePatterns": [
-        "/^machines\\/stratton\\/vms\\/apps\\/docker-services\\/immich\\/compose\\.yml$/"
-      ],
-      "matchStrings": [
-        "(?<indentation>\\s*)image:\\s+valkey\\/valkey:(?<currentValue>[^@\\s]+)@(?<currentDigest>sha256:[a-f0-9]+)"
-      ],
-      "depNameTemplate": "valkey/valkey",
-      "packageNameTemplate": "valkey/valkey",
-      "datasourceTemplate": "custom.immich_valkey_release",
-      "versioningTemplate": "docker",
-      "autoReplaceStringTemplate": "{{{indentation}}}image: valkey/valkey:{{{newValue}}}@{{{newDigest}}}"
-    }
-  ],
+  "pinDigests": false,
   "packageRules": [
     {
-      "description": "Mark all Kubernetes GitOps updates clearly in PRs.",
-      "matchManagers": [
-        "custom.regex",
-        "helm-values",
-        "helmv3"
-      ],
-      "matchFileNames": [
-        "machines/stratton/k8s/**"
-      ],
-      "addLabels": [
-        "k8s"
-      ]
-    },
-    {
-      "description": "Mark VM Docker Compose updates clearly in PRs.",
-      "matchManagers": [
-        "docker-compose"
-      ],
-      "matchFileNames": [
-        "machines/stratton/vms/**/compose.yml"
-      ],
-      "addLabels": [
-        "docker"
-      ]
-    },
-    {
-      "description": "Apply a baseline soak period to regular Helm and git-tag version bumps.",
-      "matchManagers": [
-        "custom.regex",
-        "helmv3"
-      ],
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "patch"
-      ],
-      "minimumReleaseAge": "3 days"
-    },
-    {
-      "description": "Apply a baseline soak period only to Docker Hub image version and digest bumps.",
-      "matchDatasources": [
-        "docker"
-      ],
+      "description": "Disable digest-only PRs; we don't pin digests.",
       "matchUpdateTypes": [
         "digest",
-        "major",
-        "minor",
-        "patch"
-      ],
-      "matchRegistryUrls": [
-        "https://index.docker.io",
-        "https://index.docker.io/**"
-      ],
-      "minimumReleaseAge": "3 days"
-    },
-    {
-      "description": "Mark all infra app updates as k8s-critical.",
-      "matchManagers": [
-        "custom.regex",
-        "helm-values",
-        "helmv3"
-      ],
-      "matchFileNames": [
-        "machines/stratton/k8s/workloads/infra/**"
-      ],
-      "addLabels": [
-        "k8s-critical"
-      ]
-    },
-    {
-      "description": "Let infra app version updates age longer.",
-      "matchManagers": [
-        "custom.regex",
-        "helmv3"
-      ],
-      "matchFileNames": [
-        "machines/stratton/k8s/workloads/infra/**"
-      ],
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "patch"
-      ],
-      "minimumReleaseAge": "7 days"
-    },
-    {
-      "description": "Let Docker Hub-backed infra app image version and digest bumps age longer.",
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchFileNames": [
-        "machines/stratton/k8s/workloads/infra/**"
-      ],
-      "matchUpdateTypes": [
-        "digest",
-        "major",
-        "minor",
-        "patch"
-      ],
-      "matchRegistryUrls": [
-        "https://index.docker.io",
-        "https://index.docker.io/**"
-      ],
-      "minimumReleaseAge": "7 days"
-    },
-    {
-      "description": "Keep cluster-critical chart updates separate and let them age longer.",
-      "matchManagers": [
-        "custom.regex"
-      ],
-      "matchFileNames": [
-        "machines/stratton/k8s/workloads/cluster/argocd/application.yaml",
-        "machines/stratton/k8s/workloads/cluster/cilium/application.yaml",
-        "machines/stratton/k8s/workloads/cluster/longhorn/application.yaml"
-      ],
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "patch"
-      ],
-      "addLabels": [
-        "k8s-critical"
-      ],
-      "minimumReleaseAge": "7 days"
-    },
-    {
-      "description": "Keep the Authentik wrapper dependency aligned with the app image override.",
-      "matchFileNames": [
-        "machines/stratton/k8s/workloads/infra/authentik/resources/Chart.yaml",
-        "machines/stratton/k8s/workloads/infra/authentik/resources/values.yaml"
-      ],
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "patch"
-      ],
-      "groupName": "authentik",
-      "addLabels": [
-        "k8s-critical"
-      ]
-    },
-    {
-      "description": "Keep Immich application images bundled together.",
-      "matchFileNames": [
-        "machines/stratton/vms/apps/docker-services/immich/compose.yml"
-      ],
-      "matchPackageNames": [
-        "ghcr.io/immich-app/postgres",
-        "ghcr.io/immich-app/immich-machine-learning",
-        "ghcr.io/immich-app/immich-server",
-        "valkey/valkey"
-      ],
-      "groupName": "immich",
-      "addLabels": [
-        "docker"
-      ]
-    },
-    {
-      "description": "Follow Immich database and cache recommendations from the released compose bundle, not raw registry lookups.",
-      "matchManagers": [
-        "docker-compose"
-      ],
-      "matchFileNames": [
-        "machines/stratton/vms/apps/docker-services/immich/compose.yml"
-      ],
-      "matchPackageNames": [
-        "ghcr.io/immich-app/postgres",
-        "valkey/valkey"
+        "pinDigest"
       ],
       "enabled": false
     },
     {
-      "description": "Do not apply stability-day checks to the Immich release-compose bundle lookups.",
-      "matchManagers": [
-        "custom.regex"
-      ],
+      "description": "Apply a baseline soak period to image version bumps.",
       "matchDatasources": [
-        "custom.immich_postgres_release",
-        "custom.immich_valkey_release"
+        "docker"
       ],
-      "minimumReleaseAge": null
+      "matchUpdateTypes": [
+        "major",
+        "minor",
+        "patch"
+      ],
+      "minimumReleaseAge": "3 days"
     },
     {
-      "description": "Mark major updates explicitly even before review.",
+      "description": "Tag docker-compose updates so they're easy to scan in the PR list.",
+      "matchManagers": [
+        "docker-compose"
+      ],
+      "addLabels": [
+        "docker"
+      ]
+    },
+    {
+      "description": "Mark major updates explicitly.",
       "matchUpdateTypes": [
         "major"
       ],
