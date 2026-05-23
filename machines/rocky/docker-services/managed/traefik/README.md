@@ -3,11 +3,11 @@
 Single edge proxy for the homelab. Runs on Rocky/DietPi and fronts every
 `*.local.jabbas.dev` route, regardless of which host the backend lives on.
 
-This stack is **not managed by Dockhand**: a bad reconcile here would knock out
-`dockhand.local.jabbas.dev` itself, making the GitOps controller unreachable
-until somebody SSHes to Rocky. It's brought up by hand and updated by
-re-running `docker compose pull && docker compose up -d` on Rocky. Renovate
-still opens PRs against the image tag.
+This stack is reconciled by Dockhand like any other `managed/` stack.
+Dockhand is published on Rocky's LAN IP at `http://10.0.20.53:3000` as a
+non-Traefik fallback, so a broken Traefik reconcile no longer locks the
+control plane out — recover by editing this stack, pushing, and letting
+Dockhand reconcile.
 
 Rocky keeps Pi-hole DNS on `10.0.20.53:53`. Pi-hole's web UI moves to
 `127.0.0.1:8080`, and Traefik binds Rocky's `80` and `443`.
@@ -39,7 +39,7 @@ in `config/dynamic.yml`.
 ## Prerequisites
 
 - Rocky is reachable at `10.0.20.53`.
-- Pi-hole v6 is installed on Rocky (Compose stack at `../pi-hole/`).
+- Pi-hole v6 is installed on Rocky (Compose stack at `../../pi-hole/`).
 - Docker and Docker Compose are installed on Rocky.
 - The Cloudflare token is scoped to `jabbas.dev` with `Zone / Zone / Read` and
   `Zone / DNS / Edit`.
@@ -55,7 +55,7 @@ sudo apt install -y apache2-utils dnsutils
 ## Local DNS
 
 The wildcard `address=/local.jabbas.dev/10.0.20.53` is set by the Pi-hole
-Compose stack at [`../pi-hole`](../pi-hole). Every `*.local.jabbas.dev` name
+Compose stack at [`../../pi-hole`](../../pi-hole). Every `*.local.jabbas.dev` name
 resolves to Rocky's IP and lands on this Traefik.
 
 If Pi-hole is still running directly on DietPi instead of in Compose, mirror the
@@ -83,17 +83,8 @@ http:
 
 ## Prepare Traefik State
 
-From this directory:
-
-```bash
-cp .env.example .env
-chmod 600 .env
-mkdir -p acme
-touch acme/acme.json
-chmod 600 acme/acme.json
-```
-
-Edit `.env`:
+Set the following env vars in the Dockhand stack's secrets (not in a host
+`.env` file — see `.env.example` for the canonical keys):
 
 ```bash
 TIMEZONE=Europe/Stockholm
@@ -102,17 +93,12 @@ CF_DNS_API_TOKEN=<cloudflare-dns-token>
 TRAEFIK_BASIC_AUTH_USERS='<user>:<bcrypt-hash>'
 ```
 
-Generate the basic-auth value:
+ACME state lives in the named Docker volume `traefik_letsencrypt` (pinned via
+`name:` in compose.yml so it survives stack-name changes). Traefik creates
+`acme.json` inside the volume on first start with mode `0600` — no host
+setup needed.
 
-```bash
-htpasswd -nbB <user> <password>
-```
-
-Copy the full output into `.env` as `TRAEFIK_BASIC_AUTH_USERS`. Keep the single
-quotes around the value because the bcrypt hash contains `$`.
-This basic auth is only used for `traefik-rocky.local.jabbas.dev`.
-
-To generate it without putting the password in shell history:
+Generate the basic-auth value (only used for `traefik-rocky.local.jabbas.dev`):
 
 ```bash
 read -rs TRAEFIK_BASIC_AUTH_PASSWORD
@@ -120,9 +106,24 @@ htpasswd -nbB <user> "$TRAEFIK_BASIC_AUTH_PASSWORD"
 unset TRAEFIK_BASIC_AUTH_PASSWORD
 ```
 
-## Start
+Copy the full `htpasswd` output into the Dockhand secret. Keep single quotes
+around the value because the bcrypt hash contains `$`.
 
-Validate and start the stack:
+## Reconcile
+
+Register the stack in Dockhand pointing at this directory; Dockhand handles
+`compose up -d` on Rocky and re-reconciles on every git push. Traefik's file
+provider hot-reloads `dynamic.yml`, so route-only changes apply without a
+container restart.
+
+Traefik uses Cloudflare DNS-01 to request a wildcard certificate for
+`local.jabbas.dev` and `*.local.jabbas.dev`. The ACME account and certificates
+are stored in the `traefik_letsencrypt` Docker volume at `/letsencrypt/acme.json`.
+
+## Emergency hand-recovery
+
+If Dockhand is unreachable and Traefik also needs intervention, fall back to
+running Compose directly on Rocky from this directory:
 
 ```bash
 docker compose config
@@ -130,9 +131,32 @@ docker compose up -d
 docker compose logs -f traefik
 ```
 
-Traefik uses Cloudflare DNS-01 to request a wildcard certificate for
-`local.jabbas.dev` and `*.local.jabbas.dev`. The ACME account and certificates
-are stored in `acme/acme.json`, which must not be committed.
+## Inspect or back up ACME state
+
+```bash
+docker run --rm -v traefik_letsencrypt:/data alpine cat /data/acme.json
+docker run --rm -v traefik_letsencrypt:/data -v "$PWD":/backup alpine \
+  tar czf /backup/acme-backup.tar.gz -C /data acme.json
+```
+
+## One-time migration from the old bind mount
+
+If you previously ran this stack with `./acme/acme.json` bind-mounted, seed the
+new volume from that file before bringing Traefik up against the new compose,
+otherwise Traefik will re-issue the wildcard from Let's Encrypt:
+
+```bash
+docker compose down
+docker volume create traefik_letsencrypt
+docker run --rm \
+  -v traefik_letsencrypt:/dst \
+  -v "$PWD/acme":/src \
+  alpine sh -c 'cp /src/acme.json /dst/acme.json && chmod 600 /dst/acme.json'
+docker compose up -d
+```
+
+After verifying Traefik came up and certs are served from the volume, the host
+`acme/` directory can be removed.
 
 ## Validation
 
@@ -159,7 +183,8 @@ Expected shape:
 - Pi-hole DNS listens on `:53`.
 - Traefik listens on `:80` and `:443`.
 - Pi-hole web listens on `127.0.0.1:8080`.
-- Dockhand listens on `127.0.0.1:3000`.
+- Dockhand listens on `:3000` (LAN-published so it's reachable when Traefik
+  is down).
 - Homepage listens on `127.0.0.1:3001`.
 
 Check routes:
@@ -179,14 +204,14 @@ basic auth.
 
 ## Rollback
 
-Stop Rocky Traefik:
+Stop the stack from the Dockhand UI, or for emergency hand-recovery on Rocky:
 
 ```bash
 docker compose down
 ```
 
 Restore Pi-hole's default web ports if Pi-hole is running directly on DietPi
-rather than in the `../pi-hole` Compose stack:
+rather than in the `../../pi-hole` Compose stack:
 
 ```bash
 sudo pihole-FTL --config webserver.port "80o,443os,[::]:80o,[::]:443os"

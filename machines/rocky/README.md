@@ -14,10 +14,12 @@ Service docs:
 
 - [`docker-services/dockhand/README.md`](docker-services/dockhand/README.md)
 - [`docker-services/pi-hole/README.md`](docker-services/pi-hole/README.md)
-- [`docker-services/traefik/README.md`](docker-services/traefik/README.md)
+- [`docker-services/managed/traefik/README.md`](docker-services/managed/traefik/README.md)
 - [`docker-services/managed/homepage/README.md`](docker-services/managed/homepage/README.md)
 
-`dockhand`, `pi-hole`, and `traefik` live outside `managed/` and are brought up
-by hand on Rocky — not reconciled by Dockhand, since a bad reconcile to any of
-them would break the GitOps control plane itself. Everything else under
-`managed/` is Dockhand-reconciled.
+`dockhand` and `pi-hole` live outside `managed/` and are brought up by hand on
+Rocky — not reconciled by Dockhand, since a bad reconcile to either would
+break the GitOps control plane itself (repo pull or DNS). Everything else
+under `managed/` is Dockhand-reconciled, including Traefik: Dockhand is
+published on Rocky's LAN IP (`http://10.0.20.53:3000`) as a non-Traefik
+fallback, so a broken Traefik no longer locks the control plane out.

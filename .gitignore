@@ -10,7 +10,6 @@
 # Runtime state
 # -----------------------------------------------------------------------------
 
-machines/rocky/docker-services/traefik/acme/
 machines/rocky/docker-services/pi-hole/etc-pihole/
 machines/rocky/docker-services/managed/homepage/config/logs/
 

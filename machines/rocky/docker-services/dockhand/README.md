@@ -4,16 +4,18 @@ Dockhand is the GitOps controller for every Docker host in the homelab. It pulls
 Compose stacks from this repository and reconciles them on the hosts it manages.
 
 - UI: `https://dockhand.local.jabbas.dev` (proxied by Rocky Traefik)
-- Container port: `127.0.0.1:3000` (loopback only — Traefik on Rocky is the
-  only path in, since Dockhand holds the Docker socket and Git credentials)
+- Direct fallback: `http://10.0.20.53:3000` — published on the LAN so the
+  control plane stays reachable when Traefik is down. Dockhand's own auth is
+  the only protection on this path.
 - State: Docker volume `dockhand_data` mounted at `/app/data` (DATA_DIR) — holds
   SQLite, config, and cloned git checkouts (`/app/data/git-repos/`)
 
 This stack sits at `machines/rocky/docker-services/dockhand/`, not under
 `docker-services/managed/`, because Dockhand cannot reconcile itself: bringing
 it up has to happen by hand on Rocky before any GitOps loop exists. The same
-applies to `pi-hole/` and `traefik/` next to it — those are the other two
-stacks the control plane depends on and the only other ones outside `managed/`.
+applies to `pi-hole/` next to it — Rocky uses Pi-hole as its DNS resolver, so
+a broken Pi-hole reconcile would prevent Dockhand from resolving GitHub to
+`git pull` a recovery.
 
 ## Why on Rocky
 
@@ -35,8 +37,8 @@ docker compose up -d
 docker compose logs -f dockhand
 ```
 
-The UI binds to `127.0.0.1:3000` only. Reach it through Rocky Traefik at
-`https://dockhand.local.jabbas.dev`.
+Reach the UI through Rocky Traefik at `https://dockhand.local.jabbas.dev`, or
+directly at `http://10.0.20.53:3000` if Traefik is down.
 
 ## First-run configuration
 
@@ -46,8 +48,8 @@ In the UI:
 2. Add this git repository as a source. Point it at the directory containing the
    compose file for each stack (e.g.
    `machines/rocky/docker-services/managed/homepage`).
-   Do not add the `dockhand/`, `pi-hole/`, or `traefik/` directories — those
-   stacks are bootstrap and stay outside Dockhand's reconciliation loop.
+   Do not add the `dockhand/` or `pi-hole/` directories — those stacks are
+   bootstrap and stay outside Dockhand's reconciliation loop.
 3. Register the remote Docker host `apps-vm`.
 4. Create one stack per service, choosing the right host and the right compose
    path in the repo.

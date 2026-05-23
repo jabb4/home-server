@@ -2,11 +2,11 @@
 
 This stack runs Pi-hole in Docker on Rocky/DietPi.
 
-This stack is **not managed by Dockhand**: Pi-hole is on the same chicken-and-egg
-loop as Dockhand and Traefik, since Dockhand can't `git pull` from GitHub if the
-local resolver is broken. It is brought up by hand on Rocky and updated by
-re-running `docker compose pull && docker compose up -d` there. Renovate still
-opens PRs against the image tag.
+This stack is **not managed by Dockhand**: Pi-hole is on the same
+chicken-and-egg loop as Dockhand itself, since Dockhand can't `git pull` from
+GitHub if the local resolver is broken. It is brought up by hand on Rocky and
+updated by re-running `docker compose pull && docker compose up -d` there.
+Renovate still opens PRs against the image tag.
 
 It is designed to run next to the Rocky Traefik stack:
 
