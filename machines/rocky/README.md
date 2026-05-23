@@ -23,3 +23,22 @@ break the GitOps control plane itself (repo pull or DNS). Everything else
 under `managed/` is Dockhand-reconciled, including Traefik: Dockhand is
 published on Rocky's LAN IP (`http://10.0.20.53:3000`) as a non-Traefik
 fallback, so a broken Traefik no longer locks the control plane out.
+
+## Host setup
+
+### Enable memory cgroup
+
+So you can see memory usage in Dockhand.
+
+1. Append `cgroup_memory=1` to the single line in
+   `/boot/firmware/cmdline.txt`:
+
+   ```bash
+   sudo sed -i 's/$/ cgroup_memory=1/' /boot/firmware/cmdline.txt
+   ```
+2. Check that `/boot/firmware/cmdline.txt` includes both `cgroup_enable=memory` and `cgroup_memory=1` (only one line)
+
+3. `sudo reboot`. Can take ~5 min to get everything back up.
+
+4. Confirm with `cat /sys/fs/cgroup/cgroup.controllers` — should include
+   `memory`.

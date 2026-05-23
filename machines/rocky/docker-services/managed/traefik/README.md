@@ -106,8 +106,12 @@ htpasswd -nbB <user> "$TRAEFIK_BASIC_AUTH_PASSWORD"
 unset TRAEFIK_BASIC_AUTH_PASSWORD
 ```
 
-Copy the full `htpasswd` output into the Dockhand secret. Keep single quotes
-around the value because the bcrypt hash contains `$`.
+Copy the full `htpasswd` output into the Dockhand secret as a raw, unquoted
+value — do **not** wrap it in single quotes. Dockhand stores the value
+literally, and any wrapping `'…'` will land inside `dynamic.yml` after Go
+template expansion and break YAML parsing (zero routers load → 404 for every
+request). Trailing whitespace and newlines will break it the same way; paste
+the hash on one line with no extras.
 
 ## Reconcile
 
@@ -138,25 +142,6 @@ docker run --rm -v traefik_letsencrypt:/data alpine cat /data/acme.json
 docker run --rm -v traefik_letsencrypt:/data -v "$PWD":/backup alpine \
   tar czf /backup/acme-backup.tar.gz -C /data acme.json
 ```
-
-## One-time migration from the old bind mount
-
-If you previously ran this stack with `./acme/acme.json` bind-mounted, seed the
-new volume from that file before bringing Traefik up against the new compose,
-otherwise Traefik will re-issue the wildcard from Let's Encrypt:
-
-```bash
-docker compose down
-docker volume create traefik_letsencrypt
-docker run --rm \
-  -v traefik_letsencrypt:/dst \
-  -v "$PWD/acme":/src \
-  alpine sh -c 'cp /src/acme.json /dst/acme.json && chmod 600 /dst/acme.json'
-docker compose up -d
-```
-
-After verifying Traefik came up and certs are served from the volume, the host
-`acme/` directory can be removed.
 
 ## Validation
 

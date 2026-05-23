@@ -19,6 +19,9 @@ It is designed to run next to the Rocky Traefik stack:
 The `address=/local.jabbas.dev/10.0.20.53` wildcard is managed through
 `FTLCONF_misc_dnsmasq_lines`, so `*.local.jabbas.dev` resolves to Rocky.
 
+Don't port-forward Rocky's DNS to the internet. This resolver is for LAN/VLAN
+clients only; exposing `:53` publicly would make it an open resolver.
+
 ## Local DNS Model
 
 Local DNS is intentionally split into two kinds of names:
@@ -43,26 +46,6 @@ etc-pihole/       Runtime Pi-hole state, ignored by git
 
 Pi-hole state lives in `./etc-pihole/` next to `compose.yml`, bind-mounted to
 `/etc/pihole` inside the container. The directory is gitignored.
-
-## Before Migrating
-
-Export a Pi-hole Teleporter backup from the current standalone install before
-stopping it.
-
-Check which service owns DNS and web ports:
-
-```bash
-sudo ss -ltnup | grep -E ':(53|80|443|8080)\b'
-```
-
-When Traefik is also running on Rocky, only these public ports should be used:
-
-- Pi-hole: `53/tcp` and `53/udp`
-- Traefik: `80/tcp` and `443/tcp`
-- Pi-hole web: `127.0.0.1:8080/tcp`
-
-Do not port-forward Rocky's DNS service from the internet. This setup is for
-LAN/VLAN clients only; exposing `:53` publicly would make it an open resolver.
 
 ## Configure
 
@@ -97,35 +80,30 @@ PIHOLE_WEB_PASSWORD=<admin-password>
 - `FTLCONF_ntp_sync_active=false`
 - `FTLCONF_misc_dnsmasq_lines=address=/local.jabbas.dev/10.0.20.53`
 
-Change the upstream DNS servers in `compose.yml` before first start if the
-current Pi-hole uses different upstreams.
-
 The image tag is pinned to a date-based Pi-hole Docker release instead of
 `latest`, so upgrades are explicit. Renovate opens PRs for new tags.
 
-The current machine records from the standalone `pihole.toml` are managed with
-`FTLCONF_dns_hosts`. The old `*.local.jabbas.dev` CNAME records are not carried
-over because Rocky now answers those names through the wildcard.
+Machine records are managed via `FTLCONF_dns_hosts` in `compose.yml`. The
+`*.local.jabbas.dev` wildcard covers service names, so don't add individual
+service CNAMEs in the Pi-hole UI.
 
-If importing a Teleporter backup, restore adlists/groups/domains, but avoid
-restoring old local DNS records for individual service names; the wildcard
-already covers them.
+## Start
+
+```bash
+docker compose config
+docker compose up -d
+docker compose logs -f pihole
+```
+
+Open `https://pi-hole.local.jabbas.dev/admin/` through Traefik.
 
 ## Subscribed Lists
 
-Use Teleporter to migrate subscribed lists from the old Pi-hole:
-
-```text
-Settings > System > Teleporter > Backup
-Settings > System > Teleporter > Restore
-```
-
-If configuring manually, add these subscribed lists in the Pi-hole UI and run
-gravity afterwards:
+Subscribed lists are managed in the Pi-hole UI. The current set:
 
 | Address | Status | Comment |
 | --- | --- | --- |
-| `https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts` | Enabled | Migrated from `/etc/` |
+| `https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts` | Enabled | ads |
 | `https://v.firebog.net/hosts/Easyprivacy.txt` | Enabled | Privacy |
 | `https://raw.githubusercontent.com/crazy-max/WindowsSpyBlocker/master/data/hosts/spy.txt` | Enabled | windows spy |
 | `https://raw.githubusercontent.com/nextdns/native-tracking-domains/main/domains/alexa` | Enabled | alexa |
@@ -147,34 +125,6 @@ gravity afterwards:
 | `https://v.firebog.net/hosts/Prigent-Ads.txt` | Enabled | tracking |
 | `https://blocklistproject.github.io/Lists/ads.txt` | Disabled | ads |
 | `https://blocklistproject.github.io/Lists/tracking.txt` | Enabled | tracking |
-
-## Migration From Standalone Pi-hole
-
-Stop the standalone Pi-hole before starting the container, otherwise port `53`
-will conflict:
-
-```bash
-sudo systemctl stop pihole-FTL
-sudo systemctl disable pihole-FTL
-```
-
-If the old install still has a separate web server, stop it too:
-
-```bash
-sudo systemctl stop lighttpd 2>/dev/null || true
-sudo systemctl disable lighttpd 2>/dev/null || true
-```
-
-Start the container:
-
-```bash
-docker compose config
-docker compose up -d
-docker compose logs -f pihole
-```
-
-Open `https://pi-hole.local.jabbas.dev/admin/` through Traefik and import the
-Teleporter backup if needed.
 
 ## Validation
 
@@ -230,28 +180,6 @@ curl -I https://pi-hole.local.jabbas.dev/admin/
 
 ## Rollback
 
-Stop the container:
-
 ```bash
 docker compose down
-```
-
-Re-enable the standalone Pi-hole:
-
-```bash
-sudo systemctl enable pihole-FTL
-sudo systemctl start pihole-FTL
-```
-
-If the old install used `lighttpd`, re-enable it:
-
-```bash
-sudo systemctl enable lighttpd
-sudo systemctl start lighttpd
-```
-
-Confirm DNS is back:
-
-```bash
-dig @10.0.20.53 example.com +short
 ```
