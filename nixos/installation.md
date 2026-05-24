@@ -13,10 +13,6 @@ ip a # Get ip address
 # SSH into the vm and continue
 git clone https://github.com/jabb4/home-server.git && cd home-server/nixos
 
-# OPTIONAL
-# Change SMB creds to your liking
-#nano hosts/<HOST>/.smb-credentials
-
 sudo nix --experimental-features "nix-command flakes" run github:nix-community/disko/latest -- --mode destroy,format,mount --yes-wipe-all-disks hosts/<HOST>/disk-config.nix && nix-collect-garbage -d
 
 sudo nixos-install --no-root-passwd --flake .#<HOST>
