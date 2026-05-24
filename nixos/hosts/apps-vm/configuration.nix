@@ -34,6 +34,7 @@
 
   # Networking and firewall
   networking = {
+    nameservers = ["10.0.20.53"]; # Pi-hole on Rocky (resolves *.local.jabbas.dev)
     firewall = {
       enable = true;
       allowedTCPPorts = [
@@ -107,6 +108,7 @@
   virtualisation.docker = {
     enable = true;
     daemon.settings = {
+      dns = ["10.0.20.53"]; # Pi-hole, so containers can resolve *.local.jabbas.dev
       log-driver = "local";
       log-opts = {
         max-size = "10m";
