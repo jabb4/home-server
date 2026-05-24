@@ -1,7 +1,7 @@
 services:
   traefik:
     container_name: rocky-traefik
-    image: traefik:v3.6
+    image: traefik:v3.7
     restart: unless-stopped
     network_mode: host
     security_opt:
