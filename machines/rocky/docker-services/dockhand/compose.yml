@@ -8,6 +8,8 @@ services:
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
       - dockhand_data:/app/data
+    environment:
+      COMPOSE_TIMEOUT: 1800
     security_opt:
       - no-new-privileges:true
     logging:
