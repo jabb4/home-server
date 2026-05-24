@@ -82,13 +82,19 @@
     };
   };
     
-  # Mount SMB Share for Movies, Series, etc.
+  # Mount TrueNAS NFS share for media data.
   fileSystems."/mnt/data" = {
-    device = "//192.168.20.101/media-data";
-    fsType = "cifs";
-    options = let
-      automount_opts = "x-systemd.automount,noauto,x-systemd.idle-timeout=60,x-systemd.device-timeout=5s,x-systemd.mount-timeout=5s,user,users";
-    in ["${automount_opts},credentials=/home/nixos/.smb-credentials,uid=1000,gid=1000"];
+    device = "192.168.20.101:/mnt/Storage/media-data";
+    fsType = "nfs";
+    options = [
+      "x-systemd.automount"
+      "noauto"
+      "x-systemd.idle-timeout=60"
+      "x-systemd.device-timeout=5s"
+      "x-systemd.mount-timeout=5s"
+      "soft"
+      "nfsvers=4.1"
+    ];
   };
 
   # Enable zsh
@@ -126,10 +132,9 @@
 
   # Install packages
   environment.systemPackages = with pkgs; [
-      cifs-utils # For SMB client (mount smb share)
       git
       htop
-  ]; 
+  ];
 
   system.stateVersion = "25.05";
 }
