@@ -26,18 +26,6 @@
       "enabled": false
     },
     {
-      "description": "Apply a baseline soak period to image version bumps.",
-      "matchDatasources": [
-        "docker"
-      ],
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "patch"
-      ],
-      "minimumReleaseAge": "3 days"
-    },
-    {
       "description": "Tag docker-compose updates so they're easy to scan in the PR list.",
       "matchManagers": [
         "docker-compose"
