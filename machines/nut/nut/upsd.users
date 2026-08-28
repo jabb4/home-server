@@ -1,8 +1,0 @@
-[upsmaster]
-    password = <PASSWORD>
-    upsmon master
-    instcmds = ALL
-
-[upsremote]
-    password = <PASSWORD>
-    upsmon slave
