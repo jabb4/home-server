@@ -1,0 +1,48 @@
+- Developer:
+    - Github:
+        - icon: github-light.png
+          href: https://github.com/py-er
+    - Mend (Renovate):
+        - href: https://developer.mend.io/github/jabb4
+    - Cloudflare:
+        - icon: cloudflare.png
+          href: https://dash.cloudflare.com
+    - Hetzner:
+        - icon: hetzner.png
+          href: https://console.hetzner.cloud
+    - Vultr:
+        - icon: vultr.png
+          href: https://my.vultr.com
+    - Namecheap:
+        - icon: si-namecheap-#f76809
+          href: https://ap.www.namecheap.com
+
+- Usenet:
+    - Eweka:
+        - icon: eweka.png
+          href: https://www.eweka.nl/en/myeweka?p=acd
+    - NinjaCentral:
+        - icon: mdi-ninja-#ffffff
+          href: https://ninjacentral.co.za/
+    - Drunkenslug:
+        - icon: mdi-glass-mug-variant-#f5b427
+          href: https://drunkenslug.com/profile
+    - NZBGeek:
+        - icon: nzbgeek.png
+          href: https://www.nzbgeek.info/dashboard.php?myaccount
+    - altHUB:
+        - icon: nzbgeek.png
+          href: https://althub.co.za/profile
+    - Usenet Deals:
+        - icon: android.png
+          href: https://rexum.space/p/usenet-provider-deals
+
+- Social:
+    - Linkedin:
+        - icon: linkedin.png
+          href: https://linkedin.com/in/jacob-bengtsson/
+
+- Slack:
+    - Notifications:
+      - icon: slack.png
+        href: https://app.slack.com/client/T07FCNTJSN6/C07G1GW6UMN

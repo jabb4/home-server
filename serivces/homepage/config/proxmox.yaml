@@ -1,0 +1,5 @@
+---
+pve:
+  url: https://pve.local.jabbas.dev
+  token: {{HOMEPAGE_VAR_PROXMOX_API_USERNAME}}
+  secret: {{HOMEPAGE_VAR_PROXMOX_API_PASSWORD}}

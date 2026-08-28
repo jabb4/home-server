@@ -1,0 +1,20 @@
+services:
+  hawser:
+    container_name: hawser
+    image: ghcr.io/finsys/hawser:latest
+    restart: unless-stopped
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/hawser/stacks:/data/stacks
+    environment:
+      DOCKHAND_SERVER_URL: ${DOCKHAND_SERVER_URL}
+      TOKEN: ${HAWSER_TOKEN}
+      AGENT_NAME: apps-vm
+      STACKS_DIR: /data/stacks
+    security_opt:
+      - no-new-privileges:true
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
