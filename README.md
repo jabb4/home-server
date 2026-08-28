@@ -30,13 +30,13 @@ Current operating model:
 
 ## Machines
 
-### Core PI
+### Core Pi
 - Hardware: Raspberry Pi 5 4GB, RAM 256GB m.2 SSD
 - Role: always-on control plane and critical infra
 - IP: `10.0.20.53`
 - Services: `Traefik`, `Dockhand`, `Homepage`, `Uptime-kuma` (planed), `Authentik` (planed)
 
-### Home Assistant PI
+### Home Assistant Pi
 - Hardware: Raspberry Pi 4 4GB RAM, 128 GB SATA SSD USB 3.0
 - Role: home automation controller
 - IP: `10.0.20.60`
@@ -48,10 +48,10 @@ Current operating model:
 - IP: `10.0.20.61`
 - Service: Zigbee2MQTT radio coordinator
 
-### Media PI
+### Media Pi
 - Hardware: Raspberry Pi 5, 8GB RAM, 1TB m.2 SSD
 - Role: Streaming and downloding media content
-- IP: `10.0.20.??`
+- IP: `10.0.20.80`
 - Services: `Jellyfin`, `gluetun`, `SABnzbd`, `Prowlarr`, `Radarr`, `Sonarr`, `Bazarr`, `Seerr`, 
 
 
