@@ -1,15 +1,24 @@
 services:
   dockhand:
     container_name: dockhand
-    image: fnsys/dockhand:latest
+    image: fnsys/dockhand:v1.0.45
     restart: unless-stopped
     ports:
       - 3000:3000
+    group_add:
+      - ${DOCKER_GID:?set DOCKER_GID in .env}
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock
-      - dockhand_data:/app/data
+      - /opt/dockhand:/opt/dockhand
     environment:
+      DATA_DIR: /opt/dockhand
+      HOST_DOCKER_SOCKET: /var/run/docker.sock
+      PUID: ${PUID:-1000}
+      PGID: ${PGID:-1000}
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:?set ENCRYPTION_KEY in .env}
+      DOCKHAND_HOSTNAME: core-pi
       COMPOSE_TIMEOUT: 1800
+      TRUST_FORWARDED_HEADERS: "true"
     security_opt:
       - no-new-privileges:true
     logging:
@@ -17,6 +26,3 @@ services:
       options:
         max-size: 10m
         max-file: "3"
-
-volumes:
-  dockhand_data:
