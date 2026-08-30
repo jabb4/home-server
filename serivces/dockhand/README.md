@@ -11,11 +11,13 @@ Compose stacks from this repository and reconciles them on the hosts it manages.
 Dockhand cannot reconcile itself, so this stack is brought up by hand on Core PI
 and stays outside the GitOps loop.
 
+
 ## Hosts managed by Dockhand
 
 - Core PI itself, via the mounted `/var/run/docker.sock`.
 - Media PI (`10.0.20.80`), reached through the Hawser agent — see
   [`../hawser/`](../hawser/).
+
 
 ## Encryption key
 
@@ -36,6 +38,7 @@ first start once the variable is present.
 `.env` is gitignored, so it becomes the only copy on the Pi. Keep one in a
 password manager.
 
+
 ## Start
 
 ```bash
@@ -43,6 +46,7 @@ cp .env.example .env   # fill in DOCKER_GID and ENCRYPTION_KEY
 docker compose up -d
 docker compose logs -f dockhand
 ```
+
 
 ## First-run configuration
 
@@ -56,6 +60,7 @@ In the UI:
    path in the repo.
 
 Keep secrets in the per-stack `.env` managed inside Dockhand, not in this repo.
+
 
 ## Notes on the proxy setup
 
@@ -73,14 +78,6 @@ Keep secrets in the per-stack `.env` managed inside Dockhand, not in this repo.
 If container memory shows as 0B in the UI, that is the host cgroup setting, not
 Dockhand — see [`machines/core-pi/README.md`](../../machines/core-pi/README.md).
 
-## Rollback
-
-```bash
-docker compose down
-```
-
-`/opt/dockhand` is untouched by `down`, so bringing the stack back up restores
-all configured sources, hosts, and stacks.
 
 ## Update
 
@@ -100,5 +97,12 @@ Read the upstream release notes before merging a major bump; Renovate labels
 those `major`.
 
 To roll back, set the previous tag in `compose.yml` and re-run the same commands.
-`/opt/dockhand` is not touched by a recreate, so the data survives either way.
 
+## Rollback
+
+```bash
+docker compose down
+```
+
+`/opt/dockhand` is untouched by `down`, so bringing the stack back up restores
+all configured sources, hosts, and stacks.
