@@ -1,13 +1,8 @@
 - Infrastructure:
       - Unifi:
-            href: https://unifi.local.jabbas.dev/network/default/dashboard
+            href: https://unifi.ui.com
             icon: unifi.png
-            siteMonitor: https://unifi.local.jabbas.dev
-
-      - Pi-hole:
-            href: https://pi-hole.local.jabbas.dev
-            icon: pi-hole.png
-            siteMonitor: https://pi-hole.local.jabbas.dev
+            siteMonitor: https://unifi.ui.com
 
       - Traefik:
             href: https://traefik-rocky.local.jabbas.dev/dashboard/
@@ -18,21 +13,6 @@
             href: https://dockhand.local.jabbas.dev
             icon: docker.png
             siteMonitor: https://dockhand.local.jabbas.dev
-
-      - PiKVM:
-            href: https://pikvm.local.jabbas.dev
-            icon: pikvm.png
-            siteMonitor: https://pikvm.local.jabbas.dev
-
-      - Proxmox:
-            href: https://pve.local.jabbas.dev
-            icon: proxmox.png
-            siteMonitor: https://pve.local.jabbas.dev
-
-      - TrueNAS:
-            href: https://truenas.local.jabbas.dev
-            icon: truenas.png
-            siteMonitor: https://truenas.local.jabbas.dev
 
 
 

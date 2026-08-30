@@ -1,71 +1,52 @@
-# Rocky Homepage
+# Homepage
 
-Homepage dashboard for the homelab. Runs on Rocky alongside Pi-hole, Traefik,
-and Dockhand. Rocky Traefik publishes it at `https://homepage.local.jabbas.dev`
-and proxies to `http://127.0.0.1:3001`.
+Homepage dashboard for the homelab. Runs on Core PI and is orchestrated by
+Dockhand. Traefik publishes it at `https://homepage.local.jabbas.dev` and proxies
+to `http://127.0.0.1:3001`.
 
-## Security
+The port is bound to loopback only, so unlike Dockhand there is no direct-IP
+fallback — if Traefik is down, Homepage is unreachable. That is fine for a
+dashboard.
 
-This route intentionally has no Traefik basic auth. Keep it LAN/VLAN-only and do
-not publish it directly to the internet. Homepage can display data from private
-services through widgets, and Homepage itself does not provide an authentication
-layer.
 
 ## Config
 
-```text
-config/bookmarks.yaml
-config/custom.css
-config/custom.js
-config/docker.yaml
-config/proxmox.yaml
-config/services.yaml
-config/settings.yaml
-config/widgets.yaml
-```
+`./config` is a relative bind mount, so the files in this directory are the live
+config. Dockhand writes them to the host on reconcile and the container reads
+them from there.
 
-## Configure
+| File | Purpose |
+| --- | --- |
+| `settings.yaml` | Title, theme, and the declared weather providers |
+| `services.yaml` | The service tiles, grouped by Infrastructure / Streaming / Home Automation |
+| `bookmarks.yaml` | Static links — no secrets, no widgets |
+| `widgets.yaml` | Header widgets (search, datetime) |
+| `docker.yaml` | Empty — the Docker socket is not mounted, so there is no container integration |
+| `proxmox.yaml` | Empty — no Proxmox integration |
+| `custom.css`, `custom.js` | Empty placeholders |
 
-From this directory:
 
-```bash
-cp .env.example .env
-chmod 600 .env
-```
+## Deployment
 
-Edit `.env` and fill in the Homepage widget API values from your password
-manager.
+Deployed through Dockhand, targeting Core PI. Secrets go in the per-stack
+environment store in the Dockhand UI (Stack -> Environment Variables), not in
+this repo. `.env.example` documents the keys.
 
-`compose.yml` binds Homepage to `127.0.0.1:3001` only. Rocky Traefik is the only
-public entry point.
+Changes to `compose.yml` or anything in `config/` land on the host at the next
+reconcile.
 
-## Start
 
-```bash
-docker compose config
-docker compose up -d
-docker compose logs -f homepage
-```
+## Security
 
-## Validation
+Homepage has no built-in authentication. Anything that can reach
+`homepage.local.jabbas.dev` sees the full dashboard, including the bookmarks.
+Put Authentik forward auth in front of it once that is set up.
 
-Check the local backend:
 
-```bash
-curl -I http://127.0.0.1:3001
-```
+## Update
 
-Check the Traefik route:
+The image tag is pinned, so Renovate opens a PR when a new version ships. Merge
+it and Dockhand applies it on the next reconcile — no manual step on the host,
+unlike the bootstrap stacks.
 
-```bash
-curl -I https://homepage.local.jabbas.dev
-```
-
-Widgets for services hosted on `apps-vm` will show errors while `apps-vm` is
-powered off. The links still work again once `apps-vm` is online.
-
-## Rollback
-
-```bash
-docker compose down
-```
+To roll back, set the previous tag in `compose.yml` and let it reconcile again.
