@@ -5,9 +5,9 @@
             siteMonitor: https://unifi.ui.com
 
       - Traefik:
-            href: https://traefik-rocky.local.jabbas.dev/dashboard/
+            href: https://traefik.local.jabbas.dev/dashboard/
             icon: traefik.png
-            siteMonitor: https://traefik-rocky.local.jabbas.dev/dashboard/
+            siteMonitor: https://traefik.local.jabbas.dev/dashboard/
 
       - Dockhand:
             href: https://dockhand.local.jabbas.dev
