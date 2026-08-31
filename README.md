@@ -24,7 +24,7 @@ Current operating model:
 | --- | --- | --- | --- |
 | Reserved | `10.0.1.0/24` | Unused netowrk (VLAND ID 1) | None |
 | Home | `10.0.10.0/24` | Safe devices belonging to the home | Phones, computers, ... |
-| Infra | `10.0.20.0/24` | always-on infrastructure | Rocky (Pi-hole, Traefik, Dockhand, Homepage), Home Assistant, SLZB-MR4U |
+| Infra | `10.0.20.0/24` | always-on infrastructure | Core PI (Traefik, Dockhand, Homepage), Media PI, Home Assistant, SLZB-MR4U |
 | IoT | `10.0.99.0/24` | IoT devices that are "unsafe" and should be isolated | Sonos speakers, smart scale, Air purifyer etc. |
 
 
@@ -57,22 +57,21 @@ Current operating model:
 
 ## GitOps Model
 
-Dockhand runs on Rocky at `https://dockhand.local.jabbas.dev` and:
+Dockhand runs on Core PI at `https://dockhand.local.jabbas.dev` and:
 
 1. Watches this repository on branch `main`.
 2. Pulls the Compose files for each registered stack from the path that owns
-   them under `machines/<host>/docker-services/managed/<service>/`.
-3. Reconciles each stack on the host it was assigned to (Rocky or `apps-vm`).
+   them under `serivces/<service>/`.
+3. Reconciles each stack on the host it was assigned to (Core PI or Media PI).
 
 Local edits do not affect the live cluster until they are committed and pushed
 to `main`.
 
 ## Ingress
 
-Rocky Traefik is the single edge proxy. Every `*.local.jabbas.dev` name resolves
-to Rocky through the Pi-hole wildcard `address=/local.jabbas.dev/10.0.20.53` and
-is routed by Traefik to the correct backend on the LAN. Traefik holds a
-Let's Encrypt wildcard cert for `*.local.jabbas.dev` via the Cloudflare DNS-01
-challenge.
+Core PI Traefik is the single edge proxy. Every `*.local.jabbas.dev` name resolves
+to Core PI through a wildcard DNS record on the UniFi gateway and is routed by
+Traefik to the correct backend on the LAN. Traefik holds a Let's Encrypt wildcard
+cert for `*.local.jabbas.dev` via the Cloudflare DNS-01 challenge.
 
-The full route table lives in [`servicestraefik/README.md`](services/traefik/README.md).
+The full route table lives in [`serivces/traefik/README.md`](serivces/traefik/README.md).
