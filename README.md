@@ -1,141 +1,77 @@
 # Homelab Architecture
 
-This repository is the source of truth for the current Stratton homelab.
+This repository is the source of truth for Jabbas current homelab.
 
 Current operating model:
 
-- `main` is the GitOps source branch. Dockhand on Rocky pulls compose stacks
+- `main` is the GitOps source branch. Dockhand on Infra PI pulls compose stacks
   from this repo and reconciles them on the Docker hosts it manages.
-- `Stratton` runs `Proxmox VE` and hosts the apps VM and TrueNAS.
-- All user services run as Docker Compose stacks. No Kubernetes.
-- Rocky is the always-on control plane: DNS, ingress, GitOps, and the dashboard.
+- All user services run as Docker Compose stacks besides Home Assistant.
+- Services is the always-on control Ingress, GitOps, auth and the dashboard.
+
 
 ## Repo Layout
 
-- `machines/rocky/docker-services/`
-  - `dockhand/`, `pi-hole/` — bootstrap stacks brought up by hand; not managed
-    by Dockhand because a bad reconcile to either would break the GitOps
-    control plane (repo pull or DNS)
-  - `managed/` — Dockhand-managed Compose stacks on Rocky: `homepage`, `traefik`
-- `machines/stratton/vms/apps/docker-services/managed/`
-  - Dockhand-managed Compose stacks on `apps-vm`: `jellyfin`, `media-downloader`,
-    `recyclarr`
-- `machines/stratton/`
-  - Proxmox host notes and BIOS setup
-- `nixos/`
-  - NixOS host config for `apps-vm`
-- `machines/home-assistant/`, `machines/rocky/`, `machines/jordan/`,
-  `machines/nut/`, `machines/slzb-mr4u/`
-  - docs and host-specific notes for the non-Stratton machines
-- `scripts/`
-  - repo-level helper scripts
+- `machines/`: Holds the documentation of all the machines running in the homelab and how to deplay / set them up.
+- `services/`: Hold all the config files and dockumentation for the services running
+- `scripts/`: repo-level helper scripts
+- `docs/`: Documentation that doesnt fit else where like docker instructions etc.
+
 
 ## Network Layout
 
 | Network | Subnet | Purpose | Current Use |
 | --- | --- | --- | --- |
-| Default LAN | `192.168.10.0/24` | user devices and admin workstation | client origin network |
-| Management | `10.0.10.0/24` | admin-only interfaces | Proxmox, switch/AP management, other host admin surfaces |
-| Services | `10.0.20.0/24` | always-on infrastructure | Rocky (Pi-hole, Traefik, Dockhand, Homepage), Home Assistant, SLZB-MR4U |
-| VM Network | `192.168.20.0/24` | Stratton VMs | TrueNAS, `apps-vm`, NUT |
+| Reserved | `10.0.1.0/24` | Unused netowrk (VLAND ID 1) | None |
+| Home | `10.0.10.0/24` | Safe devices belonging to the home | Phones, computers, ... |
+| Infra | `10.0.20.0/24` | always-on infrastructure | Core PI (Traefik, Dockhand, Homepage), Media PI, Home Assistant, SLZB-MR4U |
+| IoT | `10.0.99.0/24` | IoT devices that are "unsafe" and should be isolated | Sonos speakers, smart scale, Air purifyer etc. |
 
-## Address Highlights
 
-| IP | Use |
-| --- | --- |
-| `10.0.10.10` | Stratton Proxmox management |
-| `10.0.20.53` | Rocky (Pi-hole DNS, Traefik ingress, Dockhand, Homepage) |
-| `10.0.20.60` | Home Assistant Raspberry Pi |
-| `10.0.20.61` | SLZB-MR4U Zigbee/Thread coordinator |
-| `192.168.20.70` | NUT UPS controller |
-| `192.168.20.101` | TrueNAS |
-| `192.168.20.103` | `apps-vm` (Jellyfin + media-downloader stack) |
+## Machines
 
-## Core Machines
+### Core Pi
+- Hardware: Raspberry Pi 5 4GB, RAM 256GB m.2 SSD
+- Role: always-on control plane and critical infra
+- IP: `10.0.20.53`
+- Services: `Traefik`, `Dockhand`, `Homepage`, `Uptime-kuma` (planed), `Authentik` (planed)
 
-### Stratton
-
-- Host role: main virtualization host
-- Host OS: `Proxmox VE`
-- Runs:
-  - `apps-vm` (streaming + downloading)
-  - `TrueNAS`
-
-### Rocky
-
-- Hardware: Raspberry Pi 5
-- Role: always-on control plane
-- Services: `Pi-hole`, `Traefik`, `Dockhand`, `Homepage`
-
-### Home Assistant
-
-- Hardware: Raspberry Pi
+### Home Assistant Pi
+- Hardware: Raspberry Pi 4 4GB RAM, 128 GB SATA SSD USB 3.0
 - Role: home automation controller
 - IP: `10.0.20.60`
 - Service: `Home Assistant`
 
-### Jordan
-
-- Hardware: Raspberry Pi 4
-- Role: out-of-band access
-- Service: `PiKVM`
-
-### NUT
-
-- Hardware: Raspberry Pi 3b+
-- Role: UPS monitoring and shutdown orchestration
-- Service: `NUT`
-
 ### SLZB-MR4U
-
 - Hardware: SMLIGHT SLZB-MR4U Multiradio
 - Role: Zigbee and Thread coordinator
 - IP: `10.0.20.61`
 - Service: Zigbee2MQTT radio coordinator
 
+### Media Pi
+- Hardware: Raspberry Pi 5, 8GB RAM, 1TB m.2 SSD
+- Role: Streaming and downloding media content
+- IP: `10.0.20.80`
+- Services: `Jellyfin`, `gluetun`, `SABnzbd`, `Prowlarr`, `Radarr`, `Sonarr`, `Bazarr`, `Seerr`, 
+
+
 ## GitOps Model
 
-Dockhand runs on Rocky at `https://dockhand.local.jabbas.dev` and:
+Dockhand runs on Core PI at `https://dockhand.local.jabbas.dev` and:
 
 1. Watches this repository on branch `main`.
 2. Pulls the Compose files for each registered stack from the path that owns
-   them under `machines/<host>/docker-services/managed/<service>/`.
-3. Reconciles each stack on the host it was assigned to (Rocky or `apps-vm`).
+   them under `serivces/<service>/`.
+3. Reconciles each stack on the host it was assigned to (Core PI or Media PI).
 
 Local edits do not affect the live cluster until they are committed and pushed
 to `main`.
 
 ## Ingress
 
-Rocky Traefik is the single edge proxy. Every `*.local.jabbas.dev` name resolves
-to Rocky through the Pi-hole wildcard `address=/local.jabbas.dev/10.0.20.53` and
-is routed by Traefik to the correct backend on the LAN. Traefik holds a
-Let's Encrypt wildcard cert for `*.local.jabbas.dev` via the Cloudflare DNS-01
-challenge.
+Core PI Traefik is the single edge proxy. Every `*.local.jabbas.dev` name resolves
+to Core PI through a wildcard DNS record on the UniFi gateway and is routed by
+Traefik to the correct backend on the LAN. Traefik holds a Let's Encrypt wildcard
+cert for `*.local.jabbas.dev` via the Cloudflare DNS-01 challenge.
 
-The full route table lives in
-[`machines/rocky/docker-services/managed/traefik/README.md`](machines/rocky/docker-services/managed/traefik/README.md).
-
-## Services Running on `apps-vm`
-
-- `Jellyfin`
-- media-downloader stack (`gluetun`, `SABnzbd`, `Prowlarr`, `Sonarr`, `Radarr`,
-  `Bazarr`, `Seerr`)
-- `Recyclarr`
-
-Large file libraries live on `TrueNAS NFS` and are mounted into the apps VM.
-
-## Key Docs
-
-- Rocky control plane:
-  [`machines/rocky/README.md`](machines/rocky/README.md)
-- Rocky Traefik (ingress):
-  [`machines/rocky/docker-services/managed/traefik/README.md`](machines/rocky/docker-services/managed/traefik/README.md)
-- Dockhand (GitOps):
-  [`machines/rocky/docker-services/dockhand/README.md`](machines/rocky/docker-services/dockhand/README.md)
-- Home Assistant:
-  [`machines/home-assistant/README.md`](machines/home-assistant/README.md)
-- SLZB-MR4U coordinator:
-  [`machines/slzb-mr4u/README.md`](machines/slzb-mr4u/README.md)
-- TrueNAS note:
-  [`machines/stratton/vms/truenas/README.md`](machines/stratton/vms/truenas/README.md)
+The full route table lives in [`serivces/traefik/README.md`](serivces/traefik/README.md).

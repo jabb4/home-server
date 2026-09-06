@@ -42,6 +42,65 @@
       "addLabels": [
         "major"
       ]
+    },
+    {
+      "description": "LSIO images label their own build repo as the source; point changelog lookups at the upstream project instead.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "lscr.io/linuxserver/jellyfin"
+      ],
+      "sourceUrl": "https://github.com/jellyfin/jellyfin"
+    },
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "lscr.io/linuxserver/sabnzbd"
+      ],
+      "sourceUrl": "https://github.com/sabnzbd/sabnzbd"
+    },
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "lscr.io/linuxserver/bazarr"
+      ],
+      "sourceUrl": "https://github.com/morpheus65535/bazarr"
+    },
+    {
+      "description": "LSIO truncates these to 3 parts (6.2.1) while upstream tags releases with 4 (v6.2.1.10461), so notes can't be version-matched. Link to the release list instead.",
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "lscr.io/linuxserver/radarr"
+      ],
+      "sourceUrl": "https://github.com/Radarr/Radarr",
+      "changelogUrl": "https://github.com/Radarr/Radarr/releases"
+    },
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "lscr.io/linuxserver/sonarr"
+      ],
+      "sourceUrl": "https://github.com/Sonarr/Sonarr",
+      "changelogUrl": "https://github.com/Sonarr/Sonarr/releases"
+    },
+    {
+      "matchDatasources": [
+        "docker"
+      ],
+      "matchPackageNames": [
+        "lscr.io/linuxserver/prowlarr"
+      ],
+      "sourceUrl": "https://github.com/Prowlarr/Prowlarr",
+      "changelogUrl": "https://github.com/Prowlarr/Prowlarr/releases"
     }
   ],
   "prBodyNotes": [

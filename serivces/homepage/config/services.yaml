@@ -1,0 +1,68 @@
+- Infrastructure:
+      - Unifi:
+            href: https://unifi.ui.com
+            icon: unifi.png
+            siteMonitor: https://unifi.ui.com
+
+      - Traefik:
+            href: https://traefik.local.jabbas.dev/dashboard/
+            icon: traefik.png
+            siteMonitor: https://traefik.local.jabbas.dev/dashboard/
+
+      - Dockhand:
+            href: https://dockhand.local.jabbas.dev
+            icon: docker.png
+            siteMonitor: https://dockhand.local.jabbas.dev
+
+
+
+- Streaming:
+      - Seerr:
+            href: https://seerr.local.jabbas.dev
+            icon: seerr.png
+            siteMonitor: https://seerr.local.jabbas.dev
+
+      - Jellyfin:
+            href: https://jellyfin.local.jabbas.dev
+            icon: jellyfin.png
+            siteMonitor: https://jellyfin.local.jabbas.dev
+
+      - SABnzbd:
+            href: https://sabnzbd.local.jabbas.dev
+            icon: sabnzbd.png
+            siteMonitor: https://sabnzbd.local.jabbas.dev
+
+      - Radarr:
+            href: https://radarr.local.jabbas.dev
+            icon: radarr.png
+            siteMonitor: https://radarr.local.jabbas.dev
+
+      - Sonarr:
+            href: https://sonarr.local.jabbas.dev
+            icon: sonarr.png
+            siteMonitor: https://sonarr.local.jabbas.dev
+
+      - Prowlarr:
+            href: https://prowlarr.local.jabbas.dev
+            icon: prowlarr.png
+            siteMonitor: https://prowlarr.local.jabbas.dev
+
+      - Bazarr:
+            href: https://bazarr.local.jabbas.dev
+            icon: bazarr.png
+            siteMonitor: https://bazarr.local.jabbas.dev
+
+
+
+- Home Automation:
+      - Home-Assistant:
+            href: https://home-assistant.local.jabbas.dev
+            icon: home-assistant.png
+            siteMonitor: https://home-assistant.local.jabbas.dev
+            widget:
+                  type: homeassistant
+                  url: https://home-assistant.local.jabbas.dev
+                  key: {{HOMEPAGE_VAR_HOMEASSISTANT_API}}
+                  custom:
+                        - state: sensor.server_rack_plug_power
+                          label: Server rack power draw

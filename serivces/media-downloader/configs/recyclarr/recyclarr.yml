@@ -1,0 +1,112 @@
+# yaml-language-server: $schema=https://schemas.recyclarr.dev/v8/config-schema.json
+
+# Profile "Best Available": 2160p when it exists, 1080p when it doesn't.
+#
+#   WEB 2160p > Bluray-2160p > Remux-2160p > Bluray-1080p > WEB 1080p
+#
+# The cutoff sits on the remux tier, so any 2160p file is final: remux is only
+# grabbed when nothing smaller exists and is never replaced afterwards. 1080p
+# stays cutoff-unmet and upgrades as soon as any 2160p shows up. No 720p.
+#
+# Both profiles are guide-backed (`trash_id`): custom formats, their scores and
+# the score set come from the TRaSH Guides and update on every sync. Only the
+# quality order and cutoff below are pinned by hand.
+#
+# trash_id sources (`recyclarr list quality-profiles <app>` lists all of them):
+#   https://github.com/TRaSH-Guides/Guides/blob/master/docs/json/radarr/quality-profiles/remux-2160p-combined.json
+#   https://github.com/TRaSH-Guides/Guides/blob/master/docs/json/sonarr/quality-profiles/remux-2160p-combined.json
+#   https://trash-guides.info/Radarr/radarr-setup-quality-profiles/
+#   https://trash-guides.info/Sonarr/sonarr-setup-quality-profiles/
+
+# Configuration specific to Sonarr
+# See: https://recyclarr.dev/wiki/yaml/config-reference/basic/
+sonarr:
+  series:
+    # Set the URL/API Key via the stack's .env file
+    base_url: !env_var SONARR_URL
+    api_key: !env_var SONARR_API_KEY
+
+    delete_old_custom_formats: true
+
+    # See: https://recyclarr.dev/wiki/yaml/config-reference/quality-definition/
+    quality_definition:
+      type: series
+      preferred_ratio: 0.1 # Prefer releses with "small" size
+
+    # See: https://recyclarr.dev/wiki/yaml/config-reference/quality-profiles/
+    quality_profiles:
+      - trash_id: 911df0e05a395c19d8b3efc76a7467c1 # Remux 2160p (Combined)
+        name: Best Available
+        reset_unmatched_scores:
+          enabled: true
+        upgrade:
+          allowed: true
+          until_quality: Bluray-2160p Remux # any 2160p meets the cutoff
+          until_score: 10000
+        qualities:
+          - name: WEB 2160p
+            qualities:
+              - WEBDL-2160p
+              - WEBRip-2160p
+          - name: Bluray-2160p
+          - name: Bluray-2160p Remux
+          - name: Bluray-1080p
+          - name: WEB 1080p
+            qualities:
+              - WEBDL-1080p
+              - WEBRip-1080p
+
+    # See: https://recyclarr.dev/wiki/yaml/config-reference/media-naming/
+    media_naming:
+      series: jellyfin-tvdb
+      season: default
+      episodes:
+        rename: true
+        standard: default
+        daily: default
+        anime: default
+
+# Configuration specific to Radarr
+# See: https://recyclarr.dev/wiki/yaml/config-reference/basic/
+radarr:
+  movies:
+    # Set the URL/API Key via the stack's .env file
+    base_url: !env_var RADARR_URL
+    api_key: !env_var RADARR_API_KEY
+
+    delete_old_custom_formats: true
+
+    # See: https://recyclarr.dev/wiki/yaml/config-reference/quality-definition/
+    quality_definition:
+      type: movie
+      preferred_ratio: 0.1 # Prefer releses with "small" size
+
+    # See: https://recyclarr.dev/wiki/yaml/config-reference/quality-profiles/
+    quality_profiles:
+      - trash_id: d1d310673359205736b4b84acd5ea8c8 # Remux 2160p (Combined)
+        name: Best Available
+        reset_unmatched_scores:
+          enabled: true
+        upgrade:
+          allowed: true
+          until_quality: Remux-2160p # any 2160p meets the cutoff
+          until_score: 10000
+        qualities:
+          - name: WEB 2160p
+            qualities:
+              - WEBDL-2160p
+              - WEBRip-2160p
+          - name: Bluray-2160p
+          - name: Remux-2160p
+          - name: Bluray-1080p
+          - name: WEB 1080p
+            qualities:
+              - WEBDL-1080p
+              - WEBRip-1080p
+
+    # See: https://recyclarr.dev/wiki/yaml/config-reference/media-naming/
+    media_naming:
+      folder: default
+      movie:
+        rename: true
+        standard: jellyfin-tmdb

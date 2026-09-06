@@ -1,0 +1,185 @@
+http:
+  routers:
+    # Core PI local services.
+    homepage:
+      entryPoints:
+        - websecure
+      rule: Host(`homepage.local.jabbas.dev`)
+      middlewares:
+        - ui-headers
+      service: homepage
+
+    dockhand:
+      entryPoints:
+        - websecure
+      rule: Host(`dockhand.local.jabbas.dev`)
+      middlewares:
+        - ui-headers
+      service: dockhand
+
+    traefik:
+      entryPoints:
+        - websecure
+      rule: Host(`traefik.local.jabbas.dev`)
+      middlewares:
+        - ui-headers
+        - traefik-auth
+      service: api@internal
+
+    # Home Assistant Pi
+    home-assistant:
+      entryPoints:
+        - websecure
+      rule: Host(`home-assistant.local.jabbas.dev`)
+      middlewares:
+        - ui-headers
+      service: home-assistant
+
+    # Media PI stack.
+    jellyfin:
+      entryPoints:
+        - websecure
+      rule: Host(`jellyfin.local.jabbas.dev`)
+      middlewares:
+        - ui-headers
+      service: jellyfin
+
+    seerr:
+      entryPoints:
+        - websecure
+      rule: Host(`seerr.local.jabbas.dev`)
+      middlewares:
+        - ui-headers
+      service: seerr
+
+    sabnzbd:
+      entryPoints:
+        - websecure
+      rule: Host(`sabnzbd.local.jabbas.dev`)
+      middlewares:
+        - ui-headers
+      service: sabnzbd
+
+    sonarr:
+      entryPoints:
+        - websecure
+      rule: Host(`sonarr.local.jabbas.dev`)
+      middlewares:
+        - ui-headers
+      service: sonarr
+
+    radarr:
+      entryPoints:
+        - websecure
+      rule: Host(`radarr.local.jabbas.dev`)
+      middlewares:
+        - ui-headers
+      service: radarr
+
+    prowlarr:
+      entryPoints:
+        - websecure
+      rule: Host(`prowlarr.local.jabbas.dev`)
+      middlewares:
+        - ui-headers
+      service: prowlarr
+
+    bazarr:
+      entryPoints:
+        - websecure
+      rule: Host(`bazarr.local.jabbas.dev`)
+      middlewares:
+        - ui-headers
+      service: bazarr
+
+  services:
+    # Core PI local services.
+    homepage:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://127.0.0.1:3001
+
+    dockhand:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://127.0.0.1:3000
+
+    # Home Assistant Pi
+    home-assistant:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://10.0.20.60:8123
+
+    # Media PI stack.
+    jellyfin:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://10.0.20.80:8096
+
+    seerr:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://10.0.20.80:5055
+
+    sabnzbd:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://10.0.20.80:8080
+
+    sonarr:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://10.0.20.80:8989
+
+    radarr:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://10.0.20.80:7878
+
+    prowlarr:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://10.0.20.80:9696
+
+    bazarr:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://10.0.20.80:6767
+
+  middlewares:
+    ui-headers:
+      chain:
+        middlewares:
+          - default-headers
+          - frame-same-origin
+
+    traefik-auth:
+      basicAuth:
+        users:
+          - '{{ env "TRAEFIK_BASIC_AUTH_USERS" }}'
+        realm: core-pi-traefik
+        removeHeader: true
+
+    default-headers:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsSeconds: 15552000
+        customRequestHeaders:
+          X-Forwarded-Proto: https
+
+    frame-same-origin:
+      headers:
+        customFrameOptionsValue: SAMEORIGIN
