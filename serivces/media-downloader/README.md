@@ -6,7 +6,7 @@ Managed by Dockhand. Changes to `compose.yml` land on the host on the next Dockh
 
 
 ## Deployment
-Deployed through Dockhand, targeting Core PI. Secrets go in the per-stack
+Deployed through Dockhand, targeting Media PI. Secrets go in the per-stack
 environment store in the Dockhand UI (Stack -> Environment Variables), not in
 this repo. `.env.example` documents the keys.
 

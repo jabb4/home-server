@@ -5,6 +5,11 @@
 3. Go to Settings -> Profiles and remove the all
 
 
+4. Go to Settings -> Media Management and leave "Use Hardlinks instead of Copy"
+   off. On Media PI `/data/usenet` is the local SSD and `/data/media` is the
+   UNAS NFS mount, so imports are a copy across filesystems either way — see
+   [`machines/media-pi/README.md`](../../../machines/media-pi/README.md).
+
 ## For Radarr only:
 1. Go to Settings -> Media Management and add root folder /data/media/movies/
 
@@ -12,9 +17,9 @@
 1. Go to Settings -> Media Management and add root folder /data/media/tv/
 
 ## When you have done the above on both radarr and sonarr
-4. Put the Sonarr/Radarr URLs and API keys into the Recyclarr stack's `.env`
-   file on `apps-vm` (`cp .env.example .env` then fill in `SONARR_API_KEY` and
-   `RADARR_API_KEY`).
-5. Start the Recyclarr container (`sudo docker compose up -d`). It runs in cron
-   mode and syncs on `@weekly`; for an immediate sync run
-   `sudo docker compose exec recyclarr recyclarr sync`.
+5. Put `SONARR_API_KEY` and `RADARR_API_KEY` into the Recyclarr stack's
+   environment variables in the Dockhand UI (Stack -> Environment Variables).
+   `serivces/recyclarr/.env.example` documents every key.
+6. Deploy the Recyclarr stack from Dockhand. It runs in cron mode and syncs on
+   `@weekly`; for an immediate sync run
+   `sudo docker exec recyclarr recyclarr sync` on Media PI.
