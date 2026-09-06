@@ -43,8 +43,8 @@ password manager.
 
 ```bash
 cp .env.example .env   # fill in DOCKER_GID and ENCRYPTION_KEY
-docker compose up -d
-docker compose logs -f dockhand
+sudo docker compose up -d
+sudo docker compose logs -f dockhand
 ```
 
 
@@ -88,9 +88,9 @@ Dockhand cannot recreate its own container:
 ```bash
 cd /path/to/home-server/services/dockhand
 git pull
-docker compose pull
-docker compose up -d
-docker compose logs -f dockhand
+sudo docker compose pull
+sudo docker compose up -d
+sudo docker compose logs -f dockhand
 ```
 
 Read the upstream release notes before merging a major bump; Renovate labels
@@ -101,7 +101,7 @@ To roll back, set the previous tag in `compose.yml` and re-run the same commands
 ## Rollback
 
 ```bash
-docker compose down
+sudo docker compose down
 ```
 
 `/opt/dockhand` is untouched by `down`, so bringing the stack back up restores

@@ -23,9 +23,9 @@ This stack is host-agnostic — everything host-specific lives in `.env`.
 
    ```bash
    cp .env.example .env   # fill in AGENT_NAME and HAWSER_TOKEN
-   docker compose config
-   docker compose up -d
-   docker compose logs -f hawser
+   sudo docker compose config
+   sudo docker compose up -d
+   sudo docker compose logs -f hawser
    ```
 
 3. The environment should flip to connected in Dockhand. Use the Test button to
@@ -40,9 +40,9 @@ agent, so it cannot recreate the agent's own container:
 ```bash
 cd /path/to/home-server/services/hawser
 git pull
-docker compose pull
-docker compose up -d
-docker compose logs -f hawser
+sudo docker compose pull
+sudo docker compose up -d
+sudo docker compose logs -f hawser
 ```
 
 To roll back, set the previous tag in `compose.yml` and re-run the same commands.
@@ -50,7 +50,7 @@ To roll back, set the previous tag in `compose.yml` and re-run the same commands
 ## Rollback
 
 ```bash
-docker compose down
+sudo docker compose down
 ```
 
 `/opt/hawser/stacks` is untouched by `down`. Stacks Dockhand deployed keep
