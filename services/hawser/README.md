@@ -38,7 +38,7 @@ it, then apply it by hand on each agent host — Dockhand reconciles through the
 agent, so it cannot recreate the agent's own container:
 
 ```bash
-cd /path/to/home-server/serivces/hawser
+cd /path/to/home-server/services/hawser
 git pull
 docker compose pull
 docker compose up -d

@@ -5,4 +5,4 @@
    - Radarr: `http://localhost:7878`
    - Sonarr: `http://localhost:8989`
 
-   The API key for each comes from the env
+   The API key for each can be found in their respective UI

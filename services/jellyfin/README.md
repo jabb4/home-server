@@ -11,17 +11,18 @@
       3. Click on "OK"
    5. Click "Next"
    6. Select English and United States for Metadat Language and press "Next"
-   7. Check "Allow remote connections to this server" and dont check "Enable automatic port mapping"
+   7. Check "Allow remote connections to this server"
    8. Click "Next"
    9. Click "Finish"
 
 2.  Plugins
     1.  Go to [Dashboard -> Catalouge (Plugins)](https://jellyfin.local.jabbas.dev/web/index.html#/dashboard/plugins/catalog)
-    2.  Click on the cogg in the top left corner
+    2.  Click on "Menage Repositories" in top right corner
     3.  Click on the "+"
     4.  Set repository name to "Intro Skipper" and Repository URL to https://intro-skipper.org/manifest.json
     5.  Click "Save" and "Ok"
-    6.  Go back to Catalouge section
-    7. Install plugins:
+    6. Restart Jellyfin
+    7.  Go back to Catalouge section
+    8. Install plugins:
        1. Intro Skipper
-    8.  Restart Jellyfin
+    9.  Restart Jellyfin

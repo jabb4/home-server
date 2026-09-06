@@ -61,7 +61,7 @@ Dockhand runs on Core PI at `https://dockhand.local.jabbas.dev` and:
 
 1. Watches this repository on branch `main`.
 2. Pulls the Compose files for each registered stack from the path that owns
-   them under `serivces/<service>/`.
+   them under `services/<service>/`.
 3. Reconciles each stack on the host it was assigned to (Core PI or Media PI).
 
 Local edits do not affect the live cluster until they are committed and pushed
@@ -74,4 +74,4 @@ to Core PI through a wildcard DNS record on the UniFi gateway and is routed by
 Traefik to the correct backend on the LAN. Traefik holds a Let's Encrypt wildcard
 cert for `*.local.jabbas.dev` via the Cloudflare DNS-01 challenge.
 
-The full route table lives in [`serivces/traefik/README.md`](serivces/traefik/README.md).
+The full route table lives in [`services/traefik/README.md`](services/traefik/README.md).

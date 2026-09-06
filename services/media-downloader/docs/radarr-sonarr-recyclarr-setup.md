@@ -3,7 +3,7 @@
 1. Enable Form authentication and put in username and password.
 2. Go to Settings -> Download Clients and add SABnzbd. Host `localhost`, port `8080` - they share the gluetun network namespace
 3. Go to Settings -> Profiles and remove the all
-4. Go to Settings -> Media Management and leave "Use Hardlinks instead of Copy"
+4. Go to Settings -> Media Management (Advnaced settings) and leave "Use Hardlinks instead of Copy"
    off. On Media PI `/data/usenet` is the local SSD and `/data/media` is the
    UNAS NFS mount, so imports are a copy across filesystems either way — see
    [`machines/media-pi/README.md`](../../../machines/media-pi/README.md).

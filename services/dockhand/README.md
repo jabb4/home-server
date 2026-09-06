@@ -54,7 +54,7 @@ In the UI:
 
 1. Create an admin account and enable authentication.
 2. Add this git repository as a source. Point it at the directory containing the
-   compose file for each stack (e.g. `serivces/homepage`).
+   compose file for each stack (e.g. `services/homepage`).
 3. Register Media PI as an environment via Hawser.
 4. Create one stack per service, choosing the right host and the right compose
    path in the repo.
@@ -86,7 +86,7 @@ it, then apply it by hand on Core PI — this stack is outside the GitOps loop, 
 Dockhand cannot recreate its own container:
 
 ```bash
-cd /path/to/home-server/serivces/dockhand
+cd /path/to/home-server/services/dockhand
 git pull
 docker compose pull
 docker compose up -d

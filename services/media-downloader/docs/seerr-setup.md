@@ -1,3 +1,5 @@
+In the setuop screen it will say that `The /app/config volume mount was not configured properly. All data will be cleared when the container is stopped or restarted.` This is not true and can be disregarded beacuse we use docker volumes and the app does not know that.
+
 1. Inital setup
    1. Select "Confighure Jellyfin"
    2. Put in "jellyfin.local.jabbas.dev" in Jellyfin URL and check "Use SSL"

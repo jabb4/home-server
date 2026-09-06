@@ -1,7 +1,7 @@
 # Media PI
 
 Media PI is the Raspberry Pi 5 that runs the streaming and download stacks. It is a Dockhand-managed
-Docker host — see [`serivces/dockhand/README.md`](../../serivces/dockhand/README.md).
+Docker host — see [`services/dockhand/README.md`](../../services/dockhand/README.md).
 
 Services:
 - Jellyfin on `jellyfin.local.jabbas.dev`
@@ -199,12 +199,12 @@ On the UNAS Pro at `10.0.20.20`:
 
 ### 5. Join the GitOps loop
 
-Follow [`serivces/hawser/README.md`](../../serivces/hawser/README.md), naming the agent `media-pi`.
+Follow [`services/hawser/README.md`](../../services/hawser/README.md), naming the agent `media-pi`.
 
 Then create the stacks in Dockhand against the `media-pi` environment, in this order:
 
-1. `serivces/jellyfin`
-2. `serivces/media-downloader` — the whole download stack including Recyclarr. VPN keys and the
+1. `services/jellyfin`
+2. `services/media-downloader` — the whole download stack including Recyclarr. VPN keys and the
    pinned Radarr/Sonarr API keys go in the per-stack environment store in the Dockhand UI, per its
    `.env.example`
 
@@ -212,11 +212,11 @@ Then create the stacks in Dockhand against the `media-pi` environment, in this o
 
 Run these in order:
 
-1. [SABnzbd](../../serivces/media-downloader/docs/sabnzbd-setup.md)
-2. [Prowlarr](../../serivces/media-downloader/docs/prowlarr-setup.md)
-3. [Radarr, Sonarr and Recyclarr](../../serivces/media-downloader/docs/radarr-sonarr-recyclarr-setup.md)
-4. [Jellyfin](../../serivces/jellyfin/README.md)
-5. [Seerr](../../serivces/media-downloader/docs/seerr-setup.md)
+1. [SABnzbd](../../services/media-downloader/docs/sabnzbd-setup.md)
+2. [Prowlarr](../../services/media-downloader/docs/prowlarr-setup.md)
+3. [Radarr, Sonarr and Recyclarr](../../services/media-downloader/docs/radarr-sonarr-recyclarr-setup.md)
+4. [Jellyfin](../../services/jellyfin/README.md)
+5. [Seerr](../../services/media-downloader/docs/seerr-setup.md)
 
 ---
 
