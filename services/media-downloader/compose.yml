@@ -34,7 +34,7 @@ services:
       VPN_SERVICE_PROVIDER: ${VPN_SERVICE_PROVIDER}
       SERVER_CITIES: ${SERVER_CITIES}
       VPN_TYPE: wireguard
-      WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY} # See https://github.com/qdm12/gluetun-wiki/blob/main/setup/providers/mullvad.md
+      WIREGUARD_PRIVATE_KEY: ${WIREGUARD_PRIVATE_KEY}
       WIREGUARD_ADDRESSES: ${WIREGUARD_ADDRESSES}
       UPDATER_PERIOD: 24h
 
@@ -200,13 +200,15 @@ services:
     user: "1000:1000"
     security_opt:
       - no-new-privileges:true
+    cap_drop:
+      - ALL 
 
     # Environment
     environment:
       TZ: ${TIMEZONE:-Europe/Stockholm}
     
     healthcheck:
-      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/status || exit 1
+      test: wget --no-verbose --tries=1 --spider http://localhost:5055/api/v1/settings/public || exit 1
       start_period: 20s
       timeout: 3s
       interval: 15s
@@ -224,7 +226,8 @@ services:
 
     # Filesystem
     volumes:
-      - ./configs/recyclarr:/config
+      - recyclarr_config:/config
+      - ./configs/recyclarr:/config/configs:ro
     read_only: true
     tmpfs: /tmp
 
@@ -232,6 +235,8 @@ services:
     user: "1000:1000"
     security_opt:
       - no-new-privileges:true
+    cap_drop:
+      - ALL
 
     # Environment
     environment:
@@ -251,6 +256,7 @@ volumes:
   sonarr_config:
   bazarr_config:
   seerr_config:
+  recyclarr_config:
   
   
   
