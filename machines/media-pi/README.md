@@ -204,9 +204,9 @@ Follow [`serivces/hawser/README.md`](../../serivces/hawser/README.md), naming th
 Then create the stacks in Dockhand against the `media-pi` environment, in this order:
 
 1. `serivces/jellyfin`
-2. `serivces/media-downloader` — Wireguard and VPN keys go in the per-stack environment store in the
-   Dockhand UI, per its `.env.example`
-3. `serivces/recyclarr` — needs Sonarr and Radarr to exist first
+2. `serivces/media-downloader` — the whole download stack including Recyclarr. VPN keys and the
+   pinned Radarr/Sonarr API keys go in the per-stack environment store in the Dockhand UI, per its
+   `.env.example`
 
 ### 6. First-run app config
 

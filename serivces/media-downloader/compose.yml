@@ -90,7 +90,10 @@ services:
       PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
-  
+      # Service specific
+      PROWLARR__LOG__ANALYTICSENABLED: "false"
+
+
   radarr:
     container_name: radarr
     image: lscr.io/linuxserver/radarr:6.2.1
@@ -117,7 +120,11 @@ services:
       PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
-  
+      # Service specific
+      RADARR__AUTH__APIKEY: ${RADARR_API_KEY:?set RADARR_API_KEY in .env}
+      RADARR__LOG__ANALYTICSENABLED: "false"
+
+
   sonarr:
     container_name: sonarr
     image: lscr.io/linuxserver/sonarr:4.0.17
@@ -144,7 +151,11 @@ services:
       PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
 
-    
+      # Service specific
+      SONARR__AUTH__APIKEY: ${SONARR_API_KEY:?set SONARR_API_KEY in .env}
+      SONARR__LOG__ANALYTICSENABLED: "false"
+
+
   bazarr:
     container_name: bazarr
     image: lscr.io/linuxserver/bazarr:1.5.6
@@ -200,6 +211,36 @@ services:
       timeout: 3s
       interval: 15s
       retries: 3
+
+
+
+  recyclarr:
+    container_name: recyclarr
+    image: ghcr.io/recyclarr/recyclarr:8.6.0
+    restart: unless-stopped
+    depends_on:
+      - sonarr
+      - radarr
+
+    # Filesystem
+    volumes:
+      - ./configs/recyclarr:/config
+    read_only: true
+    tmpfs: /tmp
+
+    # Security
+    user: "1000:1000"
+    security_opt:
+      - no-new-privileges:true
+
+    # Environment
+    environment:
+      TZ: ${TIMEZONE:-Europe/Stockholm}
+      CRON_SCHEDULE: "@weekly"
+      SONARR_URL: ${SONARR_URL:?set SONARR_URL in .env}
+      SONARR_API_KEY: ${SONARR_API_KEY:?set SONARR_API_KEY in .env}
+      RADARR_URL: ${RADARR_URL:?set RADARR_URL in .env}
+      RADARR_API_KEY: ${RADARR_API_KEY:?set RADARR_API_KEY in .env}
 
 
 volumes:
