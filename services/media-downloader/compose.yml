@@ -218,7 +218,7 @@ services:
 
   recyclarr:
     container_name: recyclarr
-    image: ghcr.io/recyclarr/recyclarr:8.6.0
+    image: ghcr.io/recyclarr/recyclarr:8.7.2
     restart: unless-stopped
     depends_on:
       - sonarr
