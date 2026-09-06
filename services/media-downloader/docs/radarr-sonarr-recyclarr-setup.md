@@ -7,6 +7,7 @@
    off. On Media PI `/data/usenet` is the local SSD and `/data/media` is the
    UNAS NFS mount, so imports are a copy across filesystems either way — see
    [`machines/media-pi/README.md`](../../../machines/media-pi/README.md).
+5. Go to Settings -> Profiles and remove all default profiles.
 
 ## For Radarr only:
 Go to Settings -> Media Management and add root folder /data/media/movies/
