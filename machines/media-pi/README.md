@@ -88,7 +88,8 @@ network copy and briefly need the space twice.
 
    If DietPi deselects Docker complaining about missing kernel modules, reboot and re-run. That is the
    expected behaviour right after a kernel upgrade.
-4. Confirm the UID matches the `PUID`/`PGID` in the compose files:
+4. Confirm the UID/GID matches `user` for Jellyfin and `PUID`/`PGID` for the
+   LinuxServer.io services in the compose files:
 
    ```bash
    id dietpi   # expect uid=1000 gid=1000

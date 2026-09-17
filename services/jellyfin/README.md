@@ -1,3 +1,7 @@
+# Jellyfin
+
+## Initial setup (new installations only)
+
 1. Initial setup
    1. Select English for language
    2. set username and password
