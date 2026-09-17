@@ -158,7 +158,7 @@ services:
 
   bazarr:
     container_name: bazarr
-    image: lscr.io/linuxserver/bazarr:1.6.0
+    image: lscr.io/linuxserver/bazarr:1.6.1
     restart: unless-stopped
     depends_on:
       - gluetun
