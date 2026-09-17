@@ -1,7 +1,7 @@
 services:
   jellyfin:
     container_name: jellyfin
-    image: jellyfin/jellyfin:10.11.11
+    image: jellyfin/jellyfin:12.1
     user: "1000:1000"
     restart: unless-stopped
 
