@@ -1,7 +1,8 @@
 services:
   jellyfin:
     container_name: jellyfin
-    image: lscr.io/linuxserver/jellyfin:10.11.11
+    image: jellyfin/jellyfin:10.11.11
+    user: "1000:1000"
     restart: unless-stopped
 
     # Networking
@@ -13,16 +14,20 @@ services:
       - jellyfin_config:/config
       - /mnt/data/media/tv:/data/tvshows
       - /mnt/data/media/movies:/data/movies
-    
+
     # Security
     security_opt:
       - no-new-privileges:true  # forbid privilege escalation
 
     # Environment
     environment:
-      PUID: 1000
-      PGID: 1000
       TZ: ${TIMEZONE:-Europe/Stockholm}
+      # Preserve the existing LinuxServer.io volume layout.
+      JELLYFIN_DATA_DIR: /config/data
+      JELLYFIN_CONFIG_DIR: /config
+      JELLYFIN_CACHE_DIR: /config/cache
+      JELLYFIN_LOG_DIR: /config/log
+      XDG_CACHE_HOME: /config/cache
 
 volumes:
   jellyfin_config:
